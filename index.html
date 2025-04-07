@@ -26,23 +26,54 @@
         .signin-section { text-align: center; padding: 30px 0; min-height: 60px; /* Reserve space */ }
         .google-signin-btn { display: inline-block; background-color: #4285F4; color: white; padding: 12px 25px; border-radius: 5px; font-size: 1.1em; font-weight: bold; border: none; cursor: pointer; transition: background-color 0.3s, opacity 0.3s, transform 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .google-signin-btn:hover { background-color: #357ae8; }
-        /* Style for logged-in state (e.g., welcome message) - initially hidden */
+        /* Welcome message */
         #welcome-message { display: none; font-weight: bold; color: #1e8449; margin-top: 5px; font-size: 1.1em;}
-
+         /* User profile elements in header */
+         #user-profile-area { display: none; align-items: center; gap: 15px; justify-content: center; margin-top: 10px; }
+         #user-profile-area img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #aed6f1; object-fit: cover; }
+         #user-profile-area span { font-weight: bold; }
+         #user-profile-area button { background: #eaf2f8; color: #1a5276; border: 1px solid #aed6f1; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.9em; transition: background-color 0.3s; font-family: 'Tajawal', sans-serif; }
+         #user-profile-area button:hover { background-color: #d6eaf8; }
 
         /* --- About Section --- */
         .about-section { background-color: #fff; padding: 30px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #eee; }
         .about-section h2 { text-align: center; border-bottom: 2px solid #1e8449; display: inline-block; padding-bottom: 5px; margin-bottom: 20px; }
 
-        /* --- Plans Section --- */
+        /* --- Plan Setup Section (NEW - Initially hidden) --- */
+        #plan-setup-section {
+            display: none; /* Hide initially */
+            background-color: #fff; padding: 30px; margin: 20px 0; border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #eee;
+            text-align: center;
+        }
+         #plan-setup-section h2 { margin-bottom: 15px; }
+         #plan-setup-section p { color: #2980b9; font-weight: bold; margin-bottom: 25px; }
+         .plan-selection-area { margin-bottom: 25px; } /* Container for cards */
+         .plan-card.selected { /* Style for selected card */
+             border-color: #1e8449;
+             box-shadow: 0 4px 10px rgba(30, 132, 73, 0.2);
+             transform: translateY(-3px);
+         }
+         .plan-setup-inputs { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 15px; margin-bottom: 25px; }
+         .plan-setup-inputs label { font-weight: bold; color: #21618c; }
+         .plan-setup-inputs input[type="date"], .plan-setup-inputs select { border: 1px solid #aed6f1; padding: 8px 12px; border-radius: 4px; font-size: 14px; font-family: 'Tajawal', sans-serif; min-width: 160px; }
+         #confirmPlanBtn {
+             display: block; margin: 0 auto; background-color: #1e8449; color: white; padding: 12px 30px;
+             border: none; border-radius: 5px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: background-color 0.3s;
+         }
+         #confirmPlanBtn:hover { background-color: #239b56; }
+         #confirmPlanBtn:disabled { background-color: #aaa; cursor: not-allowed;}
+
+
+        /* --- Plans Section (Cards Only) --- */
         .plans-section { padding: 30px 0; text-align: center; }
-        .plans-section h2 { margin-bottom: 25px; }
+        /* .plans-section h2 { margin-bottom: 25px; } */ /* Title moved to setup section */
         .plans-container { display: flex; justify-content: space-around; align-items: stretch; flex-wrap: wrap; gap: 20px; }
-        .plan-card { background-color: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 25px 20px; flex-basis: calc(25% - 20px); min-width: 220px; box-shadow: 0 2px 5px rgba(0,0,0,0.07); transition: transform 0.3s, box-shadow 0.3s; display: flex; flex-direction: column; justify-content: space-between; }
+        .plan-card { background-color: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 25px 20px; flex-basis: calc(25% - 20px); min-width: 220px; box-shadow: 0 2px 5px rgba(0,0,0,0.07); transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; /* Make card clickable */ }
         .plan-card:hover { transform: translateY(-5px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .plan-card h3 { font-size: 1.2em; color: #1e8449; margin-bottom: 15px; }
-        .plan-card .plan-link { display: inline-block; background-color: #2980b9; color: white; padding: 10px 20px; border-radius: 5px; margin-top: 15px; transition: background-color 0.3s; cursor: pointer; }
-        .plan-card .plan-link:hover { background-color: #3498db; }
+        .plan-card .plan-link { /* Style as text, click handled by card */ color: #2980b9; font-weight: bold; margin-top: 15px; pointer-events: none; /* Prevent link click */ }
+
 
         /* --- Video Section Placeholder --- */
         .video-section { padding: 30px 0; text-align: center; background-color: #f0f4f8; margin: 20px 0; border-radius: 8px; }
@@ -81,7 +112,52 @@
             <button id="google-signin-btn" class="google-signin-btn">
                 تسجيل الدخول بحساب Google
             </button>
-            <p id="welcome-message">أهلاً بك!</p> </section>
+            <div id="user-profile-area" style="display: none;">
+                <img id="user-photo" src="placeholder.png" alt="صورة المستخدم">
+                <span id="user-name">أهلاً بك</span>
+                <button id="logout-button">تسجيل الخروج</button>
+            </div>
+            <p id="welcome-message">أهلاً بك!</p>
+        </section>
+
+        <section id="plan-setup-section">
+            <h2>إعداد خطتك لأول مرة</h2>
+            <p>يرجى اختيار الخطة المناسبة وتحديد تاريخ البدء.</p>
+            <div class="plan-selection-area">
+                <div class="plans-container">
+                    <div class="plan-card" data-plan-type="1">
+                        <div> <h3>خطة حفظ صفحة واحدة يوميًا</h3> <p>خطة ميسرة للمبتدئين أو أصحاب الوقت المحدود.</p> </div>
+                        <span class="plan-link">اختر هذه الخطة</span> </div>
+                    <div class="plan-card" data-plan-type="2">
+                        <div> <h3>خطة حفظ صفحتين يوميًا</h3> <p>الخطة الأساسية والموصى بها، توازن بين الحفظ والمراجعة.</p> </div>
+                         <span class="plan-link">اختر هذه الخطة</span>
+                    </div>
+                    <div class="plan-card" data-plan-type="3">
+                         <div> <h3>خطة حفظ 3 صفحات</h3> <p>لأصحاب الهمم العالية والوقت المتوفر، تقدم أسرع.</p> </div>
+                        <span class="plan-link">اختر هذه الخطة</span>
+                    </div>
+                    <div class="plan-card" data-plan-type="4">
+                        <div> <h3>خطة حفظ 4 صفحات</h3> <p>تحدي كبير للمتمكنين الراغبين في إنجاز أسرع.</p> </div>
+                         <span class="plan-link">اختر هذه الخطة</span>
+                    </div>
+                </div>
+            </div>
+            <div class="plan-setup-inputs">
+                <div>
+                    <label for="planStartDate">تاريخ البدء:</label>
+                    <input type="date" id="planStartDate" required>
+                </div>
+                <div>
+                    <label for="planRepetitionMax">عدد التكرارات المفضل:</label>
+                    <select id="planRepetitionMax">
+                        <option value="20" selected>20</option>
+                        <option value="30">30</option>
+                        <option value="40">40</option>
+                    </select>
+                </div>
+            </div>
+            <button id="confirmPlanBtn" disabled>تأكيد الخطة والبدء</button>
+        </section>
 
         <section class="about-section">
             <h2>عن المنصة</h2>
@@ -90,26 +166,9 @@
             </p>
         </section>
 
-        <section class="plans-section">
-            <h2>اختر الخطة التي تناسبك</h2>
-            <div class="plans-container">
-                 <div class="plan-card">
-                    <div> <h3>خطة حفظ صفحة واحدة يوميًا</h3> <p>خطة ميسرة للمبتدئين أو أصحاب الوقت المحدود.</p> </div>
-                    <a href="plan1.html" class="plan-link" data-plan-url="plan1.html">ابدأ بهذه الخطة</a>
-                </div>
-                <div class="plan-card">
-                    <div> <h3>خطة حفظ صفحتين يوميًا</h3> <p>الخطة الأساسية والموصى بها، توازن بين الحفظ والمراجعة.</p> </div>
-                    <a href="plan_generator.html" class="plan-link" data-plan-url="plangen2.html">ابدأ بهذه الخطة</a>
-                </div>
-                <div class="plan-card">
-                     <div> <h3>خطة حفظ 3 صفحات</h3> <p>لأصحاب الهمم العالية والوقت المتوفر، تقدم أسرع.</p> </div>
-                    <a href="plan3.html" class="plan-link" data-plan-url="plan3.html">ابدأ بهذه الخطة</a>
-                </div>
-                <div class="plan-card">
-                    <div> <h3>خطة حفظ 4 صفحات</h3> <p>تحدي كبير للمتمكنين الراغبين في إنجاز أسرع.</p> </div>
-                     <a href="plan4.html" class="plan-link" data-plan-url="plan4.html">ابدأ بهذه الخطة</a>
-                </div>
-            </div>
+        <section class="plans-section" id="original-plans-section" style="display: none;">
+            <h2>الخطط المتاحة</h2>
+            <div class="plans-container">...</div>
         </section>
 
         <section class="video-section">
@@ -137,113 +196,220 @@
 
     <script>
         // --- Firebase Configuration ---
-        // !!! استبدل هذه ببيانات Firebase الخاصة بك !!!
         const firebaseConfig = {
-          apiKey: "AIzaSyDuUebu7Qzz3JnTfa-58EIPZjOcrkmdGHU", // استبدل بمفتاحك
-          authDomain: "quranplan2.firebaseapp.com",         // استبدل بنطاقك
-          projectId: "quranplan2",                          // استبدل بمعرف مشروعك
-          storageBucket: "quranplan2.appspot.com",          // استبدل بمخزنك
-          messagingSenderId: "1098692856811",               // استبدل بمعرف المرسل
-          appId: "1:1098692856811:web:923bca3a54fd78b1b267ae" // استبدل بمعرف تطبيقك
+          apiKey: "AIzaSyDuUebu7Qzz3JnTfa-58EIPZjOcrkmdGHU", // استخدم بياناتك الفعلية
+          authDomain: "quranplan2.firebaseapp.com",
+          projectId: "quranplan2",
+          storageBucket: "quranplan2.appspot.com",
+          messagingSenderId: "1098692856811",
+          appId: "1:1098692856811:web:923bca3a54fd78b1b267ae"
         };
 
         // --- Initialize Firebase ---
-         try {
-            firebase.initializeApp(firebaseConfig);
-        } catch (e) {
-             console.error("Firebase initialization error:", e);
-             alert("حدث خطأ أثناء تهيئة الاتصال بالخادم. يرجى المحاولة لاحقاً.");
-        }
-
+        try { firebase.initializeApp(firebaseConfig); } catch (e) { console.error("Init Error:", e); }
         const auth = firebase.auth();
         const db = firebase.firestore();
 
         // --- Get DOM Elements ---
         const loginBtn = document.getElementById('google-signin-btn');
         const welcomeMessage = document.getElementById('welcome-message');
-        const planLinks = document.querySelectorAll('.plan-link');
+        const planSetupSection = document.getElementById('plan-setup-section');
+        const planCards = planSetupSection.querySelectorAll('.plan-card'); // Get cards within setup section
+        const planStartDateInput = document.getElementById('planStartDate');
+        const planRepetitionMaxSelect = document.getElementById('planRepetitionMax');
+        const confirmPlanBtn = document.getElementById('confirmPlanBtn');
+        const originalPlansSection = document.getElementById('original-plans-section'); // Optional: Original section
+        const userProfileArea = document.getElementById('user-profile-area');
+        const userNameSpan = document.getElementById('user-name');
+        const userPhoto = document.getElementById('user-photo');
+        const logoutButton = document.getElementById('logout-button');
 
-        // --- Global variable for current user state ---
+
+        // --- Global State ---
         let currentUser = null;
+        let selectedPlanType = null; // Store the chosen plan type (1, 2, 3, 4)
+        let hasExistingPlan = false; // Flag to check if plan exists in Firestore
+
+        // --- Helper Functions ---
+        function formatDate(date) { if (!(date instanceof Date)) { date = new Date(date); } if (isNaN(date.getTime())) { return ""; } const year = date.getFullYear(); const month = String(date.getMonth() + 1).padStart(2, '0'); const day = String(date.getDate()).padStart(2, '0'); return `${year}-${month}-${day}`; }
+
+        // --- Firestore Check ---
+        async function checkIfPlanExists(uid) {
+            if (!uid) return false;
+            const planRef = db.collection("quranPlans").doc(uid);
+            try {
+                const doc = await planRef.get();
+                return doc.exists;
+            } catch (error) {
+                console.error("Error checking plan existence:", error);
+                return false; // Assume no plan on error
+            }
+        }
+
+        // --- UI Update Functions ---
+        function updateUIBasedOnLoginAndPlanState() {
+            if (currentUser) {
+                 // Logged In
+                 loginBtn.style.display = 'none';
+                 welcomeMessage.style.display = 'none'; // Hide generic welcome
+                 userProfileArea.style.display = 'flex'; // Show user profile area
+                 userNameSpan.textContent = currentUser.displayName || 'مستخدم';
+                 userPhoto.src = currentUser.photoURL || 'placeholder.png';
+
+                 if (hasExistingPlan) {
+                      // Logged In + Has Plan -> Redirect to Dashboard
+                      console.log("User has existing plan, redirecting to dashboard...");
+                      window.location.href = 'dashboard.html'; // Redirect immediately
+                      // Hide setup section just in case redirect fails?
+                      planSetupSection.style.display = 'none';
+                      if (originalPlansSection) originalPlansSection.style.display = 'none'; // Hide original plans too
+                 } else {
+                      // Logged In + NO Plan -> Show Setup Section
+                      console.log("User logged in but has no plan. Showing setup section.");
+                      planSetupSection.style.display = 'block';
+                      if (originalPlansSection) originalPlansSection.style.display = 'none'; // Hide original plans if setup is shown
+                       // Set default start date to today
+                       if (!planStartDateInput.value) {
+                            planStartDateInput.value = formatDate(new Date());
+                       }
+                        // Ensure confirm button state is correct initially
+                        updateConfirmButtonState();
+                 }
+            } else {
+                 // Logged Out
+                 loginBtn.style.display = 'inline-block';
+                 welcomeMessage.style.display = 'none';
+                 userProfileArea.style.display = 'none';
+                 planSetupSection.style.display = 'none'; // Hide setup section
+                 if (originalPlansSection) originalPlansSection.style.display = 'none'; // Hide original plans too
+            }
+        }
+
+        // Enable/disable confirm button based on selection
+        function updateConfirmButtonState() {
+             if (selectedPlanType && planStartDateInput.value) {
+                  confirmPlanBtn.disabled = false;
+             } else {
+                  confirmPlanBtn.disabled = true;
+             }
+        }
+
+        // --- Save Initial Plan Data ---
+        async function saveInitialPlanData() {
+             if (!currentUser || !selectedPlanType || !planStartDateInput.value || !planRepetitionMaxSelect.value) {
+                 alert("يرجى اختيار خطة وتحديد تاريخ البدء وعدد التكرارات.");
+                 return;
+             }
+             confirmPlanBtn.disabled = true; // Disable button during save
+             confirmPlanBtn.textContent = "جاري الحفظ...";
+
+             const uid = currentUser.uid;
+             const planRef = db.collection("quranPlans").doc(uid);
+
+             const planDataToSave = {
+                 studentName: currentUser.displayName || "طالب علم",
+                 email: currentUser.email, // Save email
+                 startDate: planStartDateInput.value,
+                 planType: selectedPlanType,
+                 repetitionMax: parseInt(planRepetitionMaxSelect.value),
+                 excuseDates: [], // Initialize empty array for excuses
+                 // We don't save the full tableRows array here initially
+                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                 lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+             };
+
+             try {
+                 await planRef.set(planDataToSave);
+                 console.log("Initial plan data saved!");
+                 hasExistingPlan = true; // Update flag
+                 window.location.href = 'dashboard.html'; // Redirect to dashboard on success
+             } catch (error) {
+                 console.error("Error saving initial plan data: ", error);
+                 alert("حدث خطأ أثناء حفظ بيانات الخطة. حاول مرة أخرى.");
+                 confirmPlanBtn.disabled = false; // Re-enable button on error
+                 confirmPlanBtn.textContent = "تأكيد الخطة والبدء";
+             }
+        }
+
 
         // --- Authentication State Observer ---
-        auth.onAuthStateChanged(user => {
-          currentUser = user; // Update global state
+        auth.onAuthStateChanged(async (user) => { // Make observer async
+          currentUser = user;
           if (user) {
-            // User is signed in
-            console.log("User logged in:", user.displayName);
-            if (loginBtn) loginBtn.style.display = 'none';
-            if (welcomeMessage) {
-              welcomeMessage.textContent = "أهلاً بك, " + user.displayName + "! يمكنك الآن اختيار خطتك.";
-              welcomeMessage.style.display = 'block';
-            }
+            // Check if plan exists AFTER knowing user is logged in
+            hasExistingPlan = await checkIfPlanExists(user.uid);
+            updateUIBasedOnLoginAndPlanState(); // Update UI based on both states
           } else {
-            // User is signed out
-            console.log("User logged out");
-            if (loginBtn) loginBtn.style.display = 'inline-block';
-            if (welcomeMessage) welcomeMessage.style.display = 'none';
+            // User is logged out
+            hasExistingPlan = false; // Reset flag
+            updateUIBasedOnLoginAndPlanState(); // Update UI for logged-out state
           }
         });
 
-        // --- Sign-in Button Listener ---
+        // --- Event Listeners ---
+
+        // Sign-in Button
         if (loginBtn) {
-          loginBtn.addEventListener('click', () => {
-            console.log("Login button clicked");
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider)
-              .then(result => {
-                const user = result.user;
-                console.log("Sign-in successful:", user.displayName);
-
-                // Save/Update user data to Firestore
+          loginBtn.addEventListener('click', () => { /* ... (Google Sign-in logic as before) ... */
+            console.log("Login button clicked"); const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).then(result => {
+                const user = result.user; console.log("Sign-in successful:", user.displayName);
                 const userRef = db.collection("students").doc(user.uid);
-                 userRef.get().then((doc) => {
-                    const userData = {
-                        name: user.displayName, email: user.email, photo: user.photoURL,
-                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-                    };
-                    if (!doc.exists) {
-                        userData.joinedAt = firebase.firestore.FieldValue.serverTimestamp();
-                        userRef.set(userData)
-                            .then(() => console.log("New user saved."))
-                            .catch(err => console.error("Error saving new user:", err));
-                    } else {
-                        userRef.update(userData)
-                             .then(() => console.log("User updated."))
-                             .catch(err => console.error("Error updating user:", err));
-                    }
+                userRef.get().then((doc) => {
+                    const userData = { name: user.displayName, email: user.email, photo: user.photoURL, lastLogin: firebase.firestore.FieldValue.serverTimestamp() };
+                    if (!doc.exists) { userData.joinedAt = firebase.firestore.FieldValue.serverTimestamp(); userRef.set(userData).then(() => console.log("New user saved.")).catch(err => console.error("Error saving new user:", err)); }
+                    else { userRef.update(userData).then(() => console.log("User updated.")).catch(err => console.error("Error updating user:", err)); }
                 }).catch(err => console.error("Error checking user existence:", err));
-                // UI update is handled by onAuthStateChanged
-
-              })
-              .catch(err => {
-                console.error("Sign-in error:", err);
-                alert("حدث خطأ أثناء تسجيل الدخول. رمز الخطأ: " + err.code);
-              });
+                // onAuthStateChanged will handle UI update and Firestore check/redirect
+            }).catch(err => { console.error("Sign-in error:", err); alert("حدث خطأ أثناء تسجيل الدخول. رمز الخطأ: " + err.code); });
           });
-        } else {
-             console.error("Login button (#google-signin-btn) not found!");
+        } else { console.error("Login button not found!"); }
+
+         // Logout Button
+         if (logoutButton) {
+              logoutButton.addEventListener('click', () => {
+                   auth.signOut().catch((error) => {
+                        console.error('Sign out error:', error);
+                        alert('حدث خطأ أثناء تسجيل الخروج.');
+                   });
+                   // onAuthStateChanged will handle UI update
+              });
+         }
+
+
+        // Plan Card Selection in Setup Section
+        planCards.forEach(card => {
+            card.addEventListener('click', () => {
+                 // Remove 'selected' from all cards first
+                 planCards.forEach(c => c.classList.remove('selected'));
+                 // Add 'selected' to the clicked card
+                 card.classList.add('selected');
+                 // Store the selected plan type
+                 selectedPlanType = parseInt(card.getAttribute('data-plan-type'));
+                 console.log("Selected Plan Type:", selectedPlanType);
+                  // Update confirm button state
+                  updateConfirmButtonState();
+            });
+        });
+
+         // Input fields change listener (for enabling confirm button)
+         if (planStartDateInput) {
+             planStartDateInput.addEventListener('change', updateConfirmButtonState);
+         }
+
+        // Confirm Plan Button
+        if (confirmPlanBtn) {
+             confirmPlanBtn.addEventListener('click', saveInitialPlanData);
         }
 
-        // --- Plan Link Listener ---
-        planLinks.forEach(link => {
-          link.addEventListener('click', e => {
-            e.preventDefault();
-            const targetUrl = link.getAttribute('data-plan-url');
-
-            if (currentUser) { // Check Firebase auth state
-              console.log("Plan link clicked (logged in). Target:", targetUrl);
-              if (targetUrl && targetUrl !== "#") {
-                window.location.href = targetUrl; // Navigate
-              } else {
-                // Handle unavailable plans gracefully if needed
-                alert('هذه الخطة غير متاحة حالياً أو الرابط غير صحيح.');
-              }
-            } else {
-              console.log("Plan link clicked (logged out).");
-              alert('يرجى تسجيل الدخول أولاً'); // Prompt to login
-            }
-          });
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+             // Hide sections initially, let Auth listener decide
+             if(planSetupSection) planSetupSection.style.display = 'none';
+             if(originalPlansSection) originalPlansSection.style.display = 'none';
+             if(userProfileArea) userProfileArea.style.display = 'none';
+             if(welcomeMessage) welcomeMessage.style.display = 'none';
+             // Auth listener (onAuthStateChanged) will handle the rest
         });
 
     </script>
