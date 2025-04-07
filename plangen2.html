@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خطة حفظ القرآن الكريم</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        /* --- General Styles --- */
+        body { font-family: 'Tajawal', sans-serif; direction: rtl; text-align: right; margin: 15px; background-color: #fdfdff; }
+        h2, h3 { color: #1a5276; text-align: center; margin-bottom: 15px; }
+
+        /* --- Input Form Area --- */
+        #input-form-container { background-color: #eaf2f8; padding: 20px 25px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #aed6f1; display: none; /* Initially hidden */ }
+        .input-row { display: flex; align-items: baseline; margin-bottom: 12px; flex-wrap: wrap; justify-content: flex-start; gap: 10px 15px; }
+        .input-row label { font-weight: bold; color: #21618c; min-width: 100px; text-align: left; padding-left: 5px; }
+        .input-row input, .input-row select, .input-row button, .input-row span { border: 1px solid #aed6f1; padding: 8px 12px; border-radius: 4px; font-size: 14px; font-family: 'Tajawal', sans-serif; color: #333; background-color: #fff; box-sizing: border-box; }
+        .input-row select { min-width: 80px; }
+        .input-row span#memorization-text { background-color: transparent; border: none; font-weight: bold; color: #34495e; padding: 8px 0; }
+        .input-row input[type="date"] { min-width: 160px; }
+        .input-row button#generateBtn { font-weight: bold; font-size: 16px; padding: 10px 25px; background-color: #1e8449; color: white; border: none; cursor: pointer; transition: background-color 0.3s; margin-right: auto; }
+        .input-row button#generateBtn:hover { background-color: #239b56; }
+
+         /* --- Hadith/Ayah Display Area --- */
+         #quran-quote-container { display: none; text-align: center; margin: 30px auto; padding: 20px; font-family: 'Tajawal', sans-serif; font-size: 1.4em; color: #1a5276; background-color: #f6f9fc; border: 1px dashed #aed6f1; border-radius: 8px; max-width: 75%; }
+
+         /* --- Action Buttons Area --- */
+         .action-buttons { padding: 10px; text-align: left; display: none; /* Initially hidden */ }
+         #print-button, #new-plan-btn { margin-right: 15px; padding: 10px 25px; font-size: 15px; font-weight: bold; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; font-family: 'Tajawal', sans-serif; }
+         #print-button { background-color: #2980b9; } #print-button:hover { background-color: #3498db; }
+         #new-plan-btn { background-color: #c0392b; } #new-plan-btn:hover { background-color: #e74c3c; }
+         .clear { clear: both; }
+
+        /* --- Summary Sections --- */
+         #summary-container { margin-top: 25px; margin-bottom: 25px; display: none; /* Initially hidden */ }
+        #data-sections { display: flex; align-items: stretch; justify-content: space-around; flex-wrap: wrap; background-color: #f8f9fa; padding: 10px; border-radius: 8px; border: 1px solid #dee2e6; gap: 15px; }
+        #data-sections > div { flex: 1; min-width: 210px; padding: 15px 20px; background-color: #fff; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
+        #data-sections h3 { margin-top: 0; margin-bottom: 12px; border-bottom: 2px solid #1e8449; padding-bottom: 8px; font-size: 1.15em; color:#1a5276; }
+        #data-sections > div > div { flex-grow: 1; }
+        #data-sections p { margin: 6px 0; font-size: 0.98em; line-height: 1.6; font-family: 'Tajawal', sans-serif; }
+        #data-sections p strong { color: #1a5276; margin-left: 5px; }
+         #chart-container { display: flex; justify-content: center; align-items: center; min-height: 180px; padding-top: 10px; }
+         #pieChart { max-width: 180px; max-height: 180px; }
+
+        /* --- Table Styles --- */
+        #table-container { overflow-x: auto; margin-top: 20px; display: none; /* Initially hidden */ border: 1.5px solid #6c757d; border-radius: 5px; }
+        table { width: 100%; border-collapse: collapse; table-layout: auto; font-size: 12px; }
+        th, td { border: 1px solid #8a9aab; padding: 5px 4px; text-align: center; vertical-align: middle; word-wrap: break-word; font-family: 'Tajawal', sans-serif; color: #1C1C1C; font-weight: normal; }
+         td { font-weight: bold; }
+         tbody tr:nth-child(even):not(.completed-row):not(.excuse-holder-row) { background-color: #f8f9fa; }
+         tbody tr:hover:not(.completed-row):not(.excuse-holder-row) { background-color: #eaf2f8; }
+        th { background-color: #e4eaf1; font-weight: bold; font-size: 11.5px; position: sticky; top: 0; z-index: 10; color: #1a5276; border-bottom-width: 2px; border-bottom-color: #aed6f1; white-space: normal !important; }
+         /* Varied Subtle Column Colors (TH only) */
+         th:nth-child(1), th:nth-child(2), th:nth-child(3), th:nth-child(4) { background-color: #d1dbe5; } /* Group 1 */
+         th:nth-child(5), th:nth-child(6), th:nth-child(7) { background-color: #d9e1e9; } /* Group 2 */
+         th:nth-child(8), th:nth-child(9), th:nth-child(10), th:nth-child(11) { background-color: #e1e8ee; } /* Group 3 */
+         th:nth-child(n+12) { background-color: #e4eaf1; } /* Default for rest */
+        /* Cell Content Styles */
+        select.excuse-select { width: 100%; box-sizing: border-box; font-size: 11px; padding: 4px 2px; border-color: #ccc; font-family: 'Tajawal', sans-serif; }
+        td input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; vertical-align: middle; }
+        td input[type="checkbox"]:disabled { cursor: not-allowed; opacity: 0.5; }
+        /* Counter Button Styles */
+        .button-group { display: flex; align-items: center; justify-content: center; }
+        .button-group button { width: 20px; height: 20px; font-size: 14px; font-weight: bold; margin: 0 1px; cursor: pointer; transition: background-color 0.2s, transform 0.1s; border: 1px solid #ccc; background-color: #f8f8f8; color: #333; border-radius: 3px; padding: 0; line-height: 18px; font-family: 'Tajawal', sans-serif; }
+        .button-group button:active { transform: translateY(1px); }
+        .button-group button:disabled { background-color: #f0f0f0; color: #bbb; cursor: not-allowed; opacity: 0.7; }
+        .button-group span { font-size: 13px; font-weight: bold; margin: 0 3px; min-width: 15px; display: inline-block; text-align: center; }
+        /* Row States */
+        .completed-row td { background-color: #d1e7dd !important; color: #0f5132; font-weight: bold; }
+        .excuse-holder-row td { background-color: #f8d7da !important; font-style: italic; color: #58151c; }
+        .excuse-holder-row td:nth-child(3) { font-weight: bold; font-style: normal; }
+        .disabled-row { opacity: 0.7; }
+        .disabled-row td:nth-child(3) { opacity: 1; pointer-events: auto; }
+        .disabled-row td:nth-child(3) select { pointer-events: auto; opacity: 1; }
+        .disabled-row .button-group button, .disabled-row input[type="checkbox"] { pointer-events: none; }
+        /* Read-only styling */
+        td.read-only { background-color: #f5f5f5; color: #444; font-weight: bold; }
+        th.read-only { font-weight: bold; }
+        /* Round colors */
+        td.round-1 { background-color: #ffebee !important; } td.round-2 { background-color: #e8f5e9 !important; } td.round-3 { background-color: #e3f2fd !important; } td.round-4 { background-color: #fffde7 !important; } td.round-5 { background-color: #f3e5f5 !important; } td.round-6 { background-color: #e0f7fa !important; } td.round-1, td.round-2, td.round-3, td.round-4, td.round-5, td.round-6 { font-weight: bold; color: #333; }
+        /* Delete Button */
+        .delete-button { background-color: #e74c3c; color: white; border: none; width: 22px; height: 22px; border-radius: 50%; font-weight: bold; font-size: 12px; line-height: 22px; cursor: pointer; padding: 0; transition: background-color 0.3s; }
+        .delete-button:hover { background-color: #c0392b; }
+        .delete-button:disabled { background-color: #E5E7E9; cursor: not-allowed; }
+         /* Loading Indicator */
+         #loading-indicator { text-align: center; padding: 40px; font-size: 1.3em; color: #1a5276; display: none; /* Initially hidden */ }
+
+
+        /* --- Print Specific Styles --- */
+        @media print { /* ... (Print styles remain the same) ... */ }
+
+    </style>
+</head>
+<body>
+    <div id="input-form-container">
+        <h2>أنشئ خطتك لأول مرة</h2>
+        <div class="input-row"> <label for="studentName">اسم الطالب:</label> <input type="text" id="studentName" placeholder="اسمك الظاهر في الخطة"> </div>
+        <div class="input-row"> <label>مقدار الحفظ:</label> <span id="memorization-text">2 صفحة</span> </div>
+        <div class="input-row"> <label for="repetitionMax">عدد التكرارات:</label> <select id="repetitionMax"> <option value="20" selected>20</option> <option value="30">30</option> <option value="40">40</option> </select> </div>
+        <div class="input-row"> <label for="startDate">تاريخ البدء:</label> <input type="date" id="startDate"> </div>
+        <div class="input-row"> <button id="generateBtn">إنشاء وحفظ الجدول</button> </div>
+    </div>
+
+     <div id="quran-quote-container"> <p id="quran-quote-text"></p> </div>
+
+     <div class="action-buttons">
+        <button id="new-plan-btn">إنشاء جدول جديد</button>
+        <button id="print-button" onclick="printData()">طباعة الجدول</button>
+     </div>
+     <div class="clear"></div>
+
+    <div id="summary-container">
+         <h3>ملخص الخطة والإنجاز</h3>
+        <div id="data-sections">
+            <div> <h3>البيانات الأساسية</h3> <div id="data-section"></div> </div>
+            <div> <h3>إحصائيات الحفظ</h3> <div id="memorized-section"></div> </div>
+            <div> <h3>إحصائيات الإتقان والربط</h3> <div id="followup-section"></div> </div>
+            <div> <h3>رسم بياني</h3> <div id="chart-container"> <canvas id="pieChart"></canvas> </div> </div>
+        </div>
+    </div>
+
+    <div id="table-container">
+        <table id="customTable">
+             <thead>
+                  <tr>
+                      <th>التسلسل</th><th>التاريخ</th><th>الأعذار</th><th>تكرار الأمس</th><th>من الصفحة</th><th>إلى الصفحة</th><th>السورة</th><th>الاستماع</th><th>التفسير</th><th>التسجيل</th><th>التكرار</th><th>الربط من</th><th>الربط إلى</th><th>مربوط</th><th>المراجعة من</th><th>المراجعة إلى</th><th>رقم الجولة</th><th>مراجع</th><th>إتمام اليوم</th><th>حذف</th>
+                  </tr>
+             </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="loading-indicator"> جاري تحميل بيانات الخطة... </div>
+
+
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // --- Global Variables & Config ---
+        const initialTotalRows = 320;
+        const initialTotalDays = 300;
+        let pieChartInstance;
+        const totalQuranPages = 604;
+        let currentUser = null; // Store current logged-in user
+        let currentPlanData = null; // Store loaded plan data from Firestore (includes tableRows array)
+        let isSaving = false; // Flag to prevent concurrent saves
+
+        // Firebase Config (From User)
+        const firebaseConfig = {
+          apiKey: "AIzaSyDuUebu7Qzz3JnTfa-58EIPZjOcrkmdGHU",
+          authDomain: "quranplan2.firebaseapp.com",
+          projectId: "quranplan2",
+          storageBucket: "quranplan2.appspot.com",
+          messagingSenderId: "1098692856811",
+          appId: "1:1098692856811:web:923bca3a54fd78b1b267ae"
+        };
+
+        // --- Initialize Firebase ---
+         try {
+            firebase.initializeApp(firebaseConfig);
+        } catch (e) {
+             console.error("Firebase initialization error:", e);
+             alert("حدث خطأ أثناء تهيئة الاتصال بالخادم.");
+        }
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // --- DOM Element References ---
+        const inputContainer = document.getElementById('input-form-container');
+        const quoteContainer = document.getElementById('quran-quote-container');
+        const quoteText = document.getElementById('quran-quote-text');
+        const actionButtonsContainer = document.querySelector('.action-buttons');
+        const printButton = document.getElementById('print-button');
+        const newPlanBtn = document.getElementById('new-plan-btn');
+        const summaryContainer = document.getElementById('summary-container');
+        const tableContainer = document.getElementById('table-container');
+        const tableBody = document.querySelector('#customTable tbody');
+        const generateBtn = document.getElementById('generateBtn');
+        const loadingIndicator = document.getElementById('loading-indicator');
+
+        // --- Data Arrays ---
+        const surahs = ['الفاتحة والبقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة وآل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء والمائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة والأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأنفال', 'الأنفال', 'الأنفال', 'الأنفال', 'الأنفال', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة ويونس', 'يونس', 'يونس', 'يونس', 'يونس', 'يونس', 'يونس', 'يونس وهود', 'هود', 'هود', 'هود', 'هود', 'هود', 'هود', 'هود ويوسف', 'يوسف', 'يوسف', 'يوسف', 'يوسف', 'يوسف', 'يوسف', 'الرعد', 'الرعد', 'الرعد', 'إبراهيم', 'إبراهيم', 'إبراهيم', 'إبراهيم والحجر', 'الحجر', 'الحجر', 'الحجر والنحل', 'النحل', 'النحل', 'النحل', 'النحل', 'النحل', 'النحل', 'النحل والإسراء', 'الإسراء', 'الإسراء', 'الإسراء', 'الإسراء', 'الإسراء', 'الإسراء والكهف', 'الكهف', 'الكهف', 'الكهف', 'الكهف', 'الكهف', 'مريم', 'مريم', 'مريم', 'مريم وطه', 'طه', 'طه', 'طه', 'طه', 'طه والأنبياء', 'الأنبياء', 'الأنبياء', 'الأنبياء', 'الأنبياء', 'الأنبياء والحج', 'الحج', 'الحج', 'الحج', 'الحج', 'الحج والمؤمنون', 'المؤمنون', 'المؤمنون', 'المؤمنون', 'المؤمنون والنور', 'النور', 'النور', 'النور', 'النور', 'النور والفرقان', 'الفرقان', 'الفرقان', 'الفرقان', 'الشعراء', 'الشعراء', 'الشعراء', 'الشعراء', 'الشعراء', 'النمل', 'النمل', 'النمل', 'النمل', 'النمل والقصص', 'القصص', 'القصص', 'القصص', 'القصص', 'القصص والعنكبوت', 'العنكبوت', 'العنكبوت', 'العنكبوت', 'العنكبوت والروم', 'الروم', 'الروم', 'الروم', 'لقمان', 'لقمان', 'السجدة', 'السجدة والأحزاب', 'الأحزاب', 'الأحزاب', 'الأحزاب', 'الأحزاب', 'الأحزاب وسبأ', 'سبأ', 'سبأ', 'سبأ وفاطر', 'فاطر', 'فاطر', 'فاطر ويس', 'يس', 'يس', 'يس والصافات', 'الصافات', 'الصافات', 'الصافات', 'ص', 'ص', 'ص والزمر', 'الزمر', 'الزمر', 'الزمر', 'الزمر', 'غافر', 'غافر', 'غافر', 'غافر', 'غافر', 'فصلت', 'فصلت', 'فصلت', 'الشورى', 'الشورى', 'الشورى', 'الشورى والزخرف', 'الزخرف', 'الزخرف', 'الزخرف والدخان', 'الدخان', 'الجاثية', 'الجاثية والأحقاف', 'الأحقاف', 'الأحقاف', 'محمد', 'محمد', 'الفتح', 'الفتح', 'الفتح والحجرات', 'الحجرات و ق', 'ق', 'الذاريات', 'الذاريات والطور', 'الطور والنجم', 'النجم والقمر', 'القمر', 'القمر والرحمن', 'الرحمن والواقعة', 'الواقعة', 'الواقعة والحديد', 'الحديد', 'الحديد والمجادلة', 'المجادلة', 'المجادلة والحشر', 'الحشر', 'الممتحنة', 'الممتحنة والصف', 'الجمعة والمنافقون', 'المنافقون والتغابن', 'التغابن والطلاق', 'الطلاق والتحريم', 'التحريم والملك', 'الملك والقلم', 'القلم والحاقة', 'الحاقة والمعارج', 'المعارج ونوح', 'نوح والجن', 'الجن والمزمل', 'المزمل والمدثر', 'المدثر والقيامة والإنسان', 'الإنسان والمرسلات', 'المرسلات والنبأ', 'النبأ والنازعات', 'عبس والتكوير', 'الإنفطار والمطففين', 'الإنشقاق والبروج', 'الطارق والأعلى والغاشية', 'الفجر والبلد', 'الشمس والليل', 'الضحى إلى الناس', 'ختم القرآن'];
+        const linkFromData = ['', '', 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 13,13,13,13,13,13,25,25,25,25,25,25,37,37,37,37,37,37,49,49,49,49,49,49,61,61,61,61,61,61, 73,73,73,73,73,73,85,85,85,85,85,85,97,97,97,97,97,97,109,109,109,109,109,109,121,121,121,121,121,121, 133,133,133,133,133,133,145,145,145,145,145,145,157,157,157,157,157,157,169,169,169,169,169,169,181,181,181,181,181,181, 193,193,193,193,193,193,205,205,205,205,205,205,217,217,217,217,217,217,229,229,229,229,229,229,241,241,241,241,241,241, 253,253,253,253,253,253,265,265,265,265,265,265,277,277,277,277,277,277,289,289,289,289,289,289,301,301,301,301,301,301, 313,313,313,313,313,313,325,325,325,325,325,325,337,337,337,337,337,337,349,349,349,349,349,349,361,361,361,361,361,361, 373,373,373,373,373,373,385,385,385,385,385,385,397,397,397,397,397,397,409,409,409,409,409,409,421,421,421,421,421,421, 433,433,433,433,433,433,445,445,445,445,445,445,457,457,457,457,457,457,469,469,469,469,469,469,481,481,481,481,481,481, 493,493,493,493,493,493,505,505,505,505,505,505,517,517,517,517,517,517,529,529,529,529,529,529,541,541,541,541,541,541, 553,553,553,553,553,553,565,565,565,565,565,565,577,577,577,577,577,577];
+        const linkToData = ['', '', 2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60, 62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94,96,98,100,102,104,106,108,110,112,114,116, 118,120,122,124,126,128,130,132,134,136,138,140,142,144,146,148,150,152,154,156,158,160,162,164,166,168, 170,172,174,176,178,180,182,184,186,188,190,192,194,196,198,200,202,204,206,208,210,212,214,216,218,220, 222,224,226,228,230,232,234,236,238,240,242,244,246,248,250,252,254,256,258,260,262,264,266,268,270,272, 274,276,278,280,282,284,286,288,290,292,294,296,298,300,302,304,306,308,310,312,314,316,318,320,322,324, 326,328,330,332,334,336,338,340,342,344,346,348,350,352,354,356,358,360,362,364,366,368,370,372,374,376, 378,380,382,384,386,388,390,392,394,396,398,400,402,404,406,408,410,412,414,416,418,420,422,424,426,428, 430,432,434,436,438,440,442,444,446,448,450,452,454,456,458,460,462,464,466,468,470,472,474,476,478,480, 482,484,486,488,490,492,494,496,498,500,502,504,506,508,510,512,514,516,518,520,522,524,526,528,530,532, 534,536,538,540,542,544,546,548,550,552,554,556,558,560,562,564,566,568,570,572,574,576,578,580,582,584, 586,588,590,592,594,597,600,604];
+        const reviewFromData = [...Array(32).fill(''), 1,3,5,7,9,11,1,5,9,13,17,21,1,7,13,19,25,31,1,9,17,25,33,41, 1,11,21,31,41,51,1,13,25,37,49,61,1,15,29,43,57,71,1,17,33,49,65,81, 1,19,37,55,73,91,1,21,41,61,81,101,1,23,45,67,89,111,1,25,49,73,97,121, 1,27,53,79,105,131,1,29,57,85,113,141,1,31,61,91,121,151,1,33,65,97,129,161, 1,35,69,103,137,171,1,37,73,109,145,181,1,39,77,115,153,191,1,41,81,121,161,201, 1,43,85,127,169,211,1,45,89,133,177,221,1,47,93,139,185,231,1,49,97,145,193,241, 1,51,101,151,201,251,1,53,105,157,209,261,1,55,109,163,217,271,1,57,113,169,225,281, 1,59,117,175,233,291,1,61,121,181,241,301,1,63,125,187,249,311,1,65,129,193,257,321, 1,67,133,199,265,331,1,69,137,205,273,341,1,71,141,211,281,351,1,73,145,217,289,361, 1,75,149,223,297,371,1,77,153,229,305,381,1,79,157,235,313,391,1,81,161,241,321,401, 1,83,165,247,329,411,1,85,169,253,337,421,1,87,173,259,345,431,1,89,177,265,353,441, 1,91,181,271,361,451,1,93,185,277,369,461,1,95,189,283,377,471,1,97,193,289,385,481];
+        const reviewToData = [...Array(32).fill(''), 2,4,6,8,10,12,4,8,12,16,20,24,6,12,18,24,30,36,8,16,24,32,40,48, 10,20,30,40,50,60,12,24,36,48,60,72,14,28,42,56,70,84,16,32,48,64,80,96, 18,36,54,72,90,108,20,40,60,80,100,120,22,44,66,88,110,132,24,48,72,96,120,144, 26,52,78,104,130,156,28,56,84,112,140,168,30,60,90,120,150,180,32,64,96,128,160,192, 34,68,102,136,170,204,36,72,108,144,180,216,38,76,114,152,190,228,40,80,120,160,200,240, 42,84,126,168,210,252,44,88,132,176,220,264,46,92,138,184,230,276,48,96,144,192,240,288, 50,100,150,200,250,300,52,104,156,208,260,312,54,108,162,216,270,324,56,112,168,224,280,336, 58,116,174,232,290,348,60,120,180,240,300,360,62,124,186,248,310,372,64,128,192,256,320,384, 66,132,198,264,330,396,68,136,204,272,340,408,70,140,210,280,350,420,72,144,216,288,360,432, 74,148,222,296,370,444,76,152,228,304,380,456,78,156,234,312,390,468,80,160,240,320,400,480, 82,164,246,328,410,492,84,168,252,336,420,504,86,172,258,344,430,516,88,176,264,352,440,528, 90,180,270,360,450,540,92,184,276,368,460,552,94,188,282,376,470,564,96,192,288,384,480,576];
+        const quranQuotes = [ "‏قال رسول الله ‏ ‏صلى الله عليه وسلم ‏ ‏يقال لصاحب القرآن اقرأ وارتق ورتل كما كنت ترتل في الدنيا فإن منزلتك عند آخر آية تقرأ بها", "‏قال رسول الله ‏ ‏صلى الله عليه وسلم ‏ ‏مثل المؤمن الذي يقرأ القرآن كمثل الأترجة ريحها طيب وطعمها طيب ومثل المؤمن الذي لا يقرأ القرآن كمثل التمرة لا ريح لها وطعمها حلو", "خيركم من تعلم القرآن وعلمه", "قُلْ هُوَ لِلَّذِينَ آمَنُوا هُدًى وَشِفَاءٌ", "وَنُنَزِّلُ مِنَ الْقُرْآنِ مَا هُوَ شِفَاءٌ وَرَحْمَةٌ لِّلْمُؤْمِنِينَ", "إِنَّ هَٰذَا الْقُرْآنَ يَهْدِي لِلَّتِي هِيَ أَقْوَمُ وَيُبَشِّرُ الْمُؤْمِنِينَ الَّذِينَ يَعْمَلُونَ الصَّالِحَاتِ أَنَّ لَهُمْ أَجْرًا كَبِيرًا", "لَوْ أَنزَلْنَا هَٰذَا الْقُرْآنَ عَلَىٰ جَبَلٍ لَّرَأَيْتَهُ خَاشِعًا مُّتَصَدِّعًا مِّنْ خَشْيَةِ اللَّهِ", "إِنَّا نَحْنُ نَزَّلْنَا الذِّكْرَ وَإِنَّا لَهُ لَحَافِظُونَ", "الَّذِينَ آتَيْنَاهُمُ الْكِتَابَ يَتْلُونَهُ حَقَّ تِلَاوَتِهِ أُولَٰئِكَ يُؤْمِنُونَ بِهِ", "بَلْ هُوَ آيَاتٌ بَيِّنَاتٌ فِي صُدُورِ الَّذِينَ أُوتُوا الْعِلْمَ", "اقرؤوا القرآن فإنه يأتي يوم القيامة شفيعاً لأصحابه", "إِنَّ لِلَّهِ أَهْلِينَ مِنَ النَّاسِ. قَالُوا: يَا رَسُولَ اللَّهِ، مَنْ هُمْ؟ قَالَ: هُمْ أَهْلُ الْقُرْآنِ، أَهْلُ اللَّهِ وَخَاصَّتُهُ", "إنَّ الذي ليس في جوفِهِ شيءٌ من القرآنِ كالبيتِ الْخَرِبِ", "يقالُ لصاحِبِ القرآنِ إذا دخل الجنَّةَ: اقرأ واصعَد، فيقرأُ ويصعدُ بكلِّ آيةٍ درجةً، حتَّى يقرأَ آخرَ شيءٍ معه", "من قرأ حرفًا من كتابِ اللهِ فله به حسنةٌ، والحسنةُ بعشرِ أمثالِها، لا أقولُ آلم حرفٌ، ولكن ألِفٌ حرفٌ، ولامٌ حرفٌ، وميمٌ حرفٌ", "يُجَاءُ بِالْقُرْآنِ يَوْمَ الْقِيَامَةِ وَأَهْلِهِ الَّذِينَ كَانُوا يَعْمَلُونَ بِهِ تَقْدُمُهُ سُورَةُ الْبَقَرَةِ وَآلُ عِمْرَانَ، كَأَنَّهُمَا غَمَامَتَانِ، أَوْ ظُلَّتَانِ سَوْدَاوَانِ بَيْنَهُمَا شَرْقٌ، أَوْ كَأَنَّهُمَا حِزْقَانِ مِنْ طَيْرٍ صَوَافَّ، تُحَاجَّانِ عَنْ صَاحِبِهِمَا", "حافظُ القرآنِ يُقَدَّمُ على غيره في الصلاة إماماً", "حافظ القرآن يُلبس والديه يوم القيامة تاجاً ضوءه أحسنُ من ضوء الشمس" ];
+
+        // --- Utility Functions ---
+        function formatDate(date) { if (!(date instanceof Date)) { date = new Date(date); } if (isNaN(date.getTime())) { return "تاريخ غير صالح"; } const year = date.getFullYear(); const month = String(date.getMonth() + 1).padStart(2, '0'); const day = String(date.getDate()).padStart(2, '0'); return `${year}-${month}-${day}`; }
+        function getPlanData(originalIndex) { const index = parseInt(originalIndex); if (isNaN(index) || index < 0 || index >= initialTotalRows) { return { fromPage: '', toPage: '', surah: '', linkFrom: '', linkTo: '', reviewFrom: '', reviewTo: '', round: '' }; } let fromPage = '', toPage = ''; if (index < 299) { fromPage = index * 2 + 1; toPage = fromPage + 1; } else if (index === 299) { fromPage = 601; toPage = 604; } return { fromPage: fromPage, toPage: toPage, surah: surahs[index] || '', linkFrom: linkFromData[index] ?? '', linkTo: linkToData[index] ?? '', reviewFrom: reviewFromData[index] ?? '', reviewTo: reviewToData[index] ?? '', round: calculateRoundNumber(index) }; }
+        function calculateRoundNumber(originalIndex) { if (originalIndex < 32 || reviewFromData[originalIndex] == null || reviewFromData[originalIndex] === '') { return ''; } let reviewDataStartIndex = 32; let reviewCounter = 0; for(let i = reviewDataStartIndex; i <= originalIndex; i++){ if(reviewFromData[i] != null && reviewFromData[i] !== '') reviewCounter++; } if (reviewCounter === 0) return ''; return Math.ceil(reviewCounter / 6); }
+
+        // --- Helper functions for creating cell content ---
+        function createReadOnlyCell(value, classes = []) { const cell = document.createElement('td'); cell.textContent = value ?? ''; cell.classList.add('read-only', ...classes); return cell; }
+        function createCounter(initialValue, maxValue, callback) { const container = document.createElement('div'); container.className = 'button-group'; const maxVal = parseInt(maxValue) || 0; const minusButton = document.createElement('button'); minusButton.textContent = '-'; const plusButton = document.createElement('button'); plusButton.textContent = '+'; const valueSpan = document.createElement('span'); valueSpan.textContent = initialValue; minusButton.onclick = function() { let cv = parseInt(valueSpan.textContent); if (cv > 0) { cv--; valueSpan.textContent = cv; if(callback) callback(); } }; plusButton.onclick = function() { let cv = parseInt(valueSpan.textContent); if (cv < maxVal) { cv++; valueSpan.textContent = cv; if(callback) callback(); } }; container.appendChild(plusButton); container.appendChild(valueSpan); container.appendChild(minusButton); return container; }
+        function createCounterCell(initialValue, maxValue, callback) { const cell = document.createElement('td'); const counter = createCounter(initialValue, maxValue, callback); cell.appendChild(counter); return cell; }
+        function createCheckbox(callback) { const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.onclick = callback; return checkbox; }
+        function createCheckboxCell(callback, addCheckbox = true) { const cell = document.createElement('td'); if (addCheckbox) { cell.appendChild(createCheckbox(callback)); } return cell; }
+        function createExcuseSelect(rowRef) { const excusesSelect = document.createElement('select'); excusesSelect.classList.add('excuse-select'); const options = [ { text: '', value: '' }, { text: 'مرض', value: 'مرض' }, { text: 'امتحانات', value: 'امتحانات' }, { text: 'انشغال', value: 'انشغال' }, { text: 'طارئ', value: 'طارئ' }, { text: 'نسيان', value: 'نسيان' }]; options.forEach(function(od) { const op = document.createElement('option'); op.textContent = od.text; op.value = od.value; excusesSelect.appendChild(op); }); excusesSelect.onchange = function() { if (this.value !== '') { if (confirm(`هل أنت متأكد من تسجيل عذر "${this.value}" لهذا اليوم؟ سيتم ترحيل الخطة وحفظ التقدم.`)) { handleExcuseSelection(rowRef, this.value); } this.selectedIndex = 0; } }; return excusesSelect; }
+        function createDeleteButton(rowRef) { const deleteButton = document.createElement('button'); deleteButton.textContent = 'X'; deleteButton.classList.add('delete-button'); deleteButton.title = 'حذف العذر وإعادة اليوم'; deleteButton.onclick = function() { if (confirm('هل أنت متأكد من حذف هذا العذر؟ سيتم حفظ التقدم.')) { deleteExcuse(rowRef); } }; return deleteButton; }
+
+        // --- Enabling/Disabling ---
+        function disableElement(cell) { if (!cell) return; const bg = cell.querySelector('.button-group'); const cb = cell.querySelector('input[type="checkbox"]'); if (bg) { bg.querySelectorAll('button').forEach(btn => btn.disabled = true); } else if (cb) { cb.disabled = true; } }
+        function enableElement(cell) { if (!cell) return; const bg = cell.querySelector('.button-group'); const cb = cell.querySelector('input[type="checkbox"]'); if (bg) { bg.querySelectorAll('button').forEach(btn => btn.disabled = false); } else if (cb) { cb.disabled = false; } }
+        function deactivateRow(row) { if (!row || row.classList.contains('excuse-holder-row')) return; row.classList.add('disabled-row'); for (let i = 3; i <= 18; i++) { if (row.cells[i]) { disableElement(row.cells[i]); } } if(row.cells[2]) { row.cells[2].style.opacity = 1; row.cells[2].style.pointerEvents = 'auto'; const s = row.cells[2].querySelector('select'); if(s) s.disabled = false; } }
+        function activateRow(row) { if (!row || row.classList.contains('excuse-holder-row')) return; row.classList.remove('disabled-row'); if (row.cells[3]) { enableElement(row.cells[3]); } for (let i = 7; i <= 18; i++) { if (row.cells[i]) { disableElement(row.cells[i]); } } if(row.cells[2]) { row.cells[2].style.opacity = 1; row.cells[2].style.pointerEvents = 'auto'; const s = row.cells[2].querySelector('select'); if(s) s.disabled = false; } validateSequence(row); }
+
+        // --- Validation Sequence Logic ---
+        function validateSequence(row) {
+            if (!row || row.classList.contains('disabled-row') || row.classList.contains('excuse-holder-row')) { return; }
+            const repMaxVal = (currentPlanData && currentPlanData.repetitionMax) ? currentPlanData.repetitionMax : (document.getElementById('repetitionMax') ? parseInt(document.getElementById('repetitionMax').value) : 20);
+            const yRepCell = row.cells[3]; const listCell = row.cells[7]; const intCell = row.cells[8]; const recCell = row.cells[9]; const repCell = row.cells[10]; const linkCell = row.cells[13]; const revCell = row.cells[17]; const compCell = row.cells[18]; const yVal = yRepCell?.querySelector('span') ? parseInt(yRepCell.querySelector('span').textContent) : 0; const listVal = listCell?.querySelector('span') ? parseInt(listCell.querySelector('span').textContent) : 0; const intChk = intCell?.querySelector('input') ? intCell.querySelector('input').checked : false; const recVal = recCell?.querySelector('span') ? parseInt(recCell.querySelector('span').textContent) : 0; const repVal = repCell?.querySelector('span') ? parseInt(repCell.querySelector('span').textContent) : 0; const linkEx = linkCell?.querySelector('input') !== null; const linkChk = linkEx && linkCell.querySelector('input').checked; const revEx = revCell?.querySelector('input') !== null; const revChk = revEx && revCell.querySelector('input').checked;
+            let allowNext = false; let enList = yVal >= 5; enList ? enableElement(listCell) : disableElement(listCell); if (enList) allowNext = listVal >= 1; else allowNext = false; let enInt = allowNext; enInt ? enableElement(intCell) : disableElement(intCell); if (enInt) allowNext = intChk; else allowNext = false; let enRec = allowNext; enRec ? enableElement(recCell) : disableElement(recCell); if (enRec) allowNext = recVal >= 1; else allowNext = false; let enRep = allowNext; enRep ? enableElement(repCell) : disableElement(repCell); if (enRep) allowNext = repVal >= repMaxVal; else allowNext = false; let enLink = allowNext; enLink ? enableElement(linkCell) : disableElement(linkCell); if (enLink && linkEx) allowNext = linkChk; else if (enLink && !linkEx) allowNext = true; else allowNext = false; let enRev = allowNext; enRev ? enableElement(revCell) : disableElement(revCell); if (enRev && revEx) allowNext = revChk; else if (enRev && !revEx) allowNext = true; else allowNext = false; let enComp = allowNext; enComp ? enableElement(compCell) : disableElement(compCell);
+        }
+
+
+        // --- Firestore Interaction Functions ---
+
+        // Function to get the current state of the table from the DOM into savable array format
+        function getCurrentTableStateArray() {
+            const rows = tableBody.querySelectorAll('tr');
+            const tableRowsData = [];
+            rows.forEach(row => {
+                const rowData = {
+                    type: row.classList.contains('excuse-holder-row') ? 'excuse' : 'plan',
+                    originalSequence: parseInt(row.dataset.originalSequence),
+                    displaySeq: parseInt(row.cells[0]?.textContent || '0'), // Use optional chaining and default
+                    displayDate: row.cells[1]?.textContent || '',
+                    state: null
+                };
+
+                if (rowData.type === 'plan' && row.cells.length > 18) { // Check length to avoid errors on malformed rows
+                    const yestRepSpan = row.cells[3]?.querySelector('span');
+                    const listenSpan = row.cells[7]?.querySelector('span');
+                    const interpCheck = row.cells[8]?.querySelector('input[type="checkbox"]');
+                    const recordSpan = row.cells[9]?.querySelector('span');
+                    const repSpan = row.cells[10]?.querySelector('span');
+                    const linkedCheck = row.cells[13]?.querySelector('input[type="checkbox"]');
+                    const reviewedCheck = row.cells[17]?.querySelector('input[type="checkbox"]');
+                    const completedCheck = row.cells[18]?.querySelector('input[type="checkbox"]');
+                    rowData.state = {
+                        yestRep: yestRepSpan ? parseInt(yestRepSpan.textContent) : 0,
+                        listen: listenSpan ? parseInt(listenSpan.textContent) : 0,
+                        interp: interpCheck?.checked ?? false, // Use nullish coalescing
+                        record: recordSpan ? parseInt(recordSpan.textContent) : 0,
+                        rep: repSpan ? parseInt(repSpan.textContent) : 0,
+                        linked: linkedCheck?.checked ?? false,
+                        reviewed: reviewedCheck?.checked ?? false,
+                        completed: completedCheck?.checked ?? false
+                    };
+                } else if (rowData.type === 'excuse') {
+                    rowData.excuseType = row.cells[2]?.textContent || 'عذر';
+                }
+                tableRowsData.push(rowData);
+            });
+            return tableRowsData;
+        }
+
+        // Debounce mechanism for saving
+        let saveTimeout;
+        const DEBOUNCE_DELAY = 1500; // Save 1.5 seconds after the last change
+
+        // Function to save the current table state to Firestore (Debounced)
+        function saveCurrentTableState(isInitialSave = false) {
+            // Clear any existing timeout to debounce
+            clearTimeout(saveTimeout);
+
+            // Don't save immediately if not initial save
+            if (!isInitialSave) {
+                console.log("Debouncing save...");
+                saveTimeout = setTimeout(() => {
+                    performSave(false); // Perform the actual save after delay
+                }, DEBOUNCE_DELAY);
+            } else {
+                performSave(true); // Perform initial save immediately
+            }
+        }
+
+        // Actual function performing the save operation
+        async function performSave(isInitialSave) {
+            if (!currentUser || isSaving) {
+                console.warn("Save aborted. No user or already saving.", { currentUser, isSaving });
+                return;
+            }
+            const uid = currentUser.uid;
+            const planRef = db.collection("quranPlans").doc(uid);
+
+            isSaving = true; // Set saving flag
+            console.log(`Performing ${isInitialSave ? 'initial' : 'update'} save...`);
+            // Optional: Show a subtle saving indicator to the user
+
+            try {
+                const tableRows = getCurrentTableStateArray();
+                 // Ensure basic plan data is included, get it from currentPlanData or input fields
+                 const startDateValue = currentPlanData?.startDate || document.getElementById('startDate')?.value;
+                 const repMaxValue = currentPlanData?.repetitionMax || parseInt(document.getElementById('repetitionMax')?.value) || 20;
+                 const studentNameValue = currentPlanData?.studentName || document.getElementById('studentName')?.value || "طالب العلم";
+
+                 if (!startDateValue) {
+                     throw new Error("Start date is missing, cannot save.");
+                 }
+
+                const dataToSave = {
+                    studentName: studentNameValue,
+                    startDate: startDateValue,
+                    repetitionMax: repMaxValue,
+                    tableRows: tableRows,
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                if (isInitialSave) {
+                    dataToSave.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    await planRef.set(dataToSave);
+                    console.log("Initial plan state saved successfully.");
+                } else {
+                    await planRef.update(dataToSave);
+                    console.log("Plan state updated successfully.");
+                }
+                currentPlanData = dataToSave; // Update local cache with saved data
+
+            } catch (error) {
+                console.error("Error saving plan state:", error);
+                // Don't alert on every auto-save failure, maybe just log or show subtle error
+                // alert("حدث خطأ أثناء حفظ التقدم. قد لا يتم حفظ آخر التغييرات.");
+            } finally {
+                 isSaving = false; // Reset saving flag
+                 // Optional: Hide saving indicator
+                 console.log("Save operation finished.");
+            }
+        }
+
+
+         // Function to delete plan data from Firestore
+         async function deletePlanData() {
+             if (!currentUser) { alert("يرجى تسجيل الدخول أولاً."); return; }
+             const uid = currentUser.uid;
+             const planRef = db.collection("quranPlans").doc(uid);
+             try {
+                 await planRef.delete();
+                 console.log("Plan data deleted successfully for user:", uid);
+                 currentPlanData = null;
+                 displayPlanCreationForm();
+             } catch (error) { console.error("Error deleting plan data:", error); alert("حدث خطأ أثناء حذف الجدول القديم."); }
+         }
+
+
+         // --- Table Rendering Function (From Saved Data) ---
+         function renderSavedTable(savedPlanData) {
+            console.log("Rendering table from saved data...");
+            tableBody.innerHTML = '';
+            const savedRows = savedPlanData.tableRows || [];
+            const repetitionMax = savedPlanData.repetitionMax || 20;
+
+            currentPlanData = savedPlanData; // Store/update global state
+            // Recalculate based on actual loaded rows
+            const excuseCount = savedRows.filter(row => row.type === 'excuse').length;
+            currentTotalRows = initialTotalRows + excuseCount; // This should match savedRows.length if initial save was correct
+            currentTotalDays = initialTotalDays + excuseCount;
+
+            let previousRowCompleted = true;
+
+            savedRows.forEach((rowData, index) => {
+                const row = document.createElement('tr');
+                // Ensure originalSequence is stored and valid
+                 row.dataset.originalSequence = rowData.originalSequence !== undefined ? rowData.originalSequence : -1; // Use -1 or similar for invalid
+
+                row.appendChild(createReadOnlyCell(rowData.displaySeq));
+                row.appendChild(createReadOnlyCell(rowData.displayDate));
+
+                if (rowData.type === 'plan' && rowData.state) { // Check if state exists
+                    row.classList.toggle('completed-row', rowData.state.completed);
+                    const planData = getPlanData(rowData.originalSequence);
+
+                    row.appendChild(document.createElement('td')).appendChild(createExcuseSelect(row)); // Excuse
+                    row.appendChild(createCounterCell(rowData.state.yestRep, 5, () => { validateSequence(row); saveCurrentTableState(); })); // YestRep + Save
+                    row.appendChild(createReadOnlyCell(planData.fromPage)); row.appendChild(createReadOnlyCell(planData.toPage)); row.appendChild(createReadOnlyCell(planData.surah)); // Plan data
+                    row.appendChild(createCounterCell(rowData.state.listen, 3, () => { validateSequence(row); saveCurrentTableState(); })); // Listen + Save
+                    const interpCell = createCheckboxCell(() => { validateSequence(row); saveCurrentTableState(); }); // Interp + Save
+                    const interpCheck = interpCell.querySelector('input'); if (interpCheck) interpCheck.checked = rowData.state.interp; row.appendChild(interpCell);
+                    row.appendChild(createCounterCell(rowData.state.record, 3, () => { validateSequence(row); saveCurrentTableState(); })); // Record + Save
+                    row.appendChild(createCounterCell(rowData.state.rep, repetitionMax, () => { validateSequence(row); saveCurrentTableState(); })); // Rep + Save
+                    row.appendChild(createReadOnlyCell(planData.linkFrom)); row.appendChild(createReadOnlyCell(planData.linkTo));
+                    const linkedCell = createCheckboxCell(() => { validateSequence(row); saveCurrentTableState(); }, planData.linkTo !== ''); // Linked + Save
+                    const linkedCheck = linkedCell.querySelector('input'); if (linkedCheck) linkedCheck.checked = rowData.state.linked; row.appendChild(linkedCell);
+                    const rf_n = createReadOnlyCell(planData.reviewFrom); const rt_n = createReadOnlyCell(planData.reviewTo); row.appendChild(rf_n); row.appendChild(rt_n); const rd_n = createReadOnlyCell(planData.round); if (planData.round !== '') { const rc = `round-${((planData.round - 1) % 6 + 1)}`; rf_n.classList.add(rc); rt_n.classList.add(rc); rd_n.classList.add(rc); } row.appendChild(rd_n); // Review/Round
+                    const reviewedCell = createCheckboxCell(() => { validateSequence(row); saveCurrentTableState(); }, planData.reviewTo !== ''); // Reviewed + Save
+                    const reviewedCheck = reviewedCell.querySelector('input'); if (reviewedCheck) reviewedCheck.checked = rowData.state.reviewed; row.appendChild(reviewedCell);
+                    const comp_n = createCheckboxCell(() => { // Completion Callback
+                         const isChecked = comp_n.querySelector('input').checked; row.classList.toggle('completed-row', isChecked);
+                         saveCurrentTableState(); // <<< SAVE STATE ON COMPLETION CHANGE
+                         const nextRow = row.nextElementSibling; if (isChecked && nextRow) { activateRow(nextRow); } else if (!isChecked && nextRow && !nextRow.classList.contains('excuse-holder-row')) { const nextCompCheck = nextRow.cells[18]?.querySelector('input'); if(!nextCompCheck || !nextCompCheck.checked) { deactivateRow(nextRow); } } updateSummary();
+                    }, true);
+                    const completedCheck = comp_n.querySelector('input'); if (completedCheck) completedCheck.checked = rowData.state.completed; row.appendChild(comp_n); // Completion
+                    row.appendChild(document.createElement('td')); // Empty delete cell
+
+                    // Set initial state AFTER applying saved state
+                    validateSequence(row); // Ensure correct initial enable/disable based on loaded state
+                    if (previousRowCompleted) { activateRow(row); } else { deactivateRow(row); }
+                    previousRowCompleted = rowData.state.completed;
+
+                } else if (rowData.type === 'excuse') {
+                    row.classList.add('excuse-holder-row');
+                    row.appendChild(document.createElement('td')).textContent = rowData.excuseType || 'عذر'; // Excuse Type
+                    for (let k = 3; k <= 18; k++) { row.appendChild(document.createElement('td')); } // Empty cells
+                    row.appendChild(document.createElement('td')).appendChild(createDeleteButton(row)); // Delete Button
+                    previousRowCompleted = true; // Allow next row activation
+                } else {
+                     console.warn("Unknown or invalid row type in saved data:", rowData);
+                      // Optionally render a placeholder error row
+                }
+                tableBody.appendChild(row);
+            });
+             updateSummary();
+             hideLoading();
+         }
+
+        // --- UI Control Functions ---
+        function showLoading(message = "جاري التحميل...") { if (loadingIndicator) { loadingIndicator.textContent = message; loadingIndicator.style.display = 'block'; } hideMainContent(false); /* Keep form hidden? */ }
+        function hideLoading() { if (loadingIndicator) loadingIndicator.style.display = 'none'; }
+        function hideMainContent(hideForm = true) { if(hideForm && inputContainer) inputContainer.style.display = 'none'; if(quoteContainer) quoteContainer.style.display = 'none'; if(actionButtonsContainer) actionButtonsContainer.style.display = 'none'; if(summaryContainer) summaryContainer.style.display = 'none'; if(tableContainer) tableContainer.style.display = 'none'; }
+        function displayPlanCreationForm() { hideLoading(); hideMainContent(false); /* Keep form visible */ if(inputContainer) inputContainer.style.display = 'block'; }
+        function displayExistingPlanUI() { hideLoading(); if(inputContainer) inputContainer.style.display = 'none'; if(quoteContainer) quoteContainer.style.display = 'block'; if(actionButtonsContainer) actionButtonsContainer.style.display = 'block'; if(summaryContainer) summaryContainer.style.display = 'block'; if(tableContainer) tableContainer.style.display = 'block'; const randomQuoteIndex = Math.floor(Math.random() * quranQuotes.length); if(quoteText) quoteText.textContent = quranQuotes[randomQuoteIndex]; }
+
+        // --- Main Application Flow ---
+        function loadUserPlan(user) { /* ... (As before, calls renderSavedTable or displayPlanCreationForm) ... */
+            if (!user) { console.error("User object is null in loadUserPlan"); displayPlanCreationForm(); return; }
+            const uid = user.uid; const planRef = db.collection("quranPlans").doc(uid); console.log("Checking Firestore for plan:", uid); showLoading("جاري تحميل بيانات خطتك...");
+            planRef.get().then((doc) => {
+                if (doc.exists) {
+                    console.log("Plan data found in Firestore."); currentPlanData = doc.data();
+                    if (document.getElementById('studentName')) document.getElementById('studentName').value = currentPlanData.studentName || ''; if (document.getElementById('startDate')) document.getElementById('startDate').value = currentPlanData.startDate || ''; if (document.getElementById('repetitionMax')) document.getElementById('repetitionMax').value = currentPlanData.repetitionMax || '20';
+                    renderSavedTable(currentPlanData); displayExistingPlanUI(); attachNewPlanListener(); // Attach listener here
+                } else { console.log("No plan data found. Displaying creation form."); currentPlanData = null; displayPlanCreationForm(); }
+            }).catch((error) => { console.error("Error getting plan document:", error); alert("حدث خطأ أثناء تحميل بيانات الخطة. قد تحتاج لإنشاء خطة جديدة."); hideLoading(); displayPlanCreationForm(); });
+        }
+
+        // --- Event Listeners ---
+        if (generateBtn) { generateBtn.addEventListener('click', async () => { /* ... (Calls createInitialTableDOM, saveCurrentTableState(true), displayExistingPlanUI) ... */
+             const startDateInput = document.getElementById('startDate'); const studentNameInput = document.getElementById('studentName'); if (!startDateInput.value) { alert('يرجى تحديد تاريخ البدء.'); return; } const startDate = new Date(startDateInput.value + 'T00:00:00Z'); if (isNaN(startDate.getTime())) { alert('تاريخ البدء المحدد غير صالح.'); return; }
+             showLoading("جاري إنشاء وحفظ الجدول...");
+             createInitialTableDOM(startDate, parseInt(document.getElementById('repetitionMax').value));
+             await saveCurrentTableState(true); // Await initial save
+             hideLoading(); // Hide loading AFTER save attempt
+             displayExistingPlanUI(); updateSummary(); attachNewPlanListener();
+        }); }
+        function attachNewPlanListener() { if (newPlanBtn) { newPlanBtn.removeEventListener('click', handleNewPlanClick); newPlanBtn.addEventListener('click', handleNewPlanClick); } }
+        function handleNewPlanClick() { if (confirm("هل أنت متأكد أنك تريد حذف الجدول الحالي وإنشاء جدول جديد؟ لن تتمكن من استعادة الجدول القديم.")) { deletePlanData(); } }
+
+        // --- Auth Listener ---
+        auth.onAuthStateChanged(user => {
+          hideLoading(); // Hide loading once auth state is known
+          if (user) { currentUser = user; console.log("Auth state changed: User is logged in.", user.uid); loadUserPlan(user); }
+          else { currentUser = null; console.log("Auth state changed: User is logged out."); alert("يرجى تسجيل الدخول للمتابعة."); hideMainContent(); document.body.innerHTML = '<div style="text-align: center; padding: 50px; font-size: 1.2em;">يرجى <a href="login.html">تسجيل الدخول</a> للوصول لهذه الصفحة.</div>'; }
+        });
+
+        // --- Initial Setup on Load ---
+        document.addEventListener('DOMContentLoaded', () => { hideMainContent(); showLoading("جاري التحقق من تسجيل الدخول..."); });
+
+         // --- Utility and Helper Functions (Keep as before) ---
+         function createReadOnlyCell(value, classes = []) { const cell = document.createElement('td'); cell.textContent = value ?? ''; cell.classList.add('read-only', ...classes); return cell; }
+         function createCounter(initialValue, maxValue, callback) { const container = document.createElement('div'); container.className = 'button-group'; const maxVal = parseInt(maxValue) || 0; const minusButton = document.createElement('button'); minusButton.textContent = '-'; const plusButton = document.createElement('button'); plusButton.textContent = '+'; const valueSpan = document.createElement('span'); valueSpan.textContent = initialValue; minusButton.onclick = function() { let cv = parseInt(valueSpan.textContent); if (cv > 0) { cv--; valueSpan.textContent = cv; if(callback) callback(); } }; plusButton.onclick = function() { let cv = parseInt(valueSpan.textContent); if (cv < maxVal) { cv++; valueSpan.textContent = cv; if(callback) callback(); } }; container.appendChild(plusButton); container.appendChild(valueSpan); container.appendChild(minusButton); return container; }
+         function createCounterCell(initialValue, maxValue, callback) { const cell = document.createElement('td'); const counter = createCounter(initialValue, maxValue, callback); cell.appendChild(counter); return cell; } // Removed initial disable
+         function createCheckbox(callback) { const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.onclick = callback; return checkbox; }
+         function createCheckboxCell(callback, addCheckbox = true) { const cell = document.createElement('td'); if (addCheckbox) { cell.appendChild(createCheckbox(callback)); } return cell; } // Removed initial disable
+         function createExcuseSelect(rowRef) { const excusesSelect = document.createElement('select'); excusesSelect.classList.add('excuse-select'); const options = [ { text: '', value: '' }, { text: 'مرض', value: 'مرض' }, { text: 'امتحانات', value: 'امتحانات' }, { text: 'انشغال', value: 'انشغال' }, { text: 'طارئ', value: 'طارئ' }, { text: 'نسيان', value: 'نسيان' }]; options.forEach(function(od) { const op = document.createElement('option'); op.textContent = od.text; op.value = od.value; excusesSelect.appendChild(op); }); excusesSelect.onchange = function() { if (this.value !== '') { if (confirm(`هل أنت متأكد من تسجيل عذر "${this.value}" لهذا اليوم؟ سيتم ترحيل الخطة وحفظ التقدم.`)) { handleExcuseSelection(rowRef, this.value); } this.selectedIndex = 0; } }; return excusesSelect; }
+         function createDeleteButton(rowRef) { const deleteButton = document.createElement('button'); deleteButton.textContent = 'X'; deleteButton.classList.add('delete-button'); deleteButton.title = 'حذف العذر وإعادة اليوم'; deleteButton.onclick = function() { if (confirm('هل أنت متأكد من حذف هذا العذر؟ سيتم حفظ التقدم.')) { deleteExcuse(rowRef); } }; return deleteButton; }
+         function disableElement(cell) { if (!cell) return; const bg = cell.querySelector('.button-group'); const cb = cell.querySelector('input[type="checkbox"]'); if (bg) { bg.querySelectorAll('button').forEach(btn => btn.disabled = true); } else if (cb) { cb.disabled = true; } }
+         function enableElement(cell) { if (!cell) return; const bg = cell.querySelector('.button-group'); const cb = cell.querySelector('input[type="checkbox"]'); if (bg) { bg.querySelectorAll('button').forEach(btn => btn.disabled = false); } else if (cb) { cb.disabled = false; } }
+         function deactivateRow(row) { if (!row || row.classList.contains('excuse-holder-row')) return; row.classList.add('disabled-row'); for (let i = 3; i <= 18; i++) { if (row.cells[i]) { disableElement(row.cells[i]); } } if(row.cells[2]) { row.cells[2].style.opacity = 1; row.cells[2].style.pointerEvents = 'auto'; const s = row.cells[2].querySelector('select'); if(s) s.disabled = false; } }
+         function activateRow(row) { if (!row || row.classList.contains('excuse-holder-row')) return; row.classList.remove('disabled-row'); if (row.cells[3]) { enableElement(row.cells[3]); } for (let i = 7; i <= 18; i++) { if (row.cells[i]) { disableElement(row.cells[i]); } } if(row.cells[2]) { row.cells[2].style.opacity = 1; row.cells[2].style.pointerEvents = 'auto'; const s = row.cells[2].querySelector('select'); if(s) s.disabled = false; } validateSequence(row); }
+         function updateSummary() { /* ... */ updateDataSection(); updateMemorizedSection(); updateFollowUpSection(); updatePieChart(); }
+         function updateDataSection() { /* ... (Uses currentPlanData or input values) ... */ const dataSection = document.getElementById('data-section'); const studentName = currentPlanData?.studentName || document.getElementById('studentName')?.value || "طالب العلم"; const startDateValue = currentPlanData?.startDate || document.getElementById('startDate')?.value; if (!startDateValue) { dataSection.innerHTML = `<p>لم يتم تحديد تاريخ البدء.</p>`; return; } const startDate = new Date(startDateValue + 'T00:00:00Z'); if (isNaN(startDate.getTime())) { dataSection.innerHTML = `<p>تاريخ البدء غير صالح.</p>`; return; } let initialEndDate = new Date(startDate); initialEndDate.setUTCDate(startDate.getUTCDate() + initialTotalDays - 1); const excuseRowsCount = document.querySelectorAll('#customTable tbody tr.excuse-holder-row').length; /* Use DOM count */ const currentDays = initialTotalDays + excuseRowsCount; let actualEndDate = new Date(startDate); actualEndDate.setUTCDate(startDate.getUTCDate() + currentDays - 1); const today = new Date(); today.setUTCHours(0, 0, 0, 0); let remainingDays = 0; let actualEndDateUTC = new Date(actualEndDate); actualEndDateUTC.setUTCHours(0,0,0,0); if (actualEndDateUTC >= today) { remainingDays = Math.ceil((actualEndDateUTC.getTime() - today.getTime()) / (1000 * 3600 * 24)); } dataSection.innerHTML = `<p><strong>اسم الطالب:</strong> ${studentName}</p><p><strong>تاريخ البدء:</strong> ${formatDate(startDate)}</p><p><strong>الانتهاء الأولي:</strong> ${formatDate(initialEndDate)}</p><p><strong>الانتهاء المتوقع:</strong> ${formatDate(actualEndDate)}</p><p><strong>أيام الأعذار:</strong> ${excuseRowsCount}</p><p><strong>الأيام المتبقية:</strong> ${remainingDays}</p>`;}
+         function updateMemorizedSection() { /* ... (Added Pages Prefix) ... */ const memorizedSection = document.getElementById('memorized-section'); const tableRows = document.querySelectorAll('#customTable tbody tr:not(.excuse-holder-row)'); let lmp = 0; tableRows.forEach(row => { const cc = row.cells[18]?.querySelector('input[type="checkbox"]'); const tc = row.cells[5]; if (cc?.checked && tc) { const tp = parseInt(tc.textContent); if (!isNaN(tp) && tp > lmp) { lmp = tp; } } }); lmp = Math.min(lmp, totalQuranPages); const rm = totalQuranPages - lmp; memorizedSection.innerHTML = `<p><strong>الصفحات المحفوظة:</strong> ${lmp}</p><p><strong>الصفحات غير المحفوظة:</strong> ${rm}</p>`;}
+         function updateFollowUpSection() { /* ... (Added Pages Prefix) ... */ const followupSection = document.getElementById('followup-section'); const tableRows = document.querySelectorAll('#customTable tbody tr:not(.excuse-holder-row)'); let lpp = 0; let llp = 0; let cr = '-'; tableRows.forEach(row => { const lc = row.cells[13]?.querySelector('input[type="checkbox"]'); const rc = row.cells[17]?.querySelector('input[type="checkbox"]'); const ltc = row.cells[12]; const rtc = row.cells[15]; const rdc = row.cells[16]; if (lc?.checked && ltc) { const lt = parseInt(ltc.textContent); if (!isNaN(lt) && lt > llp) llp = lt; } if (rc?.checked && rtc) { const rt = parseInt(rtc.textContent); if (!isNaN(rt) && rt > lpp) { lpp = rt; if(rdc?.textContent !== '') cr = rdc.textContent; } } }); llp = Math.min(llp, totalQuranPages); lpp = Math.min(lpp, totalQuranPages); const rl = totalQuranPages - llp; const rp = totalQuranPages - lpp; followupSection.innerHTML = `<p><strong>الصفحات المربوطة:</strong> ${llp} <span style="font-size:0.8em;">(المتبقي: ${rl})</span></p><p><strong>الصفحات المتقنة:</strong> ${lpp} <span style="font-size:0.8em;">(المتبقي: ${rp})</span></p><p><strong>الجولة الحالية:</strong> ${cr}</p>`;}
+         function updatePieChart() { /* ... (same) ... */ const tableRows = document.querySelectorAll('#customTable tbody tr:not(.excuse-holder-row)'); let lmp = 0; let lpp = 0; tableRows.forEach(row => { const cc = row.cells[18]?.querySelector('input[type="checkbox"]'); const tc = row.cells[5]; const revc = row.cells[17]?.querySelector('input[type="checkbox"]'); const revtc = row.cells[15]; if (cc?.checked && tc) { const tp = parseInt(tc.textContent); if (!isNaN(tp) && tp > lmp) lmp = tp; } if (revc?.checked && revtc) { const rt = parseInt(revtc.textContent); if (!isNaN(rt) && rt > lpp) lpp = rt; } }); lmp = Math.min(lmp, totalQuranPages); lpp = Math.min(lpp, totalQuranPages); lpp = Math.min(lpp, lmp); const perfected = lpp; const memorizedNotPerfected = lmp - perfected; const notMemorized = totalQuranPages - lmp; const ctx = document.getElementById('pieChart').getContext('2d'); const data = { labels: ['متقن', 'محفوظ', 'غير محفوظ'], datasets: [{ data: [perfected, memorizedNotPerfected, notMemorized], backgroundColor: ['#28a745', '#ffc107', '#dc3545'], borderColor: '#fff', borderWidth: 1, hoverOffset: 4 }] }; if (window.pieChartInstance) { window.pieChartInstance.destroy(); } if (perfected === 0 && memorizedNotPerfected === 0 && notMemorized === 0 && totalQuranPages > 0) { const ca = document.getElementById('pieChart'); const co = ca.getContext('2d'); co.clearRect(0, 0, ca.width, ca.height); co.textAlign = 'center'; co.fillStyle = '#6c757d'; co.font = '13px Tajawal'; co.fillText('لا توجد بيانات بعد', ca.width / 2, ca.height / 2); window.pieChartInstance = null; } else { window.pieChartInstance = new Chart(ctx, { type: 'doughnut', data: data, options: { responsive: true, maintainAspectRatio: false, cutout: '50%', plugins: { legend: { position: 'bottom', labels: { font: { size: 11, family: 'Tajawal' } } }, tooltip: { bodyFont: { family: 'Tajawal' }, callbacks: { label: function(ctx) { let l = ctx.label||''; if(l) l+=': '; const v = ctx.parsed||0; l += v + ' صفحة'; const t = ctx.dataset.data.reduce((a,b)=>a+b, 0); const p = t>0?((v/t)*100).toFixed(0)+'%':'0%'; l+=` (${p})`; return l; } } } } } }); } }
+         function printData() { console.log("Initiating browser print..."); window.print(); }
+
+        // --- Function to create initial table DOM ---
+         function createInitialTableDOM(startDate, repetitionMax) {
+              tableBody.innerHTML = ''; // Clear previous table if any
+              let currentDate = new Date(startDate);
+              for (let i = 0; i < initialTotalRows; i++) {
+                  const row = document.createElement('tr'); row.dataset.originalSequence = i; const planData = getPlanData(i);
+                  row.appendChild(createReadOnlyCell(i + 1)); // Seq
+                  row.appendChild(createReadOnlyCell(formatDate(currentDate))); // Date
+                  if (i < initialTotalRows - 1) { currentDate.setUTCDate(currentDate.getUTCDate() + 1); } // Increment
+                  row.appendChild(document.createElement('td')).appendChild(createExcuseSelect(row)); // Excuse Select
+                  row.appendChild(createCounterCell(0, 5, () => { validateSequence(row); saveCurrentTableState(); })); // YestRep + Save
+                  row.appendChild(createReadOnlyCell(planData.fromPage)); row.appendChild(createReadOnlyCell(planData.toPage)); row.appendChild(createReadOnlyCell(planData.surah)); // Surah
+                  row.appendChild(createCounterCell(0, 3, () => { validateSequence(row); saveCurrentTableState(); })); // Listen + Save
+                  row.appendChild(createCheckboxCell(() => { validateSequence(row); saveCurrentTableState(); })); // Interp + Save
+                  row.appendChild(createCounterCell(0, 3, () => { validateSequence(row); saveCurrentTableState(); })); // Record + Save
+                  row.appendChild(createCounterCell(0, repetitionMax, () => { validateSequence(row); saveCurrentTableState(); })); // Rep + Save
+                  row.appendChild(createReadOnlyCell(planData.linkFrom)); row.appendChild(createReadOnlyCell(planData.linkTo));
+                  row.appendChild(createCheckboxCell(() => { validateSequence(row); saveCurrentTableState(); }, planData.linkTo !== '')); // Linked + Save
+                  const rf_n = createReadOnlyCell(planData.reviewFrom); const rt_n = createReadOnlyCell(planData.reviewTo); row.appendChild(rf_n); row.appendChild(rt_n); const rd_n = createReadOnlyCell(planData.round); if (planData.round !== '') { const rc = `round-${((planData.round - 1) % 6 + 1)}`; rf_n.classList.add(rc); rt_n.classList.add(rc); rd_n.classList.add(rc); } row.appendChild(rd_n); // Review/Round
+                  row.appendChild(createCheckboxCell(() => { validateSequence(row); saveCurrentTableState(); }, planData.reviewTo !== '')); // Reviewed + Save
+                  const comp_n = createCheckboxCell(() => { // Completion Callback
+                       const isChecked = comp_n.querySelector('input').checked; row.classList.toggle('completed-row', isChecked);
+                       saveCurrentTableState(); // <<< SAVE STATE ON COMPLETION CHANGE
+                       const nextRow = row.nextElementSibling; if (isChecked && nextRow) { activateRow(nextRow); } else if (!isChecked && nextRow && !nextRow.classList.contains('excuse-holder-row')) { const nextCompCheck = nextRow.cells[18]?.querySelector('input'); if(!nextCompCheck || !nextCompCheck.checked) { deactivateRow(nextRow); } } updateSummary();
+                  }, true); row.appendChild(comp_n); // Completion
+                  row.appendChild(document.createElement('td')); // Delete placeholder
+                  if (i === 0) { activateRow(row); } else { deactivateRow(row); } tableBody.appendChild(row);
+              }
+         }
+
+         // --- Modified Excuse/Delete functions to call save ---
+          function handleExcuseSelection(row, excuseValue) {
+               const tableBody = document.querySelector('#customTable tbody'); const rowIndex = Array.from(tableBody.rows).indexOf(row); const originalSequence = parseInt(row.dataset.originalSequence); const originalDate = new Date(row.cells[1].textContent + 'T00:00:00Z');
+               row.classList.add('excuse-holder-row'); row.classList.remove('disabled-row', 'completed-row'); const planIndices = [4, 5, 6, 11, 12, 14, 15, 16]; planIndices.forEach(idx => { if(row.cells[idx]) row.cells[idx].textContent = ''; }); const interactiveIndices = [3, 7, 8, 9, 10, 13, 17, 18]; interactiveIndices.forEach(idx => { const c = row.cells[idx]; if(c){ const co = c.querySelector('.button-group'); const ch = c.querySelector('input[type="checkbox"]'); if(co) c.removeChild(co); if(ch) c.removeChild(ch); c.textContent = ''; disableElement(c); c.style.pointerEvents = 'none'; } }); const excuseCell = row.cells[2]; excuseCell.textContent = excuseValue; excuseCell.style.fontWeight = 'bold'; const sel = excuseCell.querySelector('select'); if (sel) excuseCell.removeChild(sel);
+               const deleteCell = row.cells[19]; if (deleteCell) { deleteCell.innerHTML = ''; const deleteButton = createDeleteButton(row); deleteCell.appendChild(deleteButton); } else { console.error("Delete cell not found."); }
+               const newRow = document.createElement('tr'); const shiftedSeq = originalSequence; newRow.dataset.originalSequence = shiftedSeq; const newDate = new Date(originalDate); newDate.setUTCDate(originalDate.getUTCDate() + 1); const planDataNew = getPlanData(shiftedSeq); const repMax = parseInt(document.getElementById('repetitionMax').value); const newSeqCell = document.createElement('td'); newRow.appendChild(newSeqCell); newRow.appendChild(createReadOnlyCell(formatDate(newDate))); const newExcCell = document.createElement('td'); newExcCell.appendChild(createExcuseSelect(newRow)); newRow.appendChild(newExcCell);
+               newRow.appendChild(createCounterCell(0, 5, () => { validateSequence(newRow); saveCurrentTableState(); })); newRow.appendChild(createReadOnlyCell(planDataNew.fromPage)); newRow.appendChild(createReadOnlyCell(planDataNew.toPage)); newRow.appendChild(createReadOnlyCell(planDataNew.surah)); newRow.appendChild(createCounterCell(0, 3, () => { validateSequence(newRow); saveCurrentTableState(); })); newRow.appendChild(createCheckboxCell(() => { validateSequence(newRow); saveCurrentTableState(); })); newRow.appendChild(createCounterCell(0, 3, () => { validateSequence(newRow); saveCurrentTableState(); })); newRow.appendChild(createCounterCell(0, repMax, () => { validateSequence(newRow); saveCurrentTableState(); })); newRow.appendChild(createReadOnlyCell(planDataNew.linkFrom)); newRow.appendChild(createReadOnlyCell(planDataNew.linkTo)); newRow.appendChild(createCheckboxCell(() => { validateSequence(newRow); saveCurrentTableState(); }, planDataNew.linkTo !== '')); const rf_n = createReadOnlyCell(planDataNew.reviewFrom); const rt_n = createReadOnlyCell(planDataNew.reviewTo); newRow.appendChild(rf_n); newRow.appendChild(rt_n); const rd_n = createReadOnlyCell(planDataNew.round); if (planDataNew.round !== '') { const rc = `round-${((planDataNew.round - 1) % 6 + 1)}`; rf_n.classList.add(rc); rt_n.classList.add(rc); rd_n.classList.add(rc); } newRow.appendChild(rd_n); newRow.appendChild(createCheckboxCell(() => { validateSequence(newRow); saveCurrentTableState(); }, planDataNew.reviewTo !== ''));
+               const comp_n = createCheckboxCell(() => { const ich = comp_n.querySelector('input').checked; newRow.classList.toggle('completed-row', ich); saveCurrentTableState(); const nxr = newRow.nextElementSibling; if (ich && nxr) activateRow(nxr); else if (!ich && nxr && !nxr.classList.contains('excuse-holder-row')) { const nc = nxr.cells[18]?.querySelector('input'); if(!nc || !nc.checked) deactivateRow(nxr); } updateSummary(); }, true); newRow.appendChild(comp_n); newRow.appendChild(document.createElement('td')); tableBody.insertBefore(newRow, row.nextSibling);
+               const prevSeqNum = parseInt(row.cells[0].textContent); if (!isNaN(prevSeqNum)) { newSeqCell.textContent = prevSeqNum + 1; } else { newSeqCell.textContent = '?'; }
+               shiftRowsMetaDataForward(rowIndex + 2, 1);
+               currentTotalRows++; currentTotalDays++;
+               const rowBefore = tableBody.rows[rowIndex -1]; if(!rowBefore || rowBefore.cells[18]?.querySelector('input')?.checked || rowIndex === 0) { activateRow(newRow); } else { deactivateRow(newRow); }
+               saveCurrentTableState(); // <<< SAVE STATE AFTER ADDING EXCUSE
+               updateSummary();
+          }
+
+         function deleteExcuse(excuseHolderRow) {
+               const tableBody = document.querySelector('#customTable tbody'); const rowIndex = Array.from(tableBody.rows).indexOf(excuseHolderRow); if (rowIndex === -1 || !excuseHolderRow.classList.contains('excuse-holder-row')) return;
+               tableBody.removeChild(excuseHolderRow);
+               shiftRowsMetaDataBack(rowIndex);
+               currentTotalRows--; currentTotalDays--; currentTotalRows = Math.max(initialTotalRows, currentTotalRows); currentTotalDays = Math.max(initialTotalDays, currentTotalDays);
+               const rowNowAtIndex = tableBody.rows[rowIndex]; const rowBefore = tableBody.rows[rowIndex - 1];
+               if (rowNowAtIndex) { if (!rowBefore || rowBefore.cells[18]?.querySelector('input')?.checked || rowIndex === 0) { activateRow(rowNowAtIndex); } else { deactivateRow(rowNowAtIndex); } }
+               saveCurrentTableState(); // <<< SAVE STATE AFTER DELETING EXCUSE
+               updateSummary();
+         }
+
+         // Simpler shift back - only metadata
+          function shiftRowsMetaDataBack(startIndex, direction = -1) {
+              const tableBody = document.querySelector('#customTable tbody'); const rows = Array.from(tableBody.rows); console.log(`Shifting metadata back starting from index ${startIndex}`);
+              for (let i = startIndex; i < rows.length; i++) {
+                   const row = rows[i]; if (!row || row.classList.contains('excuse-holder-row')) continue;
+                   const sequenceCell = row.cells[0]; const currentDisplaySeq = parseInt(sequenceCell.textContent); if (!isNaN(currentDisplaySeq)) { sequenceCell.textContent = currentDisplaySeq + direction; } else { console.warn(`Row ${i} missing sequence.`); }
+                   const dateCell = row.cells[1]; try { const currentDate = new Date(dateCell.textContent + 'T00:00:00Z'); currentDate.setUTCDate(currentDate.getUTCDate() + direction); dateCell.textContent = formatDate(currentDate); } catch (e) { console.error("Error updating date backward", i, e); }
+              } console.log(`Finished shifting metadata back.`);
+          }
+          // Forward shift - metadata only
+          function shiftRowsMetaDataForward(startIndex, direction = 1) { const tableBody = document.querySelector('#customTable tbody'); const rows = Array.from(tableBody.rows); for (let i = startIndex; i < rows.length; i++) { const row = rows[i]; if (!row || row.classList.contains('excuse-holder-row')) continue; const sequenceCell = row.cells[0]; const currentDisplaySeq = parseInt(sequenceCell.textContent); if (!isNaN(currentDisplaySeq)) { sequenceCell.textContent = currentDisplaySeq + direction; } const dateCell = row.cells[1]; try { const currentDate = new Date(dateCell.textContent + 'T00:00:00Z'); currentDate.setUTCDate(currentDate.getUTCDate() + direction); dateCell.textContent = formatDate(currentDate); } catch (e) { console.error("Error updating date forward", i, e); } } }
+
+
+        // --- Print Function ---
+         function printData() { console.log("Initiating browser print..."); window.print(); }
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+              hideMainContent(); // Hide main sections initially
+              showLoading("جاري التحقق من تسجيل الدخول...");
+              // Auth listener (onAuthStateChanged) will take over
+        });
+
+    </script>
+
+</body>
+</html>

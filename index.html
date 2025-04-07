@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة خطة حفظ القرآن الكريم</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Basic Reset & Body --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Tajawal', sans-serif; line-height: 1.6; color: #333; background-color: #f9f9f9; direction: rtl; }
+        .container { max-width: 1100px; margin: 20px auto; padding: 0 20px; }
+        h1, h2, h3 { color: #1a5276; margin-bottom: 10px; }
+        p { margin-bottom: 15px; color: #555; }
+        a { text-decoration: none; color: #2980b9; }
+        img { max-width: 100%; height: auto; }
+
+        /* --- Header Section --- */
+        .main-header { text-align: center; padding: 40px 0 20px 0; background-color: #eaf2f8; border-bottom: 2px solid #aed6f1; }
+        .main-header h1 { font-size: 2.5em; margin-bottom: 5px; }
+        .main-header .tagline { font-size: 1.1em; color: #5a6a7a; }
+
+        /* --- Sign-in Section --- */
+        .signin-section { text-align: center; padding: 30px 0; min-height: 60px; /* Reserve space */ }
+        .google-signin-btn { display: inline-block; background-color: #4285F4; color: white; padding: 12px 25px; border-radius: 5px; font-size: 1.1em; font-weight: bold; border: none; cursor: pointer; transition: background-color 0.3s, opacity 0.3s, transform 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .google-signin-btn:hover { background-color: #357ae8; }
+        /* Style for logged-in state (e.g., welcome message) - initially hidden */
+        #welcome-message { display: none; font-weight: bold; color: #1e8449; margin-top: 5px; font-size: 1.1em;}
+
+
+        /* --- About Section --- */
+        .about-section { background-color: #fff; padding: 30px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .about-section h2 { text-align: center; border-bottom: 2px solid #1e8449; display: inline-block; padding-bottom: 5px; margin-bottom: 20px; }
+
+        /* --- Plans Section --- */
+        .plans-section { padding: 30px 0; text-align: center; }
+        .plans-section h2 { margin-bottom: 25px; }
+        .plans-container { display: flex; justify-content: space-around; align-items: stretch; flex-wrap: wrap; gap: 20px; }
+        .plan-card { background-color: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 25px 20px; flex-basis: calc(25% - 20px); min-width: 220px; box-shadow: 0 2px 5px rgba(0,0,0,0.07); transition: transform 0.3s, box-shadow 0.3s; display: flex; flex-direction: column; justify-content: space-between; }
+        .plan-card:hover { transform: translateY(-5px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .plan-card h3 { font-size: 1.2em; color: #1e8449; margin-bottom: 15px; }
+        .plan-card .plan-link { display: inline-block; background-color: #2980b9; color: white; padding: 10px 20px; border-radius: 5px; margin-top: 15px; transition: background-color 0.3s; cursor: pointer; }
+        .plan-card .plan-link:hover { background-color: #3498db; }
+
+        /* --- Video Section Placeholder --- */
+        .video-section { padding: 30px 0; text-align: center; background-color: #f0f4f8; margin: 20px 0; border-radius: 8px; }
+        .video-placeholder { background-color: #ccc; width: 80%; max-width: 560px; height: 315px; margin: 20px auto; display: flex; justify-content: center; align-items: center; color: #666; font-style: italic; border-radius: 5px; }
+
+        /* --- Features Section --- */
+        .features-section { padding: 40px 0; }
+        .features-section h2 { text-align: center; margin-bottom: 30px; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 25px; text-align: center; }
+        .feature-item { background-color: #fff; padding: 20px; border-radius: 5px; border: 1px solid #eee; }
+        .feature-item .icon { font-size: 2.5em; margin-bottom: 10px; color: #1abc9c; }
+        .feature-item h3 { font-size: 1.1em; margin-bottom: 5px; color: #333; }
+
+        /* --- Footer --- */
+        .main-footer { text-align: center; padding: 20px; margin-top: 40px; background-color: #2c3e50; color: #ecf0f1; font-size: 0.9em; }
+        .main-footer a { color: #3498db; }
+
+        /* --- Responsive Adjustments --- */
+        @media (max-width: 992px) { .plan-card { flex-basis: calc(50% - 15px); } }
+        @media (max-width: 768px) { .main-header h1 { font-size: 2em; } .main-header .tagline { font-size: 1em; } .features-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); } .video-placeholder { width: 95%; height: auto; aspect-ratio: 16 / 9; } }
+        @media (max-width: 576px) { .plan-card { flex-basis: 80%; max-width: 400px; } .features-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 480px) { .main-header h1 { font-size: 1.8em; } .google-signin-btn { font-size: 1em; padding: 10px 20px; } .container { padding: 0 15px; } .about-section, .plan-card { padding: 20px 15px; } .plan-card { flex-basis: 95%; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <header class="main-header">
+            <h1>منصة خطة حفظ القرآن الكريم</h1>
+            <p class="tagline">ابدأ رحلتك في حفظ كتاب الله بطريقة منظمة ومرنة</p>
+        </header>
+
+        <section class="signin-section">
+            <button id="google-signin-btn" class="google-signin-btn">
+                تسجيل الدخول بحساب Google
+            </button>
+            <p id="welcome-message">أهلاً بك!</p> </section>
+
+        <section class="about-section">
+            <h2>عن المنصة</h2>
+            <p>
+                منصة إلكترونية تساعدك على حفظ القرآن الكريم من خلال خطط يومية تلقائية، تتابع تقدمك وتحفزك للاستمرار. نوفر لك الأدوات اللازمة لتنظيم وردك اليومي ومراجعاتك بطريقة سهلة وميسرة.
+            </p>
+        </section>
+
+        <section class="plans-section">
+            <h2>اختر الخطة التي تناسبك</h2>
+            <div class="plans-container">
+                 <div class="plan-card">
+                    <div> <h3>خطة حفظ صفحة واحدة يوميًا</h3> <p>خطة ميسرة للمبتدئين أو أصحاب الوقت المحدود.</p> </div>
+                    <a href="plan1.html" class="plan-link" data-plan-url="plan1.html">ابدأ بهذه الخطة</a>
+                </div>
+                <div class="plan-card">
+                    <div> <h3>خطة حفظ صفحتين يوميًا</h3> <p>الخطة الأساسية والموصى بها، توازن بين الحفظ والمراجعة.</p> </div>
+                    <a href="plan_generator.html" class="plan-link" data-plan-url="plangen2.html">ابدأ بهذه الخطة</a>
+                </div>
+                <div class="plan-card">
+                     <div> <h3>خطة حفظ 3 صفحات</h3> <p>لأصحاب الهمم العالية والوقت المتوفر، تقدم أسرع.</p> </div>
+                    <a href="plan3.html" class="plan-link" data-plan-url="plan3.html">ابدأ بهذه الخطة</a>
+                </div>
+                <div class="plan-card">
+                    <div> <h3>خطة حفظ 4 صفحات</h3> <p>تحدي كبير للمتمكنين الراغبين في إنجاز أسرع.</p> </div>
+                     <a href="plan4.html" class="plan-link" data-plan-url="plan4.html">ابدأ بهذه الخطة</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="video-section">
+            <h2>شرح مبسط للمنصة</h2>
+            <div class="video-placeholder">(سيتم إضافة فيديو شرح هنا لاحقًا)</div>
+        </section>
+
+        <section class="features-section">
+            <h2>مميزات المنصة</h2>
+            <div class="features-grid">
+                <div class="feature-item"> <div class="icon">📅</div> <h3>تتابع تقدمك تلقائيًا</h3> <p>تعرف بسهولة عدد الصفحات المحفوظة والمتقنة والمتبقية.</p> </div>
+                <div class="feature-item"> <div class="icon">🎯</div> <h3>واجبات يومية</h3> <p>خطة واضحة للحفظ الجديد والربط والمراجعة لكل يوم.</p> </div>
+                <div class="feature-item"> <div class="icon">🔔</div> <h3>تنبيهات عند التأخر</h3> <p>مؤشرات تساعدك على معرفة مدى التزامك بالخطة.</p> </div>
+                 <div class="feature-item"> <div class="icon">🔗</div> <h3>عرض للمراجعة والربط</h3> <p>تحديد دقيق لصفحات المراجعة والربط المطلوبة يومياً.</p> </div>
+            </div>
+        </section>
+
+    </div><footer class="main-footer">
+        <p>&copy; 2025 منصة خطة حفظ القرآن الكريم. جميع الحقوق محفوظة.</p>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // --- Firebase Configuration ---
+        // !!! استبدل هذه ببيانات Firebase الخاصة بك !!!
+        const firebaseConfig = {
+          apiKey: "AIzaSyDuUebu7Qzz3JnTfa-58EIPZjOcrkmdGHU", // استبدل بمفتاحك
+          authDomain: "quranplan2.firebaseapp.com",         // استبدل بنطاقك
+          projectId: "quranplan2",                          // استبدل بمعرف مشروعك
+          storageBucket: "quranplan2.appspot.com",          // استبدل بمخزنك
+          messagingSenderId: "1098692856811",               // استبدل بمعرف المرسل
+          appId: "1:1098692856811:web:923bca3a54fd78b1b267ae" // استبدل بمعرف تطبيقك
+        };
+
+        // --- Initialize Firebase ---
+         try {
+            firebase.initializeApp(firebaseConfig);
+        } catch (e) {
+             console.error("Firebase initialization error:", e);
+             alert("حدث خطأ أثناء تهيئة الاتصال بالخادم. يرجى المحاولة لاحقاً.");
+        }
+
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // --- Get DOM Elements ---
+        const loginBtn = document.getElementById('google-signin-btn');
+        const welcomeMessage = document.getElementById('welcome-message');
+        const planLinks = document.querySelectorAll('.plan-link');
+
+        // --- Global variable for current user state ---
+        let currentUser = null;
+
+        // --- Authentication State Observer ---
+        auth.onAuthStateChanged(user => {
+          currentUser = user; // Update global state
+          if (user) {
+            // User is signed in
+            console.log("User logged in:", user.displayName);
+            if (loginBtn) loginBtn.style.display = 'none';
+            if (welcomeMessage) {
+              welcomeMessage.textContent = "أهلاً بك, " + user.displayName + "! يمكنك الآن اختيار خطتك.";
+              welcomeMessage.style.display = 'block';
+            }
+          } else {
+            // User is signed out
+            console.log("User logged out");
+            if (loginBtn) loginBtn.style.display = 'inline-block';
+            if (welcomeMessage) welcomeMessage.style.display = 'none';
+          }
+        });
+
+        // --- Sign-in Button Listener ---
+        if (loginBtn) {
+          loginBtn.addEventListener('click', () => {
+            console.log("Login button clicked");
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+              .then(result => {
+                const user = result.user;
+                console.log("Sign-in successful:", user.displayName);
+
+                // Save/Update user data to Firestore
+                const userRef = db.collection("students").doc(user.uid);
+                 userRef.get().then((doc) => {
+                    const userData = {
+                        name: user.displayName, email: user.email, photo: user.photoURL,
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    if (!doc.exists) {
+                        userData.joinedAt = firebase.firestore.FieldValue.serverTimestamp();
+                        userRef.set(userData)
+                            .then(() => console.log("New user saved."))
+                            .catch(err => console.error("Error saving new user:", err));
+                    } else {
+                        userRef.update(userData)
+                             .then(() => console.log("User updated."))
+                             .catch(err => console.error("Error updating user:", err));
+                    }
+                }).catch(err => console.error("Error checking user existence:", err));
+                // UI update is handled by onAuthStateChanged
+
+              })
+              .catch(err => {
+                console.error("Sign-in error:", err);
+                alert("حدث خطأ أثناء تسجيل الدخول. رمز الخطأ: " + err.code);
+              });
+          });
+        } else {
+             console.error("Login button (#google-signin-btn) not found!");
+        }
+
+        // --- Plan Link Listener ---
+        planLinks.forEach(link => {
+          link.addEventListener('click', e => {
+            e.preventDefault();
+            const targetUrl = link.getAttribute('data-plan-url');
+
+            if (currentUser) { // Check Firebase auth state
+              console.log("Plan link clicked (logged in). Target:", targetUrl);
+              if (targetUrl && targetUrl !== "#") {
+                window.location.href = targetUrl; // Navigate
+              } else {
+                // Handle unavailable plans gracefully if needed
+                alert('هذه الخطة غير متاحة حالياً أو الرابط غير صحيح.');
+              }
+            } else {
+              console.log("Plan link clicked (logged out).");
+              alert('يرجى تسجيل الدخول أولاً'); // Prompt to login
+            }
+          });
+        });
+
+    </script>
+</body>
+</html>
