@@ -586,7 +586,7 @@
              tableBody.insertBefore(newRow, row.nextSibling); // Insert the new row
 
              // Renumber and shift dates AFTER inserting the new row
-             shiftRowsMetaDataForward(rowIndex + 1); // Shift starting from the inserted row
+             shiftRowsMetaDataForward(rowIndex + 2); // Shift starting from the inserted row
 
              // Activate/Deactivate the new row based on the state of the excuse row (which is now considered 'complete' for flow)
              // Since the excuse row allows flow, the new row should be active.
