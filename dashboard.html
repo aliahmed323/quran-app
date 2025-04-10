@@ -12,7 +12,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
 
     <style>
-        /* --- CSS Styles (تبقى كما هي) --- */
+        /* --- CSS Styles (تبقى كما هي - تأكد من وجود لون الخلفية الأخضر لشريط التقدم) --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Tajawal', sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.7; }
         .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
@@ -41,7 +41,7 @@
 
         #plan-progress h3, #quick-stats h3, #calendar-view h3, #competition-section h3, #badges-section h3 { font-size: 1.15em; }
         #plan-progress .progress-bar-container { background-color: #e9ecef; border-radius: 0.25rem; height: 25px; overflow: hidden; margin-top: 10px; border: 1px solid #ccc; }
-        #plan-progress .progress-bar-value { background-color: #28a745; height: 100%; width: 0%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9em; font-weight: bold; transition: width 0.6s ease-in-out; }
+        #plan-progress .progress-bar-value { background-color: #28a745; height: 100%; width: 0%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9em; font-weight: bold; transition: width 0.6s ease-in-out; } /* اللون الأخضر موجود هنا */
         #quick-stats ul { list-style: none; padding: 0; margin-top: 15px;}
         #quick-stats ul li { margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dotted #eee; font-size: 0.95em;}
         #quick-stats ul li strong { margin-left: 5px; color: #1a5276; min-width: 110px; display: inline-block;}
@@ -51,7 +51,6 @@
         .placeholder-box { min-height: 150px; background-color: #f0f4f8; border: 1px dashed #ccc; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #777; border-radius: 5px; padding: 15px; text-align: center; }
         .placeholder-box .icon { font-size: 3em; margin-bottom: 10px; opacity: 0.5; }
         .placeholder-box .text { font-style: italic; font-size: 0.9em; }
-        /* Basic Calendar Grid Placeholder */
         #calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 10px; max-width: 250px; margin-left:auto; margin-right:auto;}
         #calendar-grid div { background-color: #e9ecef; height: 25px; border-radius: 3px; font-size: 0.7em; display: flex; justify-content: center; align-items: center;}
 
@@ -59,11 +58,8 @@
         .main-footer { text-align: center; padding: 20px; margin-top: 40px; background-color: #2c3e50; color: #ecf0f1; font-size: 0.9em; }
         .main-footer a { color: #3498db; }
 
-         /* Action Buttons Area Styling - Button removed, container hidden */
-         .action-buttons { padding: 15px 0; text-align: left; display: none; }
-         #print-button { margin-right: 15px; padding: 10px 25px; font-size: 15px; font-weight: bold; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; font-family: 'Tajawal', sans-serif; }
-         #print-button { background-color: #2980b9; } #print-button:hover { background-color: #3498db; }
-         .clear { clear: both; }
+         /* Action Buttons Hidden */
+         .action-buttons { display: none; }
 
          /* Loading Indicator */
          #loading-indicator { text-align: center; padding: 50px; font-size: 1.3em; color: #1a5276; display: block; }
@@ -79,7 +75,7 @@
 
         <header class="dashboard-header">
             <div class="logo"><h1>خطة حفظ القرآن الكريم</h1></div>
-             </header>
+        </header>
 
         <div id="loading-indicator">جاري التحميل...</div>
 
@@ -88,7 +84,7 @@
             <div class="dashboard-grid">
 
                 <section id="daily-task" class="card">
-                    <h3>🌟 واجب اليوم (<span id="today-date">...</span>)</h3>
+                    <h3>🌟 واجب اليوم (<span id="today-date-display">...</span>)</h3>
                     <div id="daily-task-content">
                         <p><i>يتم تحديد الواجب...</i></p>
                     </div>
@@ -100,8 +96,7 @@
                     <p><strong>الخطة النشطة:</strong> <span id="current-plan-name">-</span></p>
                     <p><strong>التقدم الكلي:</strong></p>
                     <div class="progress-bar-container">
-                        <div id="progress-bar-value" style="width: 0%;">0%</div>
-                    </div>
+                        <div id="progress-bar-value" style="width: 0%; background-color: #28a745;">0%</div> </div>
                     <p style="font-size: 0.9em; text-align: center; margin-top: 5px;">
                         <span id="completed-pages-progress">0</span> / 604 صفحة
                     </p>
@@ -110,9 +105,9 @@
                 <section id="quick-stats" class="card">
                     <h3>إحصائيات سريعة</h3>
                     <ul>
-                        <li><strong>الصفحات المحفوظة:</strong> <span id="stat-memorized">0</span></li>
-                        <li><strong>المهام المتقنة (مراجعة):</strong> <span id="stat-perfected">0</span></li> {/* Changed Label */}
-                        <li><strong>المهام المربوطة:</strong> <span id="stat-linked">0</span></li> {/* Changed Label */}
+                         <li><strong>الصفحات المحفوظة:</strong> <span id="stat-memorized">0</span></li>
+                        <li><strong>الصفحات المتقنة:</strong> <span id="stat-perfected">0</span></li>
+                        <li><strong>الصفحات المربوطة:</strong> <span id="stat-linked">0</span></li>
                         <li><strong>أيام الأعذار:</strong> <span id="stat-excuses">0</span></li>
                     </ul>
                 </section>
@@ -162,7 +157,7 @@
     <script>
         // --- Firebase Config ---
         const firebaseConfig = {
-         apiKey: "AIzaSyDuUebu7Qzz3JnTfa-58EIPZjOcrkmdGHU", // استخدم بياناتك الفعلية
+         apiKey: "AIzaSyDuUebu7Qzz3JnTfa-58EIPZjOcrkmdGHU",
          authDomain: "quranplan2.firebaseapp.com",
          projectId: "quranplan2",
          storageBucket: "quranplan2.appspot.com",
@@ -178,24 +173,23 @@
         // --- DOM References ---
         const loadingIndicator = document.getElementById('loading-indicator');
         const dashboardContent = document.getElementById('dashboard-content');
-        // const actionButtonsContainer = document.querySelector('.action-buttons'); // Keep if needed later
         const dailyTaskContent = document.getElementById('daily-task-content');
         const currentPlanNameSpan = document.getElementById('current-plan-name');
         const progressBarValue = document.getElementById('progress-bar-value');
         const completedPagesProgressSpan = document.getElementById('completed-pages-progress');
         const statMemorized = document.getElementById('stat-memorized');
-        const statPerfected = document.getElementById('stat-perfected');
-        const statLinked = document.getElementById('stat-linked');
+        const statPerfected = document.getElementById('stat-perfected'); // Now corresponds to "الصفحات المتقنة"
+        const statLinked = document.getElementById('stat-linked');     // Now corresponds to "الصفحات المربوطة"
         const statExcuses = document.getElementById('stat-excuses');
-        const todayDateSpan = document.getElementById('today-date');
+        const todayDateSpan = document.getElementById('today-date-display'); // Changed ID slightly for clarity
 
         // --- Constants ---
         const totalQuranPages = 604;
-        const initialTotalRows = 320; // Needed for getPlanData index check
+        const initialTotalRows = 320;
 
         // --- Global State ---
         let currentUser = null;
-        let currentPlanData = null; // Will store the FULL plan data including tableRows
+        let currentPlanData = null; // Stores the FULL plan data
 
         // --- Data Arrays & Helper Functions (Copied from plangen2.html for consistency) ---
         const surahs = ['الفاتحة والبقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة وآل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء والمائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة والأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأنفال', 'الأنفال', 'الأنفال', 'الأنفال', 'الأنفال', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة ويونس', 'يونس', 'يونس', 'يونس', 'يونس', 'يونس', 'يونس', 'يونس وهود', 'هود', 'هود', 'هود', 'هود', 'هود', 'هود', 'هود ويوسف', 'يوسف', 'يوسف', 'يوسف', 'يوسف', 'يوسف', 'يوسف', 'الرعد', 'الرعد', 'الرعد', 'إبراهيم', 'إبراهيم', 'إبراهيم', 'إبراهيم والحجر', 'الحجر', 'الحجر', 'الحجر والنحل', 'النحل', 'النحل', 'النحل', 'النحل', 'النحل', 'النحل', 'النحل والإسراء', 'الإسراء', 'الإسراء', 'الإسراء', 'الإسراء', 'الإسراء', 'الإسراء والكهف', 'الكهف', 'الكهف', 'الكهف', 'الكهف', 'الكهف', 'مريم', 'مريم', 'مريم', 'مريم وطه', 'طه', 'طه', 'طه', 'طه', 'طه والأنبياء', 'الأنبياء', 'الأنبياء', 'الأنبياء', 'الأنبياء', 'الأنبياء والحج', 'الحج', 'الحج', 'الحج', 'الحج', 'الحج والمؤمنون', 'المؤمنون', 'المؤمنون', 'المؤمنون', 'المؤمنون والنور', 'النور', 'النور', 'النور', 'النور', 'النور والفرقان', 'الفرقان', 'الفرقان', 'الفرقان', 'الشعراء', 'الشعراء', 'الشعراء', 'الشعراء', 'الشعراء', 'النمل', 'النمل', 'النمل', 'النمل', 'النمل والقصص', 'القصص', 'القصص', 'القصص', 'القصص', 'القصص والعنكبوت', 'العنكبوت', 'العنكبوت', 'العنكبوت', 'العنكبوت والروم', 'الروم', 'الروم', 'الروم', 'لقمان', 'لقمان', 'السجدة', 'السجدة والأحزاب', 'الأحزاب', 'الأحزاب', 'الأحزاب', 'الأحزاب', 'الأحزاب وسبأ', 'سبأ', 'سبأ', 'سبأ وفاطر', 'فاطر', 'فاطر', 'فاطر ويس', 'يس', 'يس', 'يس والصافات', 'الصافات', 'الصافات', 'الصافات', 'ص', 'ص', 'ص والزمر', 'الزمر', 'الزمر', 'الزمر', 'الزمر', 'غافر', 'غافر', 'غافر', 'غافر', 'غافر', 'فصلت', 'فصلت', 'فصلت', 'الشورى', 'الشورى', 'الشورى', 'الشورى والزخرف', 'الزخرف', 'الزخرف', 'الزخرف والدخان', 'الدخان', 'الجاثية', 'الجاثية والأحقاف', 'الأحقاف', 'الأحقاف', 'محمد', 'محمد', 'الفتح', 'الفتح', 'الفتح والحجرات', 'الحجرات و ق', 'ق', 'الذاريات', 'الذاريات والطور', 'الطور والنجم', 'النجم والقمر', 'القمر', 'القمر والرحمن', 'الرحمن والواقعة', 'الواقعة', 'الواقعة والحديد', 'الحديد', 'الحديد والمجادلة', 'المجادلة', 'المجادلة والحشر', 'الحشر', 'الممتحنة', 'الممتحنة والصف', 'الجمعة والمنافقون', 'المنافقون والتغابن', 'التغابن والطلاق', 'الطلاق والتحريم', 'التحريم والملك', 'الملك والقلم', 'القلم والحاقة', 'الحاقة والمعارج', 'المعارج ونوح', 'نوح والجن', 'الجن والمزمل', 'المزمل والمدثر', 'المدثر والقيامة والإنسان', 'الإنسان والمرسلات', 'المرسلات والنبأ', 'النبأ والنازعات', 'عبس والتكوير', 'الإنفطار والمطففين', 'الإنشقاق والبروج', 'الطارق والأعلى والغاشية', 'الفجر والبلد', 'الشمس والليل', 'الضحى إلى الناس', 'ختم القرآن'];
@@ -205,49 +199,20 @@
         const reviewToData = [...Array(32).fill(''), 2,4,6,8,10,12,4,8,12,16,20,24,6,12,18,24,30,36,8,16,24,32,40,48, 10,20,30,40,50,60,12,24,36,48,60,72,14,28,42,56,70,84,16,32,48,64,80,96, 18,36,54,72,90,108,20,40,60,80,100,120,22,44,66,88,110,132,24,48,72,96,120,144, 26,52,78,104,130,156,28,56,84,112,140,168,30,60,90,120,150,180,32,64,96,128,160,192, 34,68,102,136,170,204,36,72,108,144,180,216,38,76,114,152,190,228,40,80,120,160,200,240, 42,84,126,168,210,252,44,88,132,176,220,264,46,92,138,184,230,276,48,96,144,192,240,288, 50,100,150,200,250,300,52,104,156,208,260,312,54,108,162,216,270,324,56,112,168,224,280,336, 58,116,174,232,290,348,60,120,180,240,300,360,62,124,186,248,310,372,64,128,192,256,320,384, 66,132,198,264,330,396,68,136,204,272,340,408,70,140,210,280,350,420,72,144,216,288,360,432, 74,148,222,296,370,444,76,152,228,304,380,456,78,156,234,312,390,468,80,160,240,320,400,480, 82,164,246,328,410,492,84,168,252,336,420,504,86,172,258,344,430,516,88,176,264,352,440,528, 90,180,270,360,450,540,92,184,276,368,460,552,94,188,282,376,470,564,96,192,288,384,480,576];
 
         function formatDate(date) { if (!(date instanceof Date)) date = new Date(date); if (isNaN(date.getTime())) return ""; const year = date.getFullYear(); const month = String(date.getMonth() + 1).padStart(2, '0'); const day = String(date.getDate()).padStart(2, '0'); return `${year}-${month}-${day}`; }
-        // Use the exact same getPlanData as in plangen2.html to ensure consistency
         function getPlanData(originalIndex) { const index = parseInt(originalIndex); if (isNaN(index) || index < 0 || index >= initialTotalRows) { return null; } let fromPage = '', toPage = ''; if (index < 299) { fromPage = index * 2 + 1; toPage = fromPage + 1; } else if (index === 299) { fromPage = 601; toPage = 604; } return { fromPage: fromPage, toPage: toPage, surah: surahs[index] || '', linkFrom: linkFromData[index] ?? '', linkTo: linkToData[index] ?? '', reviewFrom: reviewFromData[index] ?? '', reviewTo: reviewToData[index] ?? '', round: calculateRoundNumber(index) }; }
-        function calculateRoundNumber(originalIndex) { if (originalIndex < 32 || reviewFromData[originalIndex] == null || reviewFromData[originalIndex] === '') { return ''; } let reviewDataStartIndex = 32; let reviewCounter = 0; for(let i = reviewDataStartIndex; i <= originalIndex; i++){ if(reviewFromData[i] != null && reviewFromData[i] !== '') reviewCounter++; } if (reviewCounter === 0) return ''; return Math.ceil(reviewCounter / 6); }
-
+        function calculateRoundNumber(originalIndex) { if (originalIndex < 32 || !reviewFromData || reviewFromData[originalIndex] == null || reviewFromData[originalIndex] === '') { return ''; } let reviewDataStartIndex = 32; let reviewCounter = 0; for(let i = reviewDataStartIndex; i <= originalIndex; i++){ if(reviewFromData[i] != null && reviewFromData[i] !== '') reviewCounter++; } if (reviewCounter === 0) return ''; return Math.ceil(reviewCounter / 6); }
 
         // --- UI Update Functions ---
-        function showLoading(message = "جاري التحميل...") { if(loadingIndicator){ loadingIndicator.textContent = message; loadingIndicator.style.display = 'block';} if(dashboardContent) dashboardContent.style.display = 'none'; /*if(actionButtonsContainer) actionButtonsContainer.style.display = 'none';*/ }
+        function showLoading(message = "جاري التحميل...") { if(loadingIndicator){ loadingIndicator.textContent = message; loadingIndicator.style.display = 'block';} if(dashboardContent) dashboardContent.style.display = 'none'; }
         function hideLoading() { if(loadingIndicator) loadingIndicator.style.display = 'none'; }
-        function displayDashboard() { hideLoading(); if(dashboardContent) dashboardContent.style.display = 'block'; /*if(actionButtonsContainer) actionButtonsContainer.style.display = 'block';*/ } // Keep actions hidden for now
+        function displayDashboard() { hideLoading(); if(dashboardContent) dashboardContent.style.display = 'block'; }
 
-
-        // --- >>> NEW: Functions to Calculate Stats from tableRows <<< ---
-        function findCurrentTaskInfo(tableRows) {
-            if (!tableRows || tableRows.length === 0) {
-                return null; // No rows to process
-            }
-            // Find the first row that is a 'plan' type and not completed
-            const firstIncompleteTask = tableRows.find(row => row.type === 'plan' && row.state && !row.state.completed);
-
-            if (firstIncompleteTask) {
-                // Return details needed to display the task
-                return {
-                    originalSequence: firstIncompleteTask.originalSequence,
-                    displayDate: firstIncompleteTask.displayDate
-                };
-            } else {
-                // Check if the last row is a plan and completed (or if all are excuses?)
-                 const lastRow = tableRows[tableRows.length - 1];
-                 if(lastRow && lastRow.type === 'plan' && lastRow.state && lastRow.state.completed) {
-                    return { completed: true }; // Indicate plan completion
-                 } else {
-                    // Or maybe the plan is just excuses? Return null for now.
-                    return null;
-                 }
-            }
-        }
-
+        // --- Functions to Calculate Stats from tableRows ---
         function calculateDashboardStats(tableRows) {
-            let memorizedPages = 0;
-            let linkedTasks = 0;
-            let perfectedTasks = 0;
-            let excuseCount = 0;
             let lastCompletedPage = 0;
+            let linkedTasks = 0;
+            let perfectedTasks = 0; // Based on 'reviewed' state
+            let excuseCount = 0;
 
             if (!tableRows) return { memorizedPages: 0, linkedTasks: 0, perfectedTasks: 0, excuseCount: 0 };
 
@@ -255,93 +220,114 @@
                 if (row.type === 'excuse') {
                     excuseCount++;
                 } else if (row.type === 'plan' && row.state && row.state.completed) {
-                    // Get page info for completed row
+                    // Find last completed page number
                     const planInfo = getPlanData(row.originalSequence);
                     if (planInfo && planInfo.toPage) {
-                        lastCompletedPage = Math.max(lastCompletedPage, planInfo.toPage);
+                        // Ensure toPage is a number before comparison
+                        const pageNum = parseInt(planInfo.toPage);
+                        if (!isNaN(pageNum)) {
+                             lastCompletedPage = Math.max(lastCompletedPage, pageNum);
+                        }
                     }
-                    // Count linked tasks
-                    if (row.state.linked) {
+                    // Count linked tasks where link checkbox exists and is checked
+                    if (planInfo && planInfo.linkTo !== '' && row.state.linked) {
                         linkedTasks++;
                     }
-                    // Count perfected (reviewed) tasks
-                    if (row.state.reviewed) {
+                    // Count perfected tasks where review checkbox exists and is checked
+                    if (planInfo && planInfo.reviewTo !== '' && row.state.reviewed) {
                         perfectedTasks++;
                     }
                 }
             });
 
             // Ensure lastCompletedPage doesn't exceed total pages
-            memorizedPages = Math.min(lastCompletedPage, totalQuranPages);
+            const memorizedPages = Math.min(lastCompletedPage, totalQuranPages);
 
             return {
                 memorizedPages: memorizedPages,
-                linkedTasks: linkedTasks,
-                perfectedTasks: perfectedTasks,
+                linkedTasks: linkedTasks, // Count of completed tasks where link was checked
+                perfectedTasks: perfectedTasks, // Count of completed tasks where review was checked
                 excuseCount: excuseCount
             };
         }
 
 
-        // --- >>> MODIFIED: Functions to Update Dashboard Sections <<< ---
-        function displayDailyTask(taskInfo) {
-            if (!dailyTaskContent) return;
-
-            // Set today's date regardless
-             if (todayDateSpan) todayDateSpan.textContent = formatDate(new Date());
-
-            if (!taskInfo) {
-                dailyTaskContent.innerHTML = '<p><i>لا يمكن تحديد الواجب الحالي. قد تكون الخطة غير مكتملة.</i></p>';
+        // --- MODIFIED Functions to Update Dashboard Sections ---
+        function displayDailyTask() {
+            if (!dailyTaskContent || !currentPlanData || !currentPlanData.tableRows) {
+                if(dailyTaskContent) dailyTaskContent.innerHTML = '<p><i>جاري تحميل بيانات الخطة...</i></p>';
+                if (todayDateSpan) todayDateSpan.textContent = formatDate(new Date()); // Show today's date anyway
                 return;
             }
 
-            if (taskInfo.completed) {
-                 dailyTaskContent.innerHTML = '<p style="color: green; font-weight: bold;">🎉 الحمد لله! لقد أتممت الخطة كاملة!</p>';
-                 if (todayDateSpan) todayDateSpan.textContent = "الختم"; // Or completion date?
-                 return;
-            }
+            const tableRows = currentPlanData.tableRows;
+            const today = new Date();
+            const todayStr = formatDate(today);
 
-            // If we have an incomplete task
-            if (taskInfo.originalSequence !== undefined) {
-                 if (todayDateSpan && taskInfo.displayDate) todayDateSpan.textContent = formatDate(taskInfo.displayDate); // Show date of the task
+            // Display current date
+            if (todayDateSpan) todayDateSpan.textContent = todayStr;
 
-                 const taskDetails = getPlanData(taskInfo.originalSequence); // Get details using the sequence
+            // Find the row corresponding to today's actual date
+            const todayRow = tableRows.find(row => row.displayDate === todayStr);
 
-                 if (taskDetails) {
-                     let taskHTML = `<p><strong>الحفظ الجديد:</strong> ${taskDetails.fromPage ? `ص ${taskDetails.fromPage} - ${taskDetails.toPage}` : 'لا يوجد'} (${taskDetails.surah || 'مراجعة'})</p>`;
-                     taskHTML += `<p><strong>الربط:</strong> ${taskDetails.linkFrom ? `من ${taskDetails.linkFrom} إلى ${taskDetails.linkTo}` : 'لا يوجد'}</p>`;
-                     taskHTML += `<p><strong>المراجعة:</strong> ${taskDetails.reviewFrom ? `من ${taskDetails.reviewFrom} إلى ${taskDetails.reviewTo}` : 'لا يوجد'} ${taskDetails.round ? `(ج${taskDetails.round})` : ''}</p>`;
-                     dailyTaskContent.innerHTML = taskHTML;
-                 } else {
-                     dailyTaskContent.innerHTML = `<p><i>خطأ: لم يتم العثور على تفاصيل الواجب للفهرس ${taskInfo.originalSequence}.</i></p>`;
-                 }
+            if (!todayRow) {
+                // Handle cases where today's date is outside the plan range (e.g., before start or after calculated end)
+                const startDate = new Date(currentPlanData.startDate + 'T00:00:00Z');
+                // We might need a more robust way to find the actual end date based on rows
+                // For now, a simpler message:
+                dailyTaskContent.innerHTML = '<p>لا يوجد واجب مقرر في الخطة لهذا اليوم.</p>';
+
+            } else if (todayRow.type === 'excuse') {
+                dailyTaskContent.innerHTML = `<p style="color: orange; font-weight:bold;">لديك عذر مسجل لهذا اليوم (${todayRow.excuseType || ''}).</p>`;
+            } else if (todayRow.type === 'plan' && todayRow.state && todayRow.state.completed) {
+                dailyTaskContent.innerHTML = '<p style="color: green; font-weight: bold;">✅ الحمد لله، لقد أتممت واجب هذا اليوم!</p>';
+            } else if (todayRow.type === 'plan' && todayRow.state && !todayRow.state.completed) {
+                // Today's task is not completed, display its details
+                const taskDetails = getPlanData(todayRow.originalSequence);
+                if (taskDetails) {
+                    let taskHTML = `<h4>المطلوب إنجازه اليوم (${todayStr}):</h4>`; // Add header
+                    taskHTML += `<p><strong>الحفظ الجديد:</strong> ${taskDetails.fromPage ? `ص ${taskDetails.fromPage} - ${taskDetails.toPage}` : 'لا يوجد'} (${taskDetails.surah || 'مراجعة'})</p>`;
+                    taskHTML += `<p><strong>الربط:</strong> ${taskDetails.linkFrom ? `من ${taskDetails.linkFrom} إلى ${taskDetails.linkTo}` : 'لا يوجد'}</p>`;
+                    taskHTML += `<p><strong>المراجعة:</strong> ${taskDetails.reviewFrom ? `من ${taskDetails.reviewFrom} إلى ${taskDetails.reviewTo}` : 'لا يوجد'} ${taskDetails.round ? `(ج${taskDetails.round})` : ''}</p>`;
+                    dailyTaskContent.innerHTML = taskHTML;
+                } else {
+                    dailyTaskContent.innerHTML = `<p><i>خطأ: لم يتم العثور على تفاصيل الواجب للفهرس ${todayRow.originalSequence}.</i></p>`;
+                }
             } else {
-                 // Fallback if taskInfo structure is unexpected
-                 dailyTaskContent.innerHTML = '<p><i>جاري تحديد واجب اليوم...</i></p>';
+                 // Fallback for unexpected row state
+                 dailyTaskContent.innerHTML = '<p><i>لم يتم التعرف على حالة واجب اليوم.</i></p>';
             }
         }
 
+
         function displayProgress(stats) {
-            const planType = currentPlanData?.planType || '?'; // Use loaded data
+            // Ensure currentPlanData is available
+            if (!currentPlanData) return;
+
+            const planType = currentPlanData.planType || '?';
             const memorizedPages = stats.memorizedPages;
-            const progressPercent = totalQuranPages > 0 ? ((memorizedPages / totalQuranPages) * 100).toFixed(0) : 0;
+            const progressPercent = totalQuranPages > 0 ? Math.min(100, (memorizedPages / totalQuranPages) * 100).toFixed(0) : 0; // Cap at 100%
 
             if(currentPlanNameSpan) currentPlanNameSpan.textContent = `خطة ${planType} صفحات`;
             if(progressBarValue) {
                 progressBarValue.style.width = `${progressPercent}%`;
+                // Ensure color is set (might be redundant but safe)
+                progressBarValue.style.backgroundColor = '#28a745';
                 progressBarValue.textContent = `${progressPercent}%`;
             }
             if(completedPagesProgressSpan) completedPagesProgressSpan.textContent = memorizedPages;
         }
 
         function displayStats(stats) {
+             // Ensure elements exist before setting text content
             if(statMemorized) statMemorized.textContent = stats.memorizedPages;
-            if(statPerfected) statPerfected.textContent = stats.perfectedTasks; // Display count of perfected tasks
-            if(statLinked) statLinked.textContent = stats.linkedTasks; // Display count of linked tasks
+            // Using calculated task counts but with requested page labels
+            if(statPerfected) statPerfected.textContent = stats.perfectedTasks;
+            if(statLinked) statLinked.textContent = stats.linkedTasks;
             if(statExcuses) statExcuses.textContent = stats.excuseCount;
         }
 
-        // --- Main Data Loading Function (MODIFIED) ---
+        // --- Main Data Loading Function ---
         function loadDashboardData(user) {
             if (!user) return;
             const uid = user.uid;
@@ -355,75 +341,68 @@
                     console.log("Dashboard: Plan data found.");
                     currentPlanData = doc.data(); // Store FULL data globally
 
-                    // --- >>> NEW: Validate FULL data needed for dashboard <<< ---
-                    if (!currentPlanData.startDate || !currentPlanData.planType || !currentPlanData.tableRows || !Array.isArray(currentPlanData.tableRows)) {
-                        console.error("Loaded data missing required fields (startDate, planType, or tableRows array).", currentPlanData);
-                        dashboardContent.style.display = 'block'; // Show content area to display error
-                        // if(actionButtonsContainer) actionButtonsContainer.style.display = 'none';
+                    // Validate FULL data needed for dashboard
+                    if (!currentPlanData.startDate || !currentPlanData.planType || !currentPlanData.tableRows || !Array.isArray(currentPlanData.tableRows) || !currentPlanData.repetitionMax) { // Added repetitionMax check
+                        console.error("Loaded data missing required fields (startDate, planType, tableRows array, or repetitionMax).", currentPlanData);
+                        dashboardContent.style.display = 'block';
                         dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">خطأ: بيانات خطتك المحفوظة غير مكتملة أو تالفة. يرجى <a href="index.html">الذهاب لصفحة البداية</a> وإعادة إنشاء الخطة.</p>`;
-                        // Hide other sections that rely on full data
                         document.getElementById('plan-progress').style.display = 'none';
                         document.getElementById('quick-stats').style.display = 'none';
-                        return; // Stop processing
+                        return;
                     }
 
-                    // --- >>> NEW: Calculate stats and find task using tableRows <<< ---
-                    const taskInfo = findCurrentTaskInfo(currentPlanData.tableRows);
+                    // Calculate stats and find today's task status *using the full data*
                     const stats = calculateDashboardStats(currentPlanData.tableRows);
 
-                    // --- >>> UPDATE Display using calculated info <<< ---
-                    displayDailyTask(taskInfo); // Pass calculated task info
-                    displayProgress(stats); // Pass calculated stats
-                    displayStats(stats); // Pass calculated stats
+                    // Update Display
+                    displayDailyTask(); // Now uses logic based on today's date and tableRows
+                    displayProgress(stats);
+                    displayStats(stats);
 
                     displayDashboard(); // Show the dashboard content
 
                 } else {
-                     // No plan found logic (remains mostly the same)
+                     // No plan found logic
                      console.log("Dashboard: No plan data found.");
-                     displayDashboard(); // Show dashboard structure to display message
+                     displayDashboard();
                      dailyTaskContent.innerHTML = '<p style="color:orange; font-weight:bold;">لم تقم باختيار أو إنشاء خطة بعد!</p><p>اذهب إلى <a href="index.html">صفحة البداية</a> لاختيار خطتك.</p>';
                      document.getElementById('plan-progress').style.display = 'none';
                      document.getElementById('quick-stats').style.display = 'none';
+                     // Hide other sections as well
                      document.getElementById('calendar-view').style.display = 'none';
                      document.getElementById('competition-section').style.display = 'none';
                      document.getElementById('badges-section').style.display = 'none';
-                     // if (actionButtonsContainer) actionButtonsContainer.style.display = 'none';
                 }
             }).catch((error) => {
-                 // Error handling (remains mostly the same)
+                 // Error handling
                  console.error("Error getting plan document:", error);
                  hideLoading();
                  displayDashboard();
                  dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">حدث خطأ أثناء تحميل بيانات الخطة. (${error.code || 'UNKNOWN'})</p><p>يرجى المحاولة مرة أخرى أو التأكد من اتصالك بالإنترنت وقواعد الأمان في Firestore. <a href="index.html">العودة للرئيسية</a></p>`;
                  document.getElementById('plan-progress').style.display = 'none';
                  document.getElementById('quick-stats').style.display = 'none';
-                 // if (actionButtonsContainer) actionButtonsContainer.style.display = 'none';
             });
         }
 
-        // Removed deletePlanData and related listeners as button is removed
-
-        // --- Authentication Listener (remains the same) ---
+        // --- Authentication Listener ---
         auth.onAuthStateChanged(user => {
-         hideLoading(); // Hide loading once auth state is known
+         hideLoading();
          currentUser = user;
          if (user) {
              console.log("Dashboard: Auth state OK.");
-             loadDashboardData(user); // Load data for logged-in user
+             loadDashboardData(user);
          } else {
              console.log("Dashboard: Not logged in. Redirecting to index...");
-             // Redirect to index/login page if not logged in
-             window.location.replace('index.html'); // Or login.html if you have a separate login
+             window.location.replace('index.html'); // Or login.html
          }
         });
 
-        // --- Initial Load (remains the same) ---
+        // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
-            showLoading("جاري التحقق من تسجيل الدخول..."); // Show loading until auth resolves
+            showLoading("جاري التحقق من تسجيل الدخول...");
         });
 
-         // --- Print Function (remains the same) ---
+         // --- Print Function ---
          function printData() { console.log("Initiating browser print..."); window.print(); }
 
     </script>
