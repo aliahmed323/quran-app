@@ -626,28 +626,51 @@
              saveCurrentTableState(); // Save after deletion and shifting
              updateSummary();
         }
-        function shiftRowsMetaDataBack(startIndex, direction = -1) {
-             const tableBody = document.querySelector('#customTable tbody'); const rows = Array.from(tableBody.rows); console.log(`Shifting metadata back starting from index ${startIndex}`);
-             for (let i = startIndex; i < rows.length; i++) {
-                 const row = rows[i];
-                 const sequenceCell = row.cells[0];
-                 if (sequenceCell) {
-                      const currentDisplaySeq = parseInt(sequenceCell.textContent);
-                      if (!isNaN(currentDisplaySeq)) { sequenceCell.textContent = currentDisplaySeq + direction; }
-                      else { console.warn(`Row ${i} missing sequence.`); }
-                 }
-                 // Shift date only for non-excuse rows
-                 if (!row.classList.contains('excuse-holder-row')) {
-                      const dateCell = row.cells[1];
-                      if (dateCell) {
-                           try { const currentDate = new Date(dateCell.textContent + 'T00:00:00Z'); currentDate.setUTCDate(currentDate.getUTCDate() + direction); dateCell.textContent = formatDate(currentDate); } catch (e) { console.error("Error updating date backward", i, e); }
-                      }
-                 }
-             } console.log(`Finished shifting metadata back.`);
-             // Update global row/day counts after shifting
-              currentTotalRows = rows.length;
-              const excuseCount = Array.from(tableBody.querySelectorAll('tr.excuse-holder-row')).length;
-              currentTotalDays = initialTotalDays + excuseCount; // Recalculate based on new excuse count
+        function shiftRowsMetaDataBack(startIndex, direction = -1) { // direction is always -1 here
+     const tableBody = document.querySelector('#customTable tbody');
+     const rows = Array.from(tableBody.rows);
+     console.log(`Shifting metadata back starting from index ${startIndex}`);
+
+     // Determine the correct starting sequence number for the row at startIndex
+     let expectedSequence;
+     if (startIndex > 0 && rows[startIndex-1]?.cells[0]) { // Look at the row before the shifted block
+         const prevSeq = parseInt(rows[startIndex-1].cells[0].textContent);
+         if (!isNaN(prevSeq)) {
+             expectedSequence = prevSeq + 1; // The row at startIndex should be one more than the previous
+         }
+     }
+     // Fallback if previous doesn't exist or can't be parsed (e.g., deleting the very first row's excuse)
+     if (expectedSequence === undefined) {
+          // We assume the first row should be sequence 1 if startIndex is 0
+          expectedSequence = startIndex + 1;
+          console.warn(`Could not determine sequence from previous row for index ${startIndex}, assuming ${expectedSequence}`);
+     }
+
+     // Now loop and set sequence numbers sequentially from the calculated start
+     for (let i = startIndex; i < rows.length; i++) {
+         const row = rows[i];
+         const sequenceCell = row.cells[0];
+         if (sequenceCell) {
+             sequenceCell.textContent = expectedSequence; // Set the calculated sequence
+             // --- >>> السطر المضاف للتشخيص <<< ---
+             console.log(`Setting row index ${i} sequence to: ${expectedSequence}`);
+             // --- >>> نهاية السطر المضاف <<< ---
+             expectedSequence++; // Increment for the next row
+         }
+
+         // Shift date only for non-excuse rows
+         if (!row.classList.contains('excuse-holder-row')) {
+             const dateCell = row.cells[1];
+             if (dateCell) {
+                  try { const currentDate = new Date(dateCell.textContent + 'T00:00:00Z'); currentDate.setUTCDate(currentDate.getUTCDate() + direction); dateCell.textContent = formatDate(currentDate); } catch (e) { console.error("Error updating date backward", i, e); }
+             }
+         }
+     }
+     console.log(`Finished shifting metadata back.`);
+     // Update global row/day counts after shifting
+      currentTotalRows = rows.length;
+      const excuseCount = Array.from(tableBody.querySelectorAll('tr.excuse-holder-row')).length;
+      // currentTotalDays = initialTotalDays + excuseCount; // This global might not be used/needed anymore
         }
         function shiftRowsMetaDataForward(startIndex, direction = 1) {
             const tableBody = document.querySelector('#customTable tbody'); const rows = Array.from(tableBody.rows); console.log(`Shifting metadata forward starting from index ${startIndex}`);
