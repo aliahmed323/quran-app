@@ -430,27 +430,27 @@
         }
 
 
-        function initializeCalendar(tableRows) {
+      function initializeCalendar(tableRows) {
             if (!calendarContainer) return;
-            if (calendarInstance) {
-                // If calendar exists, maybe destroy or update?
-                // For simplicity, let's assume we initialize only once.
-                // calendarInstance.destroy();
-            }
 
             // Prepare data for the calendar (highlighted days)
-            const highlightedDays = [];
+            const daysData = [];
             if (tableRows && Array.isArray(tableRows)) {
                 tableRows.forEach(row => {
                     let cssClass = '';
+                     // Use optional chaining for safety accessing state
                     if (row.type === 'plan' && row.state?.completed) {
                         cssClass = 'day-completed'; // Green
                     } else if (row.type === 'excuse') {
                         cssClass = 'day-excused'; // Red
                     }
+
                     if (cssClass) {
-                        highlightedDays.push({
-                            date: row.displayDate, // Expects 'YYYY-MM-DD'
+                        // Format expected by VanillaCalendar dates.dates array
+                        daysData.push({
+                            date: row.displayDate, // 'YYYY-MM-DD'
+                            // 'modifier' seems to be the correct property name based on common patterns
+                            // If this doesn't work, we might need to inspect library specifics again
                             modifier: cssClass
                         });
                     }
@@ -458,67 +458,56 @@
             }
 
             const options = {
-                type: 'month', // Or 'year'
+                type: 'month',
+                // --- Pass highlighted days DIRECTLY in the options ---
+                dates: {
+                    dates: daysData, // Pass the array here
+                },
                 settings: {
-                    lang: 'ar-DZ', // Use Arabic locale
-                    iso8601: false, // Sunday is the first day
+                    lang: 'ar-DZ', // Arabic locale
+                    iso8601: false, // Sunday first
                     range: {
-                        // Optional: Limit calendar range if needed
-                        // min: currentPlanData?.startDate, // e.g., '2024-01-01'
-                        // max: calculated end date?
+                        // Optional: Limit range if needed
+                        // min: currentPlanData?.startDate,
                     },
                     selection: {
                         day: false, // Disable day selection
                     },
                     visibility: {
-                        theme: 'light', // Or 'dark'
-                        weekend: false, // Don't highlight weekends specifically
-                        today: true, // Highlight today - library default is good, added custom style too
-                    },
-                    // Dates with special styling
-                    dates: {
-                         // Mark today explicitly for our custom styling, though library does it too
-                        // today: new Date() // Handled by library + CSS
-                    },
-                    // Modifiers for specific dates (our completed/excused days)
-                     // This requires a version supporting date modifiers or custom rendering.
-                     // Let's try using the `modifier` approach if available, otherwise custom rendering might be needed.
-                    // --> Check Vanilla JS Calendar docs for applying classes to specific dates.
-                    // --> Using `CSSClasses` property seems appropriate:
-                    CSSClasses: {
-                        // Map classes to dates (This might be simpler)
-                        // Example: date: 'YYYY-MM-DD', class: 'my-class'
-                        // Let's build this dynamically
-                    },
-                    // Custom rendering hook (More powerful but complex)
-                    // actions: {
-                    //     clickDay(e, dates) { /* ... */ },
-                    //     renderResult D(e, dates) { /* ... */ },
-                    // }
-
+                        theme: 'light',
+                        weekend: false,
+                        today: true, // Highlight today (library default + our CSS)
+                    }
+                    // We no longer need CSSClasses here if dates.dates works
                 },
-                 // --- Use dates.dates or CSSClasses ---
-                 // Let's use the highlightedDays array with CSSClasses approach
-
+                // Removed actions for simplicity for now
             };
 
-             // Clear placeholder
+            // Clear placeholder before init
             calendarContainer.innerHTML = '';
 
-             // Initialize
-             try {
-                  // Adjust based on actual library API for highlighting
-                 calendarInstance = new VanillaCalendar(calendarContainer, options);
-                 calendarInstance.init();
+            try {
+                // Initialize the calendar
+                calendarInstance = new VanillaCalendar(calendarContainer, options);
+                calendarInstance.init();
 
-                 // Apply custom classes AFTER init if necessary or using specific API method
-                 applyDateModifiers(highlightedDays);
+                // --- No need for applyDateModifiers anymore ---
 
-             } catch (error) {
-                  console.error("Error initializing calendar:", error);
-                  calendarContainer.innerHTML = '<p class="text" style="color:red;">حدث خطأ أثناء تحميل التقويم.</p>';
-             }
+                 // Force a redraw/update IF NEEDED (sometimes helps with dynamic class application)
+                 // Check library docs if calendarInstance.update() or similar exists
+                 // if (calendarInstance && typeof calendarInstance.update === 'function') {
+                 //     calendarInstance.update({ dates: { dates: daysData } });
+                 // }
+
+
+            } catch (error) {
+                console.error("Error initializing calendar:", error);
+                calendarContainer.innerHTML = `<p class="text" style="color:red; text-align:center; margin-top: 20px;">حدث خطأ أثناء تحميل التقويم. (${error.message || 'خطأ غير محدد'})</p>`;
+            }
         }
+
+        // --- Remove the old applyDateModifiers function entirely ---
+        // function applyDateModifiers(daysToHighlight) { /* ... REMOVE THIS ... */ } }
 
          // Helper to apply modifiers/classes if not directly supported in options
         function applyDateModifiers(daysToHighlight) {
