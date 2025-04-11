@@ -430,79 +430,40 @@
         }
 
 
-      function initializeCalendar(tableRows) {
-            if (!calendarContainer) return;
-
-            // Prepare data for the calendar (highlighted days)
-            const daysData = [];
-            if (tableRows && Array.isArray(tableRows)) {
-                tableRows.forEach(row => {
-                    let cssClass = '';
-                     // Use optional chaining for safety accessing state
-                    if (row.type === 'plan' && row.state?.completed) {
-                        cssClass = 'day-completed'; // Green
-                    } else if (row.type === 'excuse') {
-                        cssClass = 'day-excused'; // Red
-                    }
-
-                    if (cssClass) {
-                        // Format expected by VanillaCalendar dates.dates array
-                        daysData.push({
-                            date: row.displayDate, // 'YYYY-MM-DD'
-                            // 'modifier' seems to be the correct property name based on common patterns
-                            // If this doesn't work, we might need to inspect library specifics again
-                            modifier: cssClass
-                        });
-                    }
-                });
+function initializeCalendar(tableRows) { // نترك الباراميتر ليبقى الكود متوافقاً
+            console.log("Attempting to initialize BASIC calendar..."); // رسالة للكونسول للتتبع
+            if (!calendarContainer) {
+                console.error("Calendar container element not found!");
+                return;
             }
 
-            const options = {
-                type: 'month',
-                // --- Pass highlighted days DIRECTLY in the options ---
-                dates: {
-                    dates: daysData, // Pass the array here
-                },
-                settings: {
-                    lang: 'ar-DZ', // Arabic locale
-                    iso8601: false, // Sunday first
-                    range: {
-                        // Optional: Limit range if needed
-                        // min: currentPlanData?.startDate,
-                    },
-                    selection: {
-                        day: false, // Disable day selection
-                    },
-                    visibility: {
-                        theme: 'light',
-                        weekend: false,
-                        today: true, // Highlight today (library default + our CSS)
-                    }
-                    // We no longer need CSSClasses here if dates.dates works
-                },
-                // Removed actions for simplicity for now
-            };
-
-            // Clear placeholder before init
+            // مسح المحتوى المؤقت
             calendarContainer.innerHTML = '';
 
             try {
-                // Initialize the calendar
-                calendarInstance = new VanillaCalendar(calendarContainer, options);
-                calendarInstance.init();
+                // --- محاولة أبسط تهيئة ممكنة ---
+                console.log("Is VanillaCalendar defined BEFORE new?", typeof VanillaCalendar); // فحص هل الاسم معرف قبل الإنشاء
+                const basicCalendar = new VanillaCalendar(calendarContainer, {
+                    // خيارات قليلة جداً، نعتمد على الإعدادات الافتراضية
+                     settings: { lang: 'ar-DZ' } // يمكن ترك اللغة فقط
+                });
 
-                // --- No need for applyDateModifiers anymore ---
-
-                 // Force a redraw/update IF NEEDED (sometimes helps with dynamic class application)
-                 // Check library docs if calendarInstance.update() or similar exists
-                 // if (calendarInstance && typeof calendarInstance.update === 'function') {
-                 //     calendarInstance.update({ dates: { dates: daysData } });
-                 // }
-
+                 if (basicCalendar) { // التأكد من أن الإنشاء لم يُرجع قيمة فارغة
+                     console.log("Basic calendar object created, attempting init...");
+                     basicCalendar.init(); // استدعاء التهيئة
+                     console.log("Basic calendar init() called successfully.");
+                     // إضافة رسالة نجاح مرئية للتأكد
+                     calendarContainer.innerHTML += '<p style="color: green; text-align: center; padding: 20px; border: 1px solid green; margin-top: 10px;">تم تحميل التقويم الأساسي بنجاح (لغرض الاختبار)!</p>';
+                     calendarInstance = basicCalendar; // تخزين النسخة للاستخدام لاحقاً إذا احتجنا
+                 } else {
+                      console.error("new VanillaCalendar() returned null/undefined?"); // إذا فشل الإنشاء لسبب ما
+                 }
 
             } catch (error) {
-                console.error("Error initializing calendar:", error);
-                calendarContainer.innerHTML = `<p class="text" style="color:red; text-align:center; margin-top: 20px;">حدث خطأ أثناء تحميل التقويم. (${error.message || 'خطأ غير محدد'})</p>`;
+                console.error("Error initializing BASIC calendar:", error); // طباعة الخطأ في الكونسول
+                // عرض الخطأ داخل حاوية التقويم أيضاً
+                calendarContainer.innerHTML = `<p class="text" style="color:red; text-align:center; margin-top: 20px;">حدث خطأ فادح أثناء محاولة تهيئة التقويم الأساسي. (${error.message || 'خطأ غير محدد'})</p>`;
+                 console.log("Full error object:", error); // طباعة تفاصيل الخطأ الكاملة
             }
         }
 
