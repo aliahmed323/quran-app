@@ -3,18 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة المتابعة - خطة حفظ القرآن (TESTING)</title> <link rel="preconnect" href="https://fonts.googleapis.com">
+    <title>لوحة المتابعة - خطة حفظ القرآن (TESTING - Display Disabled)</title> <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-
     <link href="https://cdn.jsdelivr.net/npm/vanilla-js-calendar@1.9.4/build/vanilla-js-calendar.min.css" rel="stylesheet">
-
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
-
     <style>
-        /* --- CSS Styles (Keep as is, including calendar/streak styles) --- */
+        /* --- CSS Styles (Remain Unchanged) --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Tajawal', sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.7; }
         .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
@@ -68,21 +65,14 @@
 
     <div class="container">
 
-        <header class="dashboard-header">
-            <div class="logo"><h1>خطة حفظ القرآن الكريم</h1></div>
-        </header>
-
+        <header class="dashboard-header"> <div class="logo"><h1>خطة حفظ القرآن الكريم</h1></div> </header>
         <div id="loading-indicator">جاري التحميل...</div>
-
         <main id="dashboard-content" style="display: none;">
-
             <div class="dashboard-grid">
 
                 <section id="daily-task" class="card">
                     <h3>🌟 واجب اليوم (<span id="today-date-display">...</span>)</h3>
-                    <div id="daily-task-content">
-                        <p><i>يتم تحديد الواجب...</i></p>
-                    </div>
+                    <div id="daily-task-content"> <p><i>(العرض معطل مؤقتًا)</i></p> </div>
                     <a href="plangen2.html" class="plan-link">الذهاب إلى جدول الخطة التفصيلي &raquo;</a>
                 </section>
 
@@ -90,12 +80,8 @@
                     <h3>الخطة والتقدم العام</h3>
                     <p><strong>الخطة النشطة:</strong> <span id="current-plan-name">-</span></p>
                     <p><strong>التقدم الكلي:</strong></p>
-                    <div class="progress-bar-container">
-                        <div id="progress-bar-value" style="width: 0%; background-color: #28a745;">0%</div>
-                    </div>
-                    <p style="font-size: 0.9em; text-align: center; margin-top: 5px;">
-                        <span id="completed-pages-progress">0</span> / 604 صفحة
-                    </p>
+                    <div class="progress-bar-container"> <div id="progress-bar-value" style="width: 0%; background-color: #28a745;">0%</div> </div>
+                    <p style="font-size: 0.9em; text-align: center; margin-top: 5px;"> <span id="completed-pages-progress">0</span> / 604 صفحة </p>
                 </section>
 
                 <section id="quick-stats" class="card">
@@ -108,48 +94,34 @@
                     </ul>
                 </section>
 
-                <section id="streak-info" class="card" style="/* display: none; */"> <h3>🔥 الإنجاز المتتالي</h3>
+                <section id="streak-info" class="card">
+                     <h3>🔥 الإنجاز المتتالي</h3>
                      <p><strong>الحالي:</strong> <span id="streak-current">0</span> أيام</p>
                      <p><strong>الأفضل:</strong> <span id="streak-longest">0</span> أيام</p>
                      <p><strong>المستوى الحالي:</strong> <span id="streak-level-title">(قريباً)</span> <span id="streak-level-icon"></span></p>
                  </section>
 
-                 <section id="calendar-view" class="card" style="/* display: none; */"> <h3>التقويم</h3>
-                    <div id="calendar-container" style="max-width: 300px; margin: 15px auto 0 auto;">
-                         <p><i>(التقويم معطل مؤقتاً للتشخيص)</i></p>
-                    </div>
-                    <div class="calendar-legend">
-                        <span class="legend-completed"></span> مكتمل &nbsp;
-                        <span class="legend-excuse"></span> عذر &nbsp;
-                        <span class="legend-today"></span> اليوم
-                    </div>
+                <section id="calendar-view" class="card">
+                    <h3>التقويم</h3>
+                    <div id="calendar-container" style="max-width: 300px; margin: 15px auto 0 auto;"> <p><i>(التقويم معطل مؤقتًا)</i></p> </div>
+                    <div class="calendar-legend"> <span class="legend-completed"></span> مكتمل &nbsp; <span class="legend-excuse"></span> عذر &nbsp; <span class="legend-today"></span> اليوم </div>
                 </section>
 
-                <section id="competition-section" class="card">
-                     <h3>المنافسة</h3>
-                     <div class="placeholder-box"> <div class="icon">🏆</div> <div class="text">(قريباً: لوحة الصدارة)</div> </div>
-                </section>
-
-                 <section id="badges-section" class="card">
-                      <h3>الأوسمة</h3>
-                       <div class="placeholder-box"> <div class="icon">🏅</div> <div class="text">(قريباً: نظام الأوسمة والحوافز)</div> </div>
-                 </section>
+                <section id="competition-section" class="card"> /* ... placeholder ... */ </section>
+                <section id="badges-section" class="card"> /* ... placeholder ... */ </section>
 
             </div>
         </main>
-
-        <footer class="main-footer">
-             <p>&copy; 2025 خطة حفظ القرآن الكريم. جميع الحقوق محفوظة.</p>
-        </footer>
-
+        <footer class="main-footer"> <p>&copy; 2025 خطة حفظ القرآن الكريم. جميع الحقوق محفوظة.</p> </footer>
     </div>
+
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vanilla-js-calendar@1.9.4/build/vanilla-js-calendar.min.js"></script>
 
     <script>
-        // --- Firebase Config (Using values you provided) ---
+        // --- Firebase Config ---
         const firebaseConfig = {
             apiKey: "AIzaSyDuUebu7Qzz3JnTfa-58EIPZjOcrkmdGHU",
             authDomain: "quranplan2.firebaseapp.com",
@@ -164,7 +136,7 @@
         const db = firebase.firestore();
 
         // --- Global Variables ---
-        let calendarInstance = null; // Still define it
+        let calendarInstance = null;
         let currentUser = null;
         let currentPlanData = null;
 
@@ -180,7 +152,6 @@
         const statLinked = document.getElementById('stat-linked');
         const statExcuses = document.getElementById('stat-excuses');
         const todayDateSpan = document.getElementById('today-date-display');
-        // >> Streak DOM References (Keep them)
         const streakCurrentEl = document.getElementById('streak-current');
         const streakLongestEl = document.getElementById('streak-longest');
         const streakLevelTitleEl = document.getElementById('streak-level-title');
@@ -189,10 +160,9 @@
         // --- Constants ---
         const totalQuranPages = 604;
         const initialTotalRows = 320;
-        // >> Streak Level Titles (Keep definition)
-        const streakLevelTitles = [ /* ... Titles ... */ ];
+        const streakLevelTitles = [ /* ... القائمة الكاملة هنا ... */ ];
 
-        // --- Data Arrays & Helper Functions (Keep them) ---
+        // --- Data Arrays & Helper Functions ---
         const surahs = ['الفاتحة والبقرة', /* ... */ 'ختم القرآن'];
         const linkFromData = ['', '', 1, /* ... */ 577];
         const linkToData = ['', '', 2, /* ... */ 604];
@@ -203,26 +173,25 @@
         function calculateRoundNumber(originalIndex) { /* ... */ }
 
         // --- UI Update Functions ---
-        function showLoading(message = "جاري التحميل...") { /* ... */ }
-        function hideLoading() { /* ... */ }
+        function showLoading(message = "جاري التحميل...") { if(loadingIndicator){ loadingIndicator.textContent = message; loadingIndicator.style.display = 'block';} if(dashboardContent) dashboardContent.style.display = 'none'; }
+        function hideLoading() { if(loadingIndicator) loadingIndicator.style.display = 'none'; }
         function displayDashboard() { hideLoading(); if(dashboardContent) dashboardContent.style.display = 'block'; }
 
-        // --- Functions to Calculate Stats & Streaks (Keep definitions, but calls might be disabled) ---
+        // --- Functions to Calculate Stats & Streaks ---
         function calculateDashboardStats(tableRows) { /* ... */ }
-        function calculateStreakInfo(tableRows) { /* ... */ } // Keep definition
+        function calculateStreakInfo(tableRows) { /* ... */ } // Definition kept
 
-        // --- Calendar Functions (Keep definitions, but calls are disabled) ---
-        function prepareDateStatusMap(tableRows) { /* ... */ }
-        function initializeCalendar(dateStatusMap) { /* ... */ } // Keep definition
+        // --- Calendar Functions ---
+        function prepareDateStatusMap(tableRows) { /* ... */ } // Definition kept
+        function initializeCalendar(dateStatusMap) { /* ... */ } // Definition kept
 
         // --- Functions to Update Dashboard Sections ---
-        function displayDailyTask() { /* ... (Keep corrected version) ... */ }
-        function displayProgress(stats) { /* ... */ }
-        function displayStats(stats) { /* ... */ }
-        // >> Display Streak Info (Keep definition, but calls disabled)
-        function displayStreakInfo(streakData) { /* ... */ }
+        function displayDailyTask() { /* ... */ } // Definition kept
+        function displayProgress(stats) { /* ... */ } // Definition kept
+        function displayStats(stats) { /* ... */ } // Definition kept
+        function displayStreakInfo(streakData) { /* ... */ } // Definition kept
 
-        // --- Main Data Loading Function (MODIFIED to disable new calls) ---
+        // --- Main Data Loading Function (MODIFIED to disable display calls) ---
         function loadDashboardData(user) {
             if (!user) return;
             const uid = user.uid;
@@ -231,19 +200,16 @@
             showLoading("جاري تحميل بيانات خطتك...");
 
             planRef.get().then((doc) => {
-                // hideLoading(); // <<<< HIDE LOADING LATER (AFTER CHECKS)
-
                 if (doc.exists) {
                     console.log("Dashboard: Plan data found.");
                     currentPlanData = doc.data();
 
-                    // Validate FULL data needed
+                    // Validate FULL data
                     if (!currentPlanData.startDate || !currentPlanData.planType || !currentPlanData.tableRows || !Array.isArray(currentPlanData.tableRows) || !currentPlanData.repetitionMax) {
                         console.error("Loaded data missing required fields...", currentPlanData);
-                        hideLoading(); // Hide loading before showing error
+                        hideLoading();
                         dashboardContent.style.display = 'block';
                         dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">خطأ: بيانات خطتك المحفوظة غير مكتملة أو تالفة. يرجى <a href="index.html">الذهاب لصفحة البداية</a> وإعادة إنشاء الخطة.</p>`;
-                        // Hide sections
                         document.getElementById('plan-progress').style.display = 'none';
                         document.getElementById('quick-stats').style.display = 'none';
                         const calendarView = document.getElementById('calendar-view'); if(calendarView) calendarView.style.display = 'none';
@@ -251,50 +217,73 @@
                         return;
                     }
 
-                    // Calculate Stats
+                    // Calculate Stats (Still runs)
+                    console.log("Calculating stats...");
                     const stats = calculateDashboardStats(currentPlanData.tableRows);
+                    console.log("Stats calculated:", stats);
 
                     // --- >>> DISABLED FOR TESTING <<< ---
+                    // console.log("Calculating streak...");
                     // const streakData = calculateStreakInfo(currentPlanData.tableRows);
+                    // console.log("Streak calculated:", streakData);
+                    // console.log("Preparing calendar map...");
                     // const dateStatusMap = prepareDateStatusMap(currentPlanData.tableRows);
+                    // console.log("Initializing calendar...");
                     // initializeCalendar(dateStatusMap);
                     // --- >>> END DISABLED <<< ---
 
-                    // Update Display (ONLY Original Sections)
-                    displayDailyTask();
-                    displayProgress(stats);
-                    displayStats(stats);
-                    // --- >>> DISABLED FOR TESTING <<< ---
-                    // displayStreakInfo(streakData);
+                    // --- >>> DISABLED Display Updates FOR TESTING <<< ---
+                    console.log("Skipping display function calls for testing...");
+                    // displayDailyTask();
+                    // displayProgress(stats);
+                    // displayStats(stats);
+                    // displayStreakInfo(streakData); // Also disable streak display
                     // --- >>> END DISABLED <<< ---
 
-
+                    // Log completion and show the basic dashboard structure
+                    console.log("Data processing complete (display functions skipped). Attempting display...");
                     hideLoading(); // Hide loading indicator NOW
-                    displayDashboard(); // Show the dashboard content
+                    displayDashboard(); // Show the main dashboard container
 
                 } else {
                      // No plan found logic
-                     hideLoading(); // Hide loading
-                     // ... (rest of no plan logic remains the same) ...
+                     hideLoading();
+                     console.log("Dashboard: No plan data found.");
+                     displayDashboard(); // Show structure for message display
+                     dailyTaskContent.innerHTML = '<p style="color:orange; font-weight:bold;">لم تقم باختيار أو إنشاء خطة بعد!</p><p>اذهب إلى <a href="index.html">صفحة البداية</a> لاختيار خطتك.</p>';
+                     // Hide all optional cards
+                     document.getElementById('plan-progress').style.display = 'none';
+                     document.getElementById('quick-stats').style.display = 'none';
+                     document.getElementById('calendar-view').style.display = 'none';
+                     document.getElementById('streak-info').style.display = 'none';
+                     document.getElementById('competition-section').style.display = 'none';
+                     document.getElementById('badges-section').style.display = 'none';
                 }
             }).catch((error) => {
                  // Error handling
-                 hideLoading(); // Hide loading
-                 // ... (rest of error handling remains the same) ...
+                 hideLoading();
+                 console.error("Error getting plan document:", error);
+                 displayDashboard(); // Show structure for error display
+                 dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">حدث خطأ أثناء تحميل بيانات الخطة. (${error.code || 'UNKNOWN'})</p><p>يرجى المحاولة مرة أخرى أو التأكد من اتصالك بالإنترنت وقواعد الأمان في Firestore. <a href="index.html">العودة للرئيسية</a></p>`;
+                 // Hide all optional cards
+                 document.getElementById('plan-progress').style.display = 'none';
+                 document.getElementById('quick-stats').style.display = 'none';
+                 document.getElementById('calendar-view').style.display = 'none';
+                 document.getElementById('streak-info').style.display = 'none';
             });
         }
 
         // --- Authentication Listener ---
         auth.onAuthStateChanged(user => {
-         // hideLoading(); // << Don't hide here, let loadDashboardData handle it
-         currentUser = user;
-         if (user) {
-             console.log("Dashboard: Auth state OK.");
-             loadDashboardData(user);
-         } else {
-             console.log("Dashboard: Not logged in. Redirecting to index...");
-             window.location.replace('index.html'); // Or login.html
-         }
+            // hideLoading(); // Moved inside loadDashboardData callbacks
+            currentUser = user;
+            if (user) {
+                console.log("Dashboard: Auth state OK.");
+                loadDashboardData(user);
+            } else {
+                console.log("Dashboard: Not logged in. Redirecting to index...");
+                window.location.replace('index.html');
+            }
         });
 
         // --- Initial Load ---
