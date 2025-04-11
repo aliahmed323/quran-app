@@ -561,7 +561,7 @@
         function updatePieChart() { const tableRows = document.querySelectorAll('#customTable tbody tr:not(.excuse-holder-row)'); let lmp = 0; let lpp = 0; tableRows.forEach(row => { const cc = row.cells[18]?.querySelector('input[type="checkbox"]'); const tc = row.cells[5]; const revc = row.cells[17]?.querySelector('input[type="checkbox"]'); const revtc = row.cells[15]; if (cc?.checked && tc?.textContent) { const tp = parseInt(tc.textContent); if (!isNaN(tp) && tp > lmp) lmp = tp; } if (revc?.checked && revtc?.textContent) { const rt = parseInt(revtc.textContent); if (!isNaN(rt) && rt > lpp) lpp = rt; } }); lmp = Math.min(lmp, totalQuranPages); lpp = Math.min(lpp, totalQuranPages); lpp = Math.min(lpp, lmp); /* Perfected cannot exceed memorized */ const perfected = lpp; const memorizedNotPerfected = Math.max(0, lmp - perfected); const notMemorized = Math.max(0, totalQuranPages - lmp); const ctx = document.getElementById('pieChart')?.getContext('2d'); if (!ctx) return; const data = { labels: ['متقن', 'محفوظ', 'غير محفوظ'], datasets: [{ data: [perfected, memorizedNotPerfected, notMemorized], backgroundColor: ['#28a745', '#ffc107', '#dc3545'], borderColor: '#fff', borderWidth: 1, hoverOffset: 4 }] }; if (window.pieChartInstance) { window.pieChartInstance.destroy(); } if (perfected === 0 && memorizedNotPerfected === 0 && notMemorized === 0 && totalQuranPages > 0) { const ca = document.getElementById('pieChart'); const co = ca.getContext('2d'); co.clearRect(0, 0, ca.width, ca.height); co.textAlign = 'center'; co.fillStyle = '#6c757d'; co.font = '13px Tajawal'; co.fillText('لا توجد بيانات بعد', ca.width / 2, ca.height / 2); window.pieChartInstance = null; } else if (perfected >= 0 && memorizedNotPerfected >= 0 && notMemorized >= 0) { window.pieChartInstance = new Chart(ctx, { type: 'doughnut', data: data, options: { responsive: true, maintainAspectRatio: false, cutout: '50%', plugins: { legend: { position: 'bottom', labels: { font: { size: 11, family: 'Tajawal' } } }, tooltip: { bodyFont: { family: 'Tajawal' }, callbacks: { label: function(ctx) { let l = ctx.label||''; if(l) l+=': '; const v = ctx.parsed||0; l += v + ' صفحة'; const t = ctx.dataset.data.reduce((a,b)=>a+b, 0); const p = t>0?((v/t)*100).toFixed(0)+'%':'0%'; l+=` (${p})`; return l; } } } } } }); } }
 
         // --- Excuse/Delete/Shift functions (Keep as provided, they rely on DOM and call saveCurrentTableState) ---
-     function handleExcuseSelection(row, excuseValue) {
+    function handleExcuseSelection(row, excuseValue) {
             const tableBody = document.querySelector('#customTable tbody');
             const rowIndex = Array.from(tableBody.rows).indexOf(row);
             if (rowIndex === -1) return;
@@ -640,7 +640,6 @@
 
             saveCurrentTableState(); // Save the entire new state
             updateSummary();
-        }
         }
         function deleteExcuse(excuseHolderRow) {
              const tableBody = document.querySelector('#customTable tbody'); const rowIndex = Array.from(tableBody.rows).indexOf(excuseHolderRow); if (rowIndex === -1 || !excuseHolderRow.classList.contains('excuse-holder-row')) return;
