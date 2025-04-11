@@ -431,14 +431,14 @@
 
 
 function initializeCalendar(tableRows) {
-    console.log("Attempting calendar init with markup.dates and 'class' array..."); // رسالة تتبع جديدة
+    console.log("Attempting calendar init using 'popups' for highlighting..."); // رسالة تتبع جديدة
     if (!calendarContainer) {
         console.error("Calendar container element not found!");
         return;
     }
 
-    // --- تحضير بيانات الأيام الملونة (تعديل هنا) ---
-    const daysData = [];
+    // --- تحضير بيانات الأيام الملونة (بنية جديدة لخيار popups) ---
+    const popupsData = {}; // سنستخدم كائن (object)، المفاتيح هي التواريخ
     if (tableRows && Array.isArray(tableRows)) {
         tableRows.forEach(row => {
             let cssClass = '';
@@ -448,12 +448,15 @@ function initializeCalendar(tableRows) {
                 cssClass = 'day-excused'; // أحمر للعذر
             }
 
-            // --- التغيير هنا: استخدام 'class' كمصفوفة ---
+            // --- تعبئة كائن popupsData ---
             if (cssClass && row.displayDate) {
-                daysData.push({
-                    date: row.displayDate, // 'YYYY-MM-DD'
-                    class: [cssClass] // <<== استخدم 'class' وبداخلها مصفوفة تحتوي على اسم الكلاس
-                });
+                // المفتاح هو التاريخ 'YYYY-MM-DD'
+                // القيمة هي كائن يحتوي على modifier مع اسم الكلاس
+                // بناءً على تحليل الكود، يبدو أن modifier هنا يضيف الكلاس
+                popupsData[row.displayDate] = {
+                    modifier: cssClass
+                    // لا نحتاج خاصية html لأننا نريد فقط إضافة الكلاس
+                };
             } else if (cssClass && !row.displayDate) {
                 console.warn("Row needs highlighting but is missing displayDate:", row);
             }
@@ -461,12 +464,13 @@ function initializeCalendar(tableRows) {
     } else {
         console.log("No tableRows data found for calendar highlighting.");
     }
-    console.log("Prepared highlighted days data (using 'class' array):", daysData); // طباعة البيانات للتحقق
+    // طباعة البيانات المحضرة للتحقق
+    console.log("Prepared highlighting data for 'popups' option:", popupsData);
 
     // --- الحصول على تاريخ اليوم ---
     const today = new Date();
 
-    // --- خيارات مع 'markup.dates' واستخدام 'class' array ---
+    // --- خيارات باستخدام 'popups' للتلوين ---
     const options = {
         // --- تحديد تاريخ البدء ---
         date: {
@@ -474,20 +478,17 @@ function initializeCalendar(tableRows) {
             year: today.getFullYear(),
         },
 
-        // --- الأيام الملونة (تجربة 'markup.dates' مع 'class') ---
-        markup: { // <<== العودة إلى استخدام هذا الخيار
-            dates: daysData // تمرير البيانات المحضرة بالبنية الجديدة
-        },
+        // --- الأيام الملونة (تجربة 'popups') ---
+        popups: popupsData, // <<== استخدام هذا الخيار لتمرير بيانات التلوين
 
-        /* // <<== التأكد من حذف أو تعليق هذا القسم
-        dates: {
-            dates: daysData
-        },
+        /* // <<== التأكد من حذف أو تعليق الخيارات الأخرى التي جربناها للتلوين
+        markup: { dates: [] },
+        dates: { dates: [] },
         */
 
-        // --- الإعدادات العامة ونوع العرض (كما هي من آخر تعديل ناجح) ---
+        // --- الإعدادات العامة ونوع العرض (كما هي) ---
         settings: {
-            type: 'month', // <<== النوع يجب أن يبقى هنا
+            type: 'month', // النوع داخل settings
             lang: 'ar',
             iso8601: false,
             selection: { day: false },
@@ -503,10 +504,10 @@ function initializeCalendar(tableRows) {
     calendarContainer.innerHTML = ''; // مسح المحتوى المؤقت
 
     try {
-        console.log("Initializing VanillaCalendar with options (using markup.dates + class array):", options);
+        console.log("Initializing VanillaCalendar with options (using popups):", options);
         calendarInstance = new VanillaCalendar(calendarContainer, options);
         calendarInstance.init();
-        console.log("Calendar initialized successfully (Highlight Attempt with class array).");
+        console.log("Calendar initialized successfully (Highlight Attempt with popups).");
 
     } catch (error) {
         console.error("Error initializing calendar:", error);
