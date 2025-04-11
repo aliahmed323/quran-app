@@ -431,45 +431,61 @@
 
 
 function initializeCalendar(tableRows) {
-    console.log("Attempting calendar init using 'actions.getDays' for highlighting...");
-    if (!calendarContainer) {
-        console.error("Calendar container element not found!");
-        return;
-    }
+    console.log("[Re-attempt] Initializing calendar with markup.dates and 'class' array...");
+    const calendarContainer = document.getElementById('calendar-container'); // التأكد من وجود الحاوية
 
-    // --- تحضير بيانات حالة الأيام لتسهيل البحث ---
-    const dayStatus = {}; // كائن لتخزين حالة كل يوم، المفتاح هو التاريخ
-    // مثال: { '2025-04-10': 'completed', '2025-04-09': 'excused' }
+    // --- التحقق من النقاط ---
+    if (!calendarContainer) {
+        console.error("Checklist Fail: Calendar container '#calendar-container' not found!");
+        return;
+    } else {
+        console.log("Checklist OK: Container '#calendar-container' found.");
+    }
+    // التحقق من تحميل المكتبة يتم ضمنيًا لأن الكود يعمل
+    // التحقق من صيغة التاريخ سيتم أدناه
+
+    // --- تحضير بيانات الأيام الملونة (مع تدقيق التنسيق) ---
+    const daysData = [];
     if (tableRows && Array.isArray(tableRows)) {
-        tableRows.forEach(row => {
-            if (row.displayDate) {
-                if (row.type === 'plan' && row.state?.completed) {
-                    dayStatus[row.displayDate] = 'completed';
-                } else if (row.type === 'excuse') {
-                    dayStatus[row.displayDate] = 'excused';
-                }
+        tableRows.forEach((row, index) => {
+            let cssClass = '';
+            if (row.type === 'plan' && row.state?.completed) { cssClass = 'day-completed'; }
+            else if (row.type === 'excuse') { cssClass = 'day-excused'; }
+
+            // التحقق من صيغة التاريخ وهيكل البيانات
+            if (cssClass && row.displayDate && /^\d{4}-\d{2}-\d{2}$/.test(row.displayDate)) {
+                const dataEntry = {
+                    date: row.displayDate, // التاريخ بصيغة 'YYYY-MM-DD'
+                    class: [cssClass]      // استخدام 'class' كمصفوفة تحتوي اسم الكلاس
+                };
+                // console.log(`Row ${index}: Preparing entry for ${dataEntry.date}:`, dataEntry); // تسجيل كل إدخال (اختياري)
+                daysData.push(dataEntry);
+            } else if (cssClass && row.displayDate) {
+                // تحذير إذا كانت صيغة التاريخ غير متوقعة
+                console.warn(`Row ${index}: Invalid date format for ${row.displayDate}. Expected YYYY-MM-DD.`);
+            } else if (cssClass && !row.displayDate) {
+                console.warn(`Row ${index}: Needs highlighting but is missing displayDate:`, row);
             }
         });
+    } else {
+        console.log("No tableRows data found for calendar highlighting.");
     }
-    console.log("Prepared day status lookup:", dayStatus);
+    // تسجيل شكل المصفوفة النهائية التي سيتم تمريرها
+    console.log("Final prepared 'daysData' for markup.dates:", JSON.stringify(daysData, null, 2));
 
-    // --- الحصول على تاريخ اليوم ---
     const today = new Date();
 
-    // --- خيارات التقويم مع استخدام actions.getDays ---
+    // --- Options using 'markup.dates' with 'class' array ---
     const options = {
         date: {
             month: today.getMonth(),
             year: today.getFullYear(),
         },
-        // --- حذف محاولات التلوين السابقة ---
-        /*
-        popups: {},
-        markup: { dates: [] },
-        dates: { dates: [] },
-        */
+        markup: {
+            dates: daysData // تمرير بيانات التلوين هنا
+        },
         settings: {
-            type: 'month',
+            type: 'month', // للحفاظ على العرض الشهري
             lang: 'ar',
             iso8601: false,
             selection: { day: false },
@@ -480,54 +496,25 @@ function initializeCalendar(tableRows) {
                 monthShort: false,
             },
         },
-
-        // --- إضافة دالة actions.getDays ---
-        actions: {
-            getDays: (day, date, dayEl, dayBtnEl) => {
-                // day: رقم اليوم (مثل 15)
-                // date: التاريخ كنص 'YYYY-MM-DD'
-                // dayEl: عنصر <div> لليوم
-                // dayBtnEl: عنصر <button> لليوم
-
-                // التحقق من حالة اليوم من البيانات التي حضرناها
-                const status = dayStatus[date];
-
-                if (status === 'completed') {
-                    // إضافة كلاس الإنجاز إلى زر اليوم
-                    if (dayBtnEl) {
-                        dayBtnEl.classList.add('day-completed');
-                    }
-                } else if (status === 'excused') {
-                    // إضافة كلاس العذر إلى زر اليوم
-                    if (dayBtnEl) {
-                        dayBtnEl.classList.add('day-excused');
-                    }
-                }
-
-                // --- ملاحظة هامة: قد نحتاج لتعديل CSS ---
-                // قواعد CSS الحالية تستهدف '.day-completed .vcal-date__day'
-                // بما أننا نضيف الكلاس الآن مباشرة إلى الزر (dayBtnEl),
-                // قد نحتاج لتغيير CSS ليستهدف الزر مباشرةً
-                // مثال: .vanilla-calendar-day__btn.day-completed { background-color: #abebc6; }
-                // سنرى إذا احتجنا لهذا التعديل لاحقًا.
-            },
-        }, // نهاية actions
+        // التأكد من إزالة محاولات التلوين الأخرى
+        // popups: {},
+        // dates: {},
+        // actions: {},
     };
 
     calendarContainer.innerHTML = ''; // مسح المحتوى المؤقت
 
     try {
-        console.log("Initializing VanillaCalendar with options (using actions.getDays):", options);
+        // تسجيل الخيارات النهائية قبل التهيئة
+        console.log("Initializing VanillaCalendar with options (Re-trying markup.dates):", JSON.stringify(options, null, 2)); // طباعة الخيارات للتحقق
+
         calendarInstance = new VanillaCalendar(calendarContainer, options);
         calendarInstance.init();
-        console.log("Calendar initialized successfully (Highlight Attempt with actions.getDays).");
-
-        // ملاحظة للتحقق من CSS لاحقاً
-        console.warn("CSS might need adjustment. Check if highlight classes are added to buttons in Inspector, then adjust CSS rules if needed.");
+        console.log("Calendar initialized successfully (Re-trying markup.dates).");
 
     } catch (error) {
         console.error("Error initializing calendar:", error);
-        calendarContainer.innerHTML = `<p class="text" style="color:red; text-align:center; margin-top: 20px;">حدث خطأ أثناء تحميل التقويم. (${error.message || 'خطأ غير محدد'})</p>`;
+        calendarContainer.innerHTML = `<p class="text" style="color:red;">Error initializing calendar. (${error.message})</p>`;
         console.log("Full error object:", error);
     }
 }
