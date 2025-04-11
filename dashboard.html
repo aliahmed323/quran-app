@@ -431,81 +431,93 @@
 
 
 function initializeCalendar(tableRows) {
-            console.log("Attempting to initialize FULL calendar (for newer library version)...");
-            if (!calendarContainer) {
-                console.error("Calendar container element not found!");
-                return;
-            }
+    console.log("Attempting to initialize FULL calendar with original 'dates.dates' highlighting..."); // رسالة تتبع محدثة
+    if (!calendarContainer) {
+        console.error("Calendar container element not found!");
+        return;
+    }
 
-            // --- تحضير بيانات الأيام الملونة (تبقى كما هي) ---
-            const daysData = [];
-            if (tableRows && Array.isArray(tableRows)) {
-                tableRows.forEach(row => {
-                    let cssClass = '';
-                    if (row.type === 'plan' && row.state?.completed) { cssClass = 'day-completed'; }
-                    else if (row.type === 'excuse') { cssClass = 'day-excused'; }
-                    if (cssClass && row.displayDate) {
-                        daysData.push({
-                            date: row.displayDate, // 'YYYY-MM-DD'
-                            modifier: cssClass // اسم الفئة CSS للتلوين
-                        });
-                    }
+    // --- تحضير بيانات الأيام الملونة (الكود يبقى كما هو) ---
+    const daysData = [];
+    if (tableRows && Array.isArray(tableRows)) {
+        tableRows.forEach(row => {
+            let cssClass = '';
+            // استخدام ?. للتأكد من وجود state قبل الوصول لـ completed
+            if (row.type === 'plan' && row.state?.completed) {
+                cssClass = 'day-completed'; // أخضر للإنجاز
+            } else if (row.type === 'excuse') {
+                cssClass = 'day-excused'; // أحمر للعذر
+            }
+            // التأكد من أن displayDate موجود قبل إضافته
+            if (cssClass && row.displayDate) {
+                daysData.push({
+                    date: row.displayDate, // 'YYYY-MM-DD'
+                    modifier: cssClass // اسم الفئة CSS للتلوين
                 });
+            } else if (cssClass && !row.displayDate) {
+                 // تحذير إذا لم يكن التاريخ موجوداً لصف يحتاج تلوين
+                 console.warn("Row needs highlighting but is missing displayDate:", row);
             }
-            console.log("Prepared highlighted days data:", daysData);
+        });
+    } else {
+        console.log("No tableRows data found for calendar highlighting.");
+    }
+    // طباعة البيانات المحضرة للتحقق
+    console.log("Prepared highlighted days data:", daysData);
 
-            // --- الحصول على تاريخ اليوم ---
-            const today = new Date();
+    // --- الحصول على تاريخ اليوم ---
+    const today = new Date(); // تاريخ اليوم: الجمعة, 11 أبريل 2025 EET
 
-            // --- خيارات الإصدار الأحدث (محاولة بناءً على التوثيق الشائع لـ v2.x) ---
-            const options = {
-                // --- تحديد تاريخ البدء مباشرة ---
-                // (نفترض أن الشهر يبدأ من 0 ليناير وينتهي بـ 11 لديسمبر)
-                date: {
-                    month: today.getMonth(), // الشهر الحالي
-                    year: today.getFullYear(), // السنة الحالية
-                    // today: today // بعض الإصدارات قد تستخدم هذا بدلاً من ذلك
-                },
+    // --- خيارات الإصدار الأحدث مع محاولة استخدام 'dates.dates' للتلوين ---
+    const options = {
+        // --- تحديد تاريخ البدء ---
+        date: {
+            month: today.getMonth(), // الشهر الحالي (0-11)
+            year: today.getFullYear(), // السنة الحالية
+        },
 
-                // --- نوع العرض ---
-                 // نستمر في محاولة فرض عرض الشهر
+        // --- الأيام الملونة (العودة إلى 'dates.dates') ---
+        dates: { // <<== استخدام هذا القسم لتمرير الألوان
+            dates: daysData // تمرير مصفوفة الأيام الملونة
+        },
 
-                // --- الأيام الملونة (تجربة استخدام 'markup.dates') ---
-                // يجب التحقق من التوثيق إذا كان 'modifier' هو الاسم الصحيح للخاصية هنا
-                markup: {
-                    dates: daysData, // تمرير مصفوفة الأيام هنا
-                },
+        /* // <<== التأكد من أن هذا القسم محذوف أو معلق
+        markup: {
+            dates: daysData,
+        },
+        */
 
-                // --- الإعدادات العامة (اللغة، إلخ) ---
-                settings: {
-                    type: 'month',
-					lang: 'ar', // 'ar' للأسماء العربية القياسية (إذا لم تكن قد غيرتها بالفعل)
-                    iso8601: false, // الأحد أول الأسبوع
-                    selection: { day: false }, // تعطيل الاختيار
-                    visibility: {
-                        theme: 'light', // المظهر
-                        weekend: false, // عطلة نهاية الأسبوع
-                        today: true, // تظليل اليوم الحالي
-                        monthShort: false, // اسم الشهر كاملاً
-                    },
-                },
-                // --- تمت إزالة الخيارات القديمة مثل 'dates: { dates: ... }' و 'settings.selected' ---
-            };
+        // --- الإعدادات العامة ونوع العرض ---
+        settings: {
+            type: 'month', // <<== التأكد أن النوع محدد هنا
+            lang: 'ar', // اللغة العربية القياسية
+            iso8601: false, // الأحد أول الأسبوع
+            selection: { day: false }, // تعطيل الاختيار
+            visibility: {
+                theme: 'light', // المظهر
+                weekend: false, // نهاية الأسبوع
+                today: true, // اليوم الحالي
+                monthShort: false, // اسم الشهر كاملاً
+            },
+        },
+    };
 
-            calendarContainer.innerHTML = ''; // مسح المحتوى المؤقت
+    calendarContainer.innerHTML = ''; // مسح المحتوى المؤقت
 
-            try {
-                console.log("Initializing NEWER VanillaCalendar with options:", options); // طباعة الخيارات للتحقق
-                calendarInstance = new VanillaCalendar(calendarContainer, options);
-                calendarInstance.init();
-                console.log("Calendar initialized successfully (Newer Version Attempt).");
+    try {
+        // طباعة الخيارات المستخدمة للتحقق
+        console.log("Initializing VanillaCalendar with REVISED options (using dates.dates):", options);
+        // تهيئة التقويم
+        calendarInstance = new VanillaCalendar(calendarContainer, options);
+        calendarInstance.init();
+        console.log("Calendar initialized successfully (Revised Highlight Attempt).");
 
-            } catch (error) {
-                console.error("Error initializing calendar:", error);
-                calendarContainer.innerHTML = `<p class="text" style="color:red; text-align:center; margin-top: 20px;">حدث خطأ أثناء تحميل التقويم. (${error.message || 'خطأ غير محدد'})</p>`;
-                console.log("Full error object:", error);
-            }
-        }
+    } catch (error) {
+        console.error("Error initializing calendar:", error);
+        calendarContainer.innerHTML = `<p class="text" style="color:red; text-align:center; margin-top: 20px;">حدث خطأ أثناء تحميل التقويم. (${error.message || 'خطأ غير محدد'})</p>`;
+        console.log("Full error object:", error);
+    }
+}
         // --- Remove the old applyDateModifiers function entirely ---
         // function applyDateModifiers(daysToHighlight) { /* ... REMOVE THIS ... */ } }
 
