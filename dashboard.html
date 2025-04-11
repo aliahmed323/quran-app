@@ -431,64 +431,45 @@
 
 
 function initializeCalendar(tableRows) {
-    console.log("Attempting calendar init using 'popups' for highlighting..."); // رسالة تتبع جديدة
+    console.log("Attempting calendar init using 'actions.getDays' for highlighting...");
     if (!calendarContainer) {
         console.error("Calendar container element not found!");
         return;
     }
 
-    // --- تحضير بيانات الأيام الملونة (بنية جديدة لخيار popups) ---
-    const popupsData = {}; // سنستخدم كائن (object)، المفاتيح هي التواريخ
+    // --- تحضير بيانات حالة الأيام لتسهيل البحث ---
+    const dayStatus = {}; // كائن لتخزين حالة كل يوم، المفتاح هو التاريخ
+    // مثال: { '2025-04-10': 'completed', '2025-04-09': 'excused' }
     if (tableRows && Array.isArray(tableRows)) {
         tableRows.forEach(row => {
-            let cssClass = '';
-            if (row.type === 'plan' && row.state?.completed) {
-                cssClass = 'day-completed'; // أخضر للإنجاز
-            } else if (row.type === 'excuse') {
-                cssClass = 'day-excused'; // أحمر للعذر
-            }
-
-            // --- تعبئة كائن popupsData ---
-            if (cssClass && row.displayDate) {
-                // المفتاح هو التاريخ 'YYYY-MM-DD'
-                // القيمة هي كائن يحتوي على modifier مع اسم الكلاس
-                // بناءً على تحليل الكود، يبدو أن modifier هنا يضيف الكلاس
-                popupsData[row.displayDate] = {
-                    modifier: cssClass
-                    // لا نحتاج خاصية html لأننا نريد فقط إضافة الكلاس
-                };
-            } else if (cssClass && !row.displayDate) {
-                console.warn("Row needs highlighting but is missing displayDate:", row);
+            if (row.displayDate) {
+                if (row.type === 'plan' && row.state?.completed) {
+                    dayStatus[row.displayDate] = 'completed';
+                } else if (row.type === 'excuse') {
+                    dayStatus[row.displayDate] = 'excused';
+                }
             }
         });
-    } else {
-        console.log("No tableRows data found for calendar highlighting.");
     }
-    // طباعة البيانات المحضرة للتحقق
-    console.log("Prepared highlighting data for 'popups' option:", popupsData);
+    console.log("Prepared day status lookup:", dayStatus);
 
     // --- الحصول على تاريخ اليوم ---
     const today = new Date();
 
-    // --- خيارات باستخدام 'popups' للتلوين ---
+    // --- خيارات التقويم مع استخدام actions.getDays ---
     const options = {
-        // --- تحديد تاريخ البدء ---
         date: {
             month: today.getMonth(),
             year: today.getFullYear(),
         },
-
-        // --- الأيام الملونة (تجربة 'popups') ---
-        popups: popupsData, // <<== استخدام هذا الخيار لتمرير بيانات التلوين
-
-        /* // <<== التأكد من حذف أو تعليق الخيارات الأخرى التي جربناها للتلوين
+        // --- حذف محاولات التلوين السابقة ---
+        /*
+        popups: {},
         markup: { dates: [] },
         dates: { dates: [] },
         */
-
-        // --- الإعدادات العامة ونوع العرض (كما هي) ---
         settings: {
-            type: 'month', // النوع داخل settings
+            type: 'month',
             lang: 'ar',
             iso8601: false,
             selection: { day: false },
@@ -499,15 +480,50 @@ function initializeCalendar(tableRows) {
                 monthShort: false,
             },
         },
+
+        // --- إضافة دالة actions.getDays ---
+        actions: {
+            getDays: (day, date, dayEl, dayBtnEl) => {
+                // day: رقم اليوم (مثل 15)
+                // date: التاريخ كنص 'YYYY-MM-DD'
+                // dayEl: عنصر <div> لليوم
+                // dayBtnEl: عنصر <button> لليوم
+
+                // التحقق من حالة اليوم من البيانات التي حضرناها
+                const status = dayStatus[date];
+
+                if (status === 'completed') {
+                    // إضافة كلاس الإنجاز إلى زر اليوم
+                    if (dayBtnEl) {
+                        dayBtnEl.classList.add('day-completed');
+                    }
+                } else if (status === 'excused') {
+                    // إضافة كلاس العذر إلى زر اليوم
+                    if (dayBtnEl) {
+                        dayBtnEl.classList.add('day-excused');
+                    }
+                }
+
+                // --- ملاحظة هامة: قد نحتاج لتعديل CSS ---
+                // قواعد CSS الحالية تستهدف '.day-completed .vcal-date__day'
+                // بما أننا نضيف الكلاس الآن مباشرة إلى الزر (dayBtnEl),
+                // قد نحتاج لتغيير CSS ليستهدف الزر مباشرةً
+                // مثال: .vanilla-calendar-day__btn.day-completed { background-color: #abebc6; }
+                // سنرى إذا احتجنا لهذا التعديل لاحقًا.
+            },
+        }, // نهاية actions
     };
 
     calendarContainer.innerHTML = ''; // مسح المحتوى المؤقت
 
     try {
-        console.log("Initializing VanillaCalendar with options (using popups):", options);
+        console.log("Initializing VanillaCalendar with options (using actions.getDays):", options);
         calendarInstance = new VanillaCalendar(calendarContainer, options);
         calendarInstance.init();
-        console.log("Calendar initialized successfully (Highlight Attempt with popups).");
+        console.log("Calendar initialized successfully (Highlight Attempt with actions.getDays).");
+
+        // ملاحظة للتحقق من CSS لاحقاً
+        console.warn("CSS might need adjustment. Check if highlight classes are added to buttons in Inspector, then adjust CSS rules if needed.");
 
     } catch (error) {
         console.error("Error initializing calendar:", error);
