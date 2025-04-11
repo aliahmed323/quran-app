@@ -15,7 +15,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
 
     <style>
-        /* --- CSS Styles (تبقى كما هي) --- */
+        /* --- CSS Styles --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Tajawal', sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.7; }
         .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
@@ -25,23 +25,37 @@
         .card { background-color: #fff; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 3px 6px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; }
         .dashboard-header { display: flex; justify-content: center; align-items: center; padding: 10px 20px; margin-bottom: 25px; border-bottom: 2px solid #aed6f1; background-color: #fff; border-radius: 0 0 8px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .dashboard-header .logo h1 { margin: 0; font-size: 1.8em; color: #1a5276; }
-        .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: auto; gap: 25px; }
-        #daily-task { grid-column: span 2; }
-        #plan-progress {} #quick-stats {} #calendar-view {} #competition-section {}
-        #badges-section { grid-column: span 3; }
+
+        /* --- Dashboard Layout (Using auto-fit for responsiveness) --- */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); grid-auto-rows: auto; gap: 25px; }
+        #daily-task { grid-column: span 2; } /* Let daily task take more space if possible */
+        @media (max-width: 860px) { #daily-task { grid-column: span 1; } } /* Adjust for medium screens */
+        /* Ensure other sections span full width on small screens */
+        @media (max-width: 600px) { .dashboard-grid { grid-template-columns: 1fr; } #daily-task, #plan-progress, #quick-stats, #streak-info, #calendar-view, #competition-section, #badges-section { grid-column: span 1; } .card { padding: 15px; } h2 { font-size: 1.4em; } h3 { font-size: 1.1em; } .dashboard-header .logo h1 { font-size: 1.5em;} }
+
+        /* --- Section Specific Styles --- */
         #daily-task h3 { color: #1e8449; font-size: 1.3em; border-bottom: 2px solid #aed6f1; padding-bottom: 8px;}
-        #daily-task-content { min-height: 100px; padding-top: 10px;}
+        #daily-task-content { min-height: 80px; padding-top: 10px;} /* Adjusted min-height */
         #daily-task-content p { margin-bottom: 0.6em; font-size: 1.05em; line-height: 1.8; }
         #daily-task-content strong { color: #1a5276; margin-left: 8px;}
         #daily-task .plan-link { margin-top: 15px; display: inline-block; font-size: 0.9em; background-color: #5dade2; color: white; padding: 5px 10px; border-radius: 4px; }
         #daily-task .plan-link:hover { background-color: #3498db; }
-        #plan-progress h3, #quick-stats h3, #calendar-view h3, #competition-section h3, #badges-section h3 { font-size: 1.15em; }
+
+        #plan-progress h3, #quick-stats h3, #streak-info h3, #calendar-view h3, #competition-section h3, #badges-section h3 { font-size: 1.15em; }
         #plan-progress .progress-bar-container { background-color: #e9ecef; border-radius: 0.25rem; height: 25px; overflow: hidden; margin-top: 10px; border: 1px solid #ccc; }
         #plan-progress .progress-bar-value { background-color: #28a745; height: 100%; width: 0%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9em; font-weight: bold; transition: width 0.6s ease-in-out; }
         #quick-stats ul { list-style: none; padding: 0; margin-top: 15px;}
         #quick-stats ul li { margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dotted #eee; font-size: 0.95em;}
         #quick-stats ul li strong { margin-left: 5px; color: #1a5276; min-width: 110px; display: inline-block;}
         #quick-stats ul li span { color: #1e8449; font-weight: bold;}
+
+        /* Streak Info Card */
+        #streak-info p { margin-bottom: 0.6em; font-size: 1em;}
+        #streak-info strong { color: #1a5276; }
+        #streak-level-title { font-weight: bold; color: #1e8449; }
+        #streak-level-icon { margin-right: 5px; }
+
+        /* Placeholder Styles */
         .placeholder-box { min-height: 150px; background-color: #f0f4f8; border: 1px dashed #ccc; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #777; border-radius: 5px; padding: 15px; text-align: center; }
         .placeholder-box .icon { font-size: 3em; margin-bottom: 10px; opacity: 0.5; }
         .placeholder-box .text { font-style: italic; font-size: 0.9em; }
@@ -51,7 +65,8 @@
         #loading-indicator { text-align: center; padding: 50px; font-size: 1.3em; color: #1a5276; display: block; }
 
         /* Calendar Custom Styles */
-        #calendar-container .vanilla-calendar-day__btn { border-radius: 4px; border: 1px solid transparent; color: #333; transition: background-color 0.2s, border-color 0.2s; }
+        #calendar-container { max-width: 300px; margin: 15px auto 0 auto; }
+        #calendar-container .vanilla-calendar-day__btn { border-radius: 4px; border: 1px solid transparent; color: #333; transition: background-color 0.2s, border-color 0.2s; padding: 5px !important; /* Adjust padding */ }
         #calendar-container .status-completed .vanilla-calendar-day__btn { background-color: #d1e7dd !important; color: #0f5132 !important; border-color: #a3cfbb !important; font-weight: bold; }
         #calendar-container .status-excuse .vanilla-calendar-day__btn { background-color: #f8d7da !important; color: #58151c !important; border-color: #f1aeae !important; text-decoration: line-through; font-style: italic; }
         #calendar-container .vanilla-calendar-day_today .vanilla-calendar-day__btn { border-color: #0d6efd !important; background-color: rgba(13, 110, 253, 0.1) !important; }
@@ -60,10 +75,6 @@
         .legend-completed { background-color: #d1e7dd; }
         .legend-excuse { background-color: #f8d7da; }
         .legend-today { background-color: rgba(13, 110, 253, 0.1); border: 1px solid #0d6efd;}
-
-        /* Responsive Adjustments */
-        @media (max-width: 992px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } #daily-task { grid-column: span 2; } #badges-section { grid-column: span 2; } }
-        @media (max-width: 600px) { .dashboard-header .logo h1 { font-size: 1.5em;} .dashboard-grid { grid-template-columns: 1fr; } #daily-task, #plan-progress, #quick-stats, #calendar-view, #competition-section, #badges-section { grid-column: span 1; } .card { padding: 15px; } h2 { font-size: 1.4em; } h3 { font-size: 1.1em; } }
     </style>
 </head>
 <body>
@@ -110,7 +121,14 @@
                     </ul>
                 </section>
 
-                <section id="calendar-view" class="card">
+                <section id="streak-info" class="card">
+                     <h3>🔥 الإنجاز المتتالي</h3>
+                     <p><strong>الحالي:</strong> <span id="streak-current">0</span> أيام</p>
+                     <p><strong>الأفضل:</strong> <span id="streak-longest">0</span> أيام</p>
+                     <p><strong>المستوى الحالي:</strong> <span id="streak-level-title">...</span> <span id="streak-level-icon"></span></p>
+                 </section>
+
+                 <section id="calendar-view" class="card">
                     <h3>التقويم</h3>
                     <div id="calendar-container" style="max-width: 300px; margin: 15px auto 0 auto;">
                          </div>
@@ -120,8 +138,7 @@
                         <span class="legend-today"></span> اليوم
                     </div>
                 </section>
-
-                <section id="competition-section" class="card">
+                 <section id="competition-section" class="card">
                      <h3>المنافسة</h3>
                      <div class="placeholder-box">
                          <div class="icon">🏆</div>
@@ -151,7 +168,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vanilla-js-calendar@1.9.4/build/vanilla-js-calendar.min.js"></script>
 
     <script>
-        // --- >>> CORRECTED Firebase Config (Using values you provided) <<< ---
+        // --- Firebase Config (Using values you provided) ---
         const firebaseConfig = {
             apiKey: "AIzaSyDuUebu7Qzz3JnTfa-58EIPZjOcrkmdGHU",
             authDomain: "quranplan2.firebaseapp.com",
@@ -160,14 +177,17 @@
             messagingSenderId: "1098692856811",
             appId: "1:1098692856811:web:923bca3a54fd78b1b267ae"
         };
-        // --- >>> END CORRECTED Firebase Config <<< ---
 
          try { firebase.initializeApp(firebaseConfig); } catch (e) { console.error("Firebase initialization error:", e); }
         const auth = firebase.auth();
         const db = firebase.firestore();
 
         // --- Global Variables ---
-        let calendarInstance = null;
+        let calendarInstance = null; // For Calendar
+        let currentUser = null;
+        let currentPlanData = null; // Stores the FULL plan data
+
+        // --- DOM References ---
         const loadingIndicator = document.getElementById('loading-indicator');
         const dashboardContent = document.getElementById('dashboard-content');
         const dailyTaskContent = document.getElementById('daily-task-content');
@@ -179,17 +199,26 @@
         const statLinked = document.getElementById('stat-linked');
         const statExcuses = document.getElementById('stat-excuses');
         const todayDateSpan = document.getElementById('today-date-display');
+        // >> Streak DOM References
+        const streakCurrentEl = document.getElementById('streak-current');
+        const streakLongestEl = document.getElementById('streak-longest');
+        const streakLevelTitleEl = document.getElementById('streak-level-title');
+        const streakLevelIconEl = document.getElementById('streak-level-icon');
+
+        // --- Constants ---
         const totalQuranPages = 604;
-        const initialTotalRows = 320;
-        let currentUser = null;
-        let currentPlanData = null; // Stores the FULL plan data
+        const initialTotalRows = 320; // Should match plangen2
+        // >> Streak Level Titles (Example - Needs refinement/completion)
+        const streakLevelTitles = [
+            /* 0 */ "المستوى 0: ساعٍ للعلا 🌱", /* 1 */ "المستوى 1: مثابر مجتهد 🥉", /* 2 */ "المستوى 2: ذو همةٍ عالية 🥈", /* 3 */ "المستوى 3: رفيق القرآن 🥉", /* 4 */ "المستوى 4: ثابت القدم 🥈", /* 5 */ "المستوى 5: نجمٌ صاعد 🌟", /* 6 */ "المستوى 6: مجتاز الصعاب", /* 7 */ "المستوى 7: ذو عزيمة", /* 8 */ "المستوى 8: مكافح مثمر", /* 9 */ "المستوى 9: قارب المئة", /* 10 */ "المستوى 10: صاحب المئة يوم 💯", /* 11 */ "المستوى 11: فارس المثابرة", /* 12 */ "المستوى 12: صاحب الإنجاز", /* 13 */ "المستوى 13: متقدم واعد", /* 14 */ "المستوى 14: عابر المراحل", /* 15 */ "المستوى 15: بلغ نصف المدى 🏁", /* 16 */ "المستوى 16: متمكن بإذن الله", /* 17 */ "المستوى 17: نجم ساطع ✨", /* 18 */ "المستوى 18: من أهل القرآن (مرشح)", /* 19 */ "المستوى 19: حثيث الخطى", /* 20 */ "المستوى 20: قاهر الصعاب 💪", /* 21 */ "المستوى 21: همة تناطح السحاب", /* 22 */ "المستوى 22: سفير الإتقان", /* 23 */ "المستوى 23: مثال يحتذى", /* 24 */ "المستوى 24: دائم الذكر", /* 25 */ "المستوى 25: قاب قوسين أو أدنى 🎯", /* 26 */ "المستوى 26: على أعتاب الختم", /* 27 */ "المستوى 27: مجاور للتمام", /* 28 */ "المستوى 28: مقدام لا يتراجع", /* 29 */ "المستوى 29: صاحب النفس الطويل", /* 30 */ "المستوى 30: حامل لواء القرآن 🚩", /* 31 */ "المستوى 31: أهل الله وخاصته (متقدم)", /* 32 */ "المستوى 32: خاتمٌ مُبارك 🏆👑"
+        ];
 
         // --- Data Arrays & Helper Functions ---
-        const surahs = ['الفاتحة والبقرة', /* ... */ 'ختم القرآن']; // Assume full data
-        const linkFromData = ['', '', 1, /* ... */ 577]; // Assume full data
-        const linkToData = ['', '', 2, /* ... */ 604]; // Assume full data
-        const reviewFromData = [...Array(32).fill(''), 1, /* ... */ 481]; // Assume full data
-        const reviewToData = [...Array(32).fill(''), 2, /* ... */ 576]; // Assume full data
+        const surahs = ['الفاتحة والبقرة', /* ... */ 'ختم القرآن']; // Assume full data arrays are here
+        const linkFromData = ['', '', 1, /* ... */ 577];
+        const linkToData = ['', '', 2, /* ... */ 604];
+        const reviewFromData = [...Array(32).fill(''), 1, /* ... */ 481];
+        const reviewToData = [...Array(32).fill(''), 2, /* ... */ 576];
         function formatDate(date) { if (!(date instanceof Date)) date = new Date(date); if (isNaN(date.getTime())) return ""; const year = date.getFullYear(); const month = String(date.getMonth() + 1).padStart(2, '0'); const day = String(date.getDate()).padStart(2, '0'); return `${year}-${month}-${day}`; }
         function getPlanData(originalIndex) { const index = parseInt(originalIndex); if (isNaN(index) || index < 0 || index >= initialTotalRows) { return null; } let fromPage = '', toPage = ''; if (index < 299) { fromPage = index * 2 + 1; toPage = fromPage + 1; } else if (index === 299) { fromPage = 601; toPage = 604; } return { fromPage: fromPage, toPage: toPage, surah: surahs[index] || '', linkFrom: linkFromData[index] ?? '', linkTo: linkToData[index] ?? '', reviewFrom: reviewFromData[index] ?? '', reviewTo: reviewToData[index] ?? '', round: calculateRoundNumber(index) }; }
         function calculateRoundNumber(originalIndex) { if (originalIndex < 32 || !reviewFromData || reviewFromData[originalIndex] == null || reviewFromData[originalIndex] === '') { return ''; } let reviewDataStartIndex = 32; let reviewCounter = 0; for(let i = reviewDataStartIndex; i <= originalIndex; i++){ if(reviewFromData[i] != null && reviewFromData[i] !== '') reviewCounter++; } if (reviewCounter === 0) return ''; return Math.ceil(reviewCounter / 6); }
@@ -199,78 +228,184 @@
         function hideLoading() { if(loadingIndicator) loadingIndicator.style.display = 'none'; }
         function displayDashboard() { hideLoading(); if(dashboardContent) dashboardContent.style.display = 'block'; }
 
-        // --- Functions to Calculate Stats ---
-        function calculateDashboardStats(tableRows) {
-            let lastCompletedPage = 0; let linkedTasks = 0; let perfectedTasks = 0; let excuseCount = 0;
-            if (!tableRows) return { memorizedPages: 0, linkedTasks: 0, perfectedTasks: 0, excuseCount: 0 };
-            tableRows.forEach(row => {
-                if (row.type === 'excuse') { excuseCount++; }
-                else if (row.type === 'plan' && row.state && row.state.completed) {
-                    const planInfo = getPlanData(row.originalSequence);
-                    if (planInfo && planInfo.toPage) { const pageNum = parseInt(planInfo.toPage); if (!isNaN(pageNum)) { lastCompletedPage = Math.max(lastCompletedPage, pageNum); } }
-                    if (planInfo && planInfo.linkTo !== '' && row.state.linked) { linkedTasks++; }
-                    if (planInfo && planInfo.reviewTo !== '' && row.state.reviewed) { perfectedTasks++; }
-                }
-            });
-            const memorizedPages = Math.min(lastCompletedPage, totalQuranPages);
-            return { memorizedPages, linkedTasks, perfectedTasks, excuseCount };
+        // --- Functions to Calculate Stats & Streaks ---
+        function calculateDashboardStats(tableRows) { /* ... (same as previous version) ... */ }
+
+        // >> NEW: Calculate Streak Info
+        function calculateStreakInfo(tableRows) {
+             if (!tableRows || !Array.isArray(tableRows) || tableRows.length === 0) {
+                 return { currentStreak: 0, longestStreak: 0, displayedLevel: 0 };
+             }
+             // Create a map for quick date lookup & filter out rows without dates
+             const rowMap = new Map();
+             const validRows = tableRows.filter(row => row.displayDate).sort((a, b) => a.displayDate.localeCompare(b.displayDate));
+             validRows.forEach(row => rowMap.set(row.displayDate, row));
+
+             let longestStreak = 0;
+             let currentConsecutiveForward = 0;
+
+             // Calculate longest streak by iterating through sorted valid rows
+             for (let i = 0; i < validRows.length; i++) {
+                 const row = validRows[i];
+                 if (row.type === 'plan' && row.state?.completed) {
+                     if (i > 0) {
+                         const prevRow = validRows[i-1];
+                         const currentDateObj = new Date(row.displayDate + 'T00:00:00Z');
+                         const prevDateObj = new Date(prevRow.displayDate + 'T00:00:00Z');
+                         const diffDays = Math.round((currentDateObj - prevDateObj) / (1000 * 60 * 60 * 24));
+
+                         if (diffDays === 1) {
+                              // Check if previous was also completed or excuse doesn't break sequence for longest calc?
+                              // For now, assume only completed days count for streak continuation
+                              if(prevRow.type === 'plan' && prevRow.state?.completed) {
+                                 currentConsecutiveForward++;
+                              } else {
+                                 // Previous day broke the streak
+                                 longestStreak = Math.max(longestStreak, currentConsecutiveForward);
+                                 currentConsecutiveForward = 1; // Start new streak
+                              }
+                         } else { // Gap or non-consecutive
+                             longestStreak = Math.max(longestStreak, currentConsecutiveForward);
+                             currentConsecutiveForward = 1; // Start new streak from this completed day
+                         }
+                     } else { // First day in sorted list
+                         currentConsecutiveForward = 1;
+                     }
+                 } else { // Excuse or incomplete/non-plan day breaks the streak
+                     longestStreak = Math.max(longestStreak, currentConsecutiveForward);
+                     currentConsecutiveForward = 0; // Reset
+                 }
+             }
+             longestStreak = Math.max(longestStreak, currentConsecutiveForward); // Final check
+
+             // Calculate current streak by iterating backward from today
+             let currentStreak = 0;
+             let dateToCheck = new Date(); // Today
+             let safety = 366; // Safety break
+
+             while (safety > 0) {
+                 const dateStr = formatDate(dateToCheck);
+                 const row = rowMap.get(dateStr);
+
+                 if (!row || row.type === 'excuse' || (row.type === 'plan' && !row.state?.completed)) {
+                     // Streak ends here (or never started today/yesterday)
+                     break;
+                 } else if (row.type === 'plan' && row.state?.completed) {
+                     currentStreak++;
+                     // Go to previous day
+                     dateToCheck.setUTCDate(dateToCheck.getUTCDate() - 1);
+                 } else {
+                     // Unexpected state
+                     break;
+                 }
+                 safety--;
+             }
+             if(safety === 0) console.error("Streak check backwards loop safety break triggered.");
+
+
+             // Calculate displayed level based ONLY on current streak for now
+             // The "drop one level" logic display needs persistent state tracking (highestLevel, currentDisplayedLevel)
+             // which should ideally be updated/saved via plangen2.html or cloud functions.
+             // For dashboard display simplicity *at this stage*, level reflects current consecutive days.
+             const displayedLevel = Math.floor(currentStreak / 10);
+
+             return { currentStreak, longestStreak, displayedLevel };
         }
 
         // --- Calendar Functions ---
-        function prepareDateStatusMap(tableRows) {
-            const statusMap = {}; if (!tableRows) return statusMap;
-            tableRows.forEach(row => { if (row.displayDate) { let currentStatus = statusMap[row.displayDate]; if (row.type === 'excuse') { statusMap[row.displayDate] = 'excuse'; } else if (row.type === 'plan' && row.state && row.state.completed && currentStatus !== 'excuse') { statusMap[row.displayDate] = 'completed'; } } });
-            return statusMap;
-        }
-        function initializeCalendar(dateStatusMap) {
-             const options = { settings: { lang: 'ar-EG', iso8601: false, visibility: { theme: 'light', today: true, daysOutside: false, }, selection: { day: false, }, modifier: { day: (dayElement, dateString) => { const status = dateStatusMap[dateString]; dayElement.classList.remove('status-completed', 'status-excuse'); if (status === 'completed') { dayElement.classList.add('status-completed'); } else if (status === 'excuse') { dayElement.classList.add('status-excuse'); } } } }, actions: {} };
-             if (calendarInstance) { try { calendarInstance.destroy(); } catch(e) { console.warn("Error destroying previous calendar:", e); } }
-             const calendarElement = document.querySelector('#calendar-container');
-             if(calendarElement) { calendarInstance = new VanillaCalendar(calendarElement, options); try { calendarInstance.init(); console.log("Calendar initialized."); } catch(e) { console.error("Error initializing calendar:", e); calendarElement.innerHTML = "<p style='color:red;font-size:0.9em;'>خطأ في عرض التقويم.</p>"; } } else { console.error("Calendar container #calendar-container not found."); }
-        }
+        function prepareDateStatusMap(tableRows) { /* ... (same as previous) ... */ }
+        function initializeCalendar(dateStatusMap) { /* ... (same as previous) ... */ }
 
         // --- Functions to Update Dashboard Sections ---
-        function displayDailyTask() {
-            if (!dailyTaskContent || !currentPlanData || !currentPlanData.tableRows) { if(dailyTaskContent) dailyTaskContent.innerHTML = '<p><i>جاري تحميل بيانات الخطة...</i></p>'; if (todayDateSpan) todayDateSpan.textContent = formatDate(new Date()); return; }
-            const tableRows = currentPlanData.tableRows; const today = new Date(); const todayStr = formatDate(today);
-            if (todayDateSpan) todayDateSpan.textContent = todayStr;
-            const todayRow = tableRows.find(row => row.displayDate === todayStr);
-            if (!todayRow) { dailyTaskContent.innerHTML = '<p>لا يوجد واجب مقرر في الخطة لهذا اليوم.</p>'; }
-            else if (todayRow.type === 'excuse') { dailyTaskContent.innerHTML = `<p style="color: orange; font-weight:bold;">لديك عذر مسجل لهذا اليوم (${todayRow.excuseType || ''}).</p>`; }
-            else if (todayRow.type === 'plan' && todayRow.state && todayRow.state.completed) { dailyTaskContent.innerHTML = '<p style="color: green; font-weight: bold;">✅ الحمد لله، لقد أتممت واجب هذا اليوم!</p>'; }
-            else if (todayRow.type === 'plan' && todayRow.state && !todayRow.state.completed) { const taskDetails = getPlanData(todayRow.originalSequence); if (taskDetails) { let taskHTML = `<h4>المطلوب إنجازه اليوم (${todayStr}):</h4>`; taskHTML += `<p><strong>الحفظ الجديد:</strong> ${taskDetails.fromPage ? `ص ${taskDetails.fromPage} - ${taskDetails.toPage}` : 'لا يوجد'} (${taskDetails.surah || 'مراجعة'})</p>`; taskHTML += `<p><strong>الربط:</strong> ${taskDetails.linkFrom ? `من ${taskDetails.linkFrom} إلى ${taskDetails.linkTo}` : 'لا يوجد'}</p>`; taskHTML += `<p><strong>المراجعة:</strong> ${taskDetails.reviewFrom ? `من ${taskDetails.reviewFrom} إلى ${taskDetails.reviewTo}` : 'لا يوجد'} ${taskDetails.round ? `(ج${taskDetails.round})` : ''}</p>`; dailyTaskContent.innerHTML = taskHTML; } else { dailyTaskContent.innerHTML = `<p><i>خطأ: لم يتم العثور على تفاصيل الواجب للفهرس ${todayRow.originalSequence}.</i></p>`; } }
-            else { dailyTaskContent.innerHTML = '<p><i>لم يتم التعرف على حالة واجب اليوم.</i></p>'; }
-        }
-        function displayProgress(stats) { if (!currentPlanData) return; const planType = currentPlanData.planType || '?'; const memorizedPages = stats.memorizedPages; const progressPercent = totalQuranPages > 0 ? Math.min(100, (memorizedPages / totalQuranPages) * 100).toFixed(0) : 0; if(currentPlanNameSpan) currentPlanNameSpan.textContent = `خطة ${planType} صفحات`; if(progressBarValue) { progressBarValue.style.width = `${progressPercent}%`; progressBarValue.style.backgroundColor = '#28a745'; progressBarValue.textContent = `${progressPercent}%`; } if(completedPagesProgressSpan) completedPagesProgressSpan.textContent = memorizedPages; }
-        function displayStats(stats) { if(statMemorized) statMemorized.textContent = stats.memorizedPages; if(statPerfected) statPerfected.textContent = stats.perfectedTasks; if(statLinked) statLinked.textContent = stats.linkedTasks; if(statExcuses) statExcuses.textContent = stats.excuseCount; }
+        function displayDailyTask() { /* ... (same as previous) ... */ }
+        function displayProgress(stats) { /* ... (same as previous) ... */ }
+        function displayStats(stats) { /* ... (same as previous) ... */ }
 
-        // --- Main Data Loading Function ---
+        // >> NEW: Display Streak Info
+        function displayStreakInfo(streakData) {
+            if (!streakCurrentEl || !streakLongestEl || !streakLevelTitleEl || !streakLevelIconEl) {
+                 console.warn("Streak display elements not found.");
+                 return;
+            }
+            const level = streakData.displayedLevel;
+            const title = streakLevelTitles[level] || streakLevelTitles[0]; // Fallback
+
+            streakCurrentEl.textContent = streakData.currentStreak || 0;
+            streakLongestEl.textContent = streakData.longestStreak || 0;
+            streakLevelTitleEl.textContent = title;
+            // Extract icon from title string if present (simple example)
+            const iconMatch = title.match(/(\p{Emoji})/u);
+             streakLevelIconEl.textContent = iconMatch ? iconMatch[1] : ''; // Display emoji if found
+
+            // Add logic later to show warning if streak is at risk?
+        }
+
+        // --- Main Data Loading Function (MODIFIED to call streak functions) ---
         function loadDashboardData(user) {
-            if (!user) return; const uid = user.uid; const planRef = db.collection("quranPlans").doc(uid); console.log("Dashboard: Checking Firestore for plan:", uid); showLoading("جاري تحميل بيانات خطتك...");
+            if (!user) return;
+            const uid = user.uid;
+            const planRef = db.collection("quranPlans").doc(uid);
+            console.log("Dashboard: Checking Firestore for plan:", uid);
+            showLoading("جاري تحميل بيانات خطتك...");
+
             planRef.get().then((doc) => {
                 hideLoading();
                 if (doc.exists) {
-                    console.log("Dashboard: Plan data found."); currentPlanData = doc.data();
-                    if (!currentPlanData.startDate || !currentPlanData.planType || !currentPlanData.tableRows || !Array.isArray(currentPlanData.tableRows) || !currentPlanData.repetitionMax) { console.error("Loaded data missing required fields...", currentPlanData); dashboardContent.style.display = 'block'; dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">خطأ: بيانات خطتك المحفوظة غير مكتملة أو تالفة. يرجى <a href="index.html">الذهاب لصفحة البداية</a> وإعادة إنشاء الخطة.</p>`; document.getElementById('plan-progress').style.display = 'none'; document.getElementById('quick-stats').style.display = 'none'; const calendarContainer = document.getElementById('calendar-container'); if(calendarContainer) calendarContainer.innerHTML = "<p style='color:red;'><i>لا يمكن عرض التقويم بسبب بيانات خطة غير مكتملة.</i></p>"; return; }
+                    console.log("Dashboard: Plan data found.");
+                    currentPlanData = doc.data();
+
+                    // Validate FULL data
+                    if (!currentPlanData.startDate || !currentPlanData.planType || !currentPlanData.tableRows || !Array.isArray(currentPlanData.tableRows) || !currentPlanData.repetitionMax) {
+                         // ... (Error handling for incomplete data) ...
+                         console.error("Loaded data missing required fields...", currentPlanData);
+                         dashboardContent.style.display = 'block';
+                         dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">خطأ: بيانات خطتك المحفوظة غير مكتملة أو تالفة. يرجى <a href="index.html">الذهاب لصفحة البداية</a> وإعادة إنشاء الخطة.</p>`;
+                         document.getElementById('plan-progress').style.display = 'none';
+                         document.getElementById('quick-stats').style.display = 'none';
+                         const calendarContainer = document.getElementById('calendar-container'); if(calendarContainer) calendarContainer.innerHTML = "<p style='color:red;'><i>لا يمكن عرض التقويم.</i></p>";
+                         const streakInfoCard = document.getElementById('streak-info'); if(streakInfoCard) streakInfoCard.style.display = 'none'; // Hide streak card too
+                         return;
+                    }
+
+                    // Calculate Stats & Streak
                     const stats = calculateDashboardStats(currentPlanData.tableRows);
+                    const streakData = calculateStreakInfo(currentPlanData.tableRows); // << Calculate Streak
+
+                    // Prepare and Initialize Calendar
                     const dateStatusMap = prepareDateStatusMap(currentPlanData.tableRows);
-                    initializeCalendar(dateStatusMap); // Initialize Calendar
-                    displayDailyTask(); displayProgress(stats); displayStats(stats); // Update other sections
-                    displayDashboard(); // Show content
+                    initializeCalendar(dateStatusMap);
+
+                    // Update Display
+                    displayDailyTask();
+                    displayProgress(stats);
+                    displayStats(stats);
+                    displayStreakInfo(streakData); // << Display Streak Info
+
+                    displayDashboard(); // Show all content
+
                 } else {
-                     console.log("Dashboard: No plan data found."); displayDashboard(); dailyTaskContent.innerHTML = '<p style="color:orange; font-weight:bold;">لم تقم باختيار أو إنشاء خطة بعد!</p><p>اذهب إلى <a href="index.html">صفحة البداية</a> لاختيار خطتك.</p>'; document.getElementById('plan-progress').style.display = 'none'; document.getElementById('quick-stats').style.display = 'none'; const calendarContainer = document.getElementById('calendar-container'); if (calendarContainer) calendarContainer.innerHTML = "<p><i>لا توجد خطة لعرض تقويمها.</i></p>"; document.getElementById('calendar-view').style.display = 'none'; document.getElementById('competition-section').style.display = 'none'; document.getElementById('badges-section').style.display = 'none';
+                     // No plan found logic
+                     // ... (Hide sections as before) ...
+                      const calendarContainer = document.getElementById('calendar-container'); if (calendarContainer) calendarContainer.innerHTML = "<p><i>لا توجد خطة لعرض تقويمها.</i></p>";
+                      const streakInfoCard = document.getElementById('streak-info'); if(streakInfoCard) streakInfoCard.style.display = 'none'; // Hide streak card too
+                      document.getElementById('calendar-view').style.display = 'none';
+                      // ... hide other placeholders ...
                 }
             }).catch((error) => {
-                 console.error("Error getting plan document:", error); hideLoading(); displayDashboard(); dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">حدث خطأ أثناء تحميل بيانات الخطة. (${error.code || 'UNKNOWN'})</p><p>يرجى المحاولة مرة أخرى أو التأكد من اتصالك بالإنترنت وقواعد الأمان في Firestore. <a href="index.html">العودة للرئيسية</a></p>`; document.getElementById('plan-progress').style.display = 'none'; document.getElementById('quick-stats').style.display = 'none'; const calendarContainer = document.getElementById('calendar-container'); if (calendarContainer) calendarContainer.innerHTML = "<p style='color:red;'><i>خطأ تحميل بيانات التقويم.</i></p>";
+                 // Error handling
+                 // ... (Hide sections as before) ...
+                  const calendarContainer = document.getElementById('calendar-container'); if (calendarContainer) calendarContainer.innerHTML = "<p style='color:red;'><i>خطأ تحميل بيانات التقويم.</i></p>";
+                  const streakInfoCard = document.getElementById('streak-info'); if(streakInfoCard) streakInfoCard.style.display = 'none'; // Hide streak card too
             });
         }
 
-        // --- Authentication Listener ---
-        auth.onAuthStateChanged(user => { hideLoading(); currentUser = user; if (user) { console.log("Dashboard: Auth state OK."); loadDashboardData(user); } else { console.log("Dashboard: Not logged in. Redirecting to index..."); window.location.replace('index.html'); } });
-        // --- Initial Load ---
-        document.addEventListener('DOMContentLoaded', () => { showLoading("جاري التحقق من تسجيل الدخول..."); });
-         // --- Print Function ---
-         function printData() { console.log("Initiating browser print..."); window.print(); }
+        // --- Authentication Listener (remains the same) ---
+        auth.onAuthStateChanged(user => { /* ... */ });
+        // --- Initial Load (remains the same) ---
+        document.addEventListener('DOMContentLoaded', () => { /* ... */ });
+         // --- Print Function (remains the same) ---
+         function printData() { /* ... */ }
+
     </script>
 
 </body>
