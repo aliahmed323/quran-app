@@ -430,43 +430,93 @@
         }
 
 
-function initializeCalendar(tableRows) { // نترك الباراميتر ليبقى الكود متوافقاً
-            console.log("Attempting to initialize BASIC calendar..."); // رسالة للكونسول للتتبع
+function initializeCalendar(tableRows) {
+            console.log("Attempting to initialize FULL calendar..."); // رسالة تتبع
             if (!calendarContainer) {
                 console.error("Calendar container element not found!");
                 return;
             }
 
-            // مسح المحتوى المؤقت
-            calendarContainer.innerHTML = '';
+            // تحضير بيانات الأيام الملونة
+            const daysData = [];
+            if (tableRows && Array.isArray(tableRows)) {
+                tableRows.forEach(row => {
+                    let cssClass = '';
+                    // استخدام ?. للتأكد من وجود state قبل الوصول لـ completed
+                    if (row.type === 'plan' && row.state?.completed) {
+                        cssClass = 'day-completed'; // أخضر للإنجاز
+                    } else if (row.type === 'excuse') {
+                        cssClass = 'day-excused'; // أحمر للعذر
+                    }
+                    if (cssClass) {
+                        // التأكد من أن displayDate موجود قبل إضافته
+                        if (row.displayDate) {
+                            daysData.push({
+                                date: row.displayDate, // 'YYYY-MM-DD'
+                                modifier: cssClass
+                            });
+                        } else {
+                            console.warn("Row is missing displayDate, cannot highlight:", row);
+                        }
+                    }
+                });
+            } else {
+                console.log("No tableRows data found for calendar highlighting.");
+            }
+             console.log("Prepared highlighted days data:", daysData); // طباعة البيانات المحضرة
+
+            // --- الحصول على تاريخ اليوم بتنسيق YYYY-MM-DD ---
+            const today = new Date(); // تاريخ اليوم: الجمعة, 11 أبريل 2025
+            const todayStr = formatDate(today); // استخدام الدالة الموجودة
+            console.log("Today's date for calendar:", todayStr);
+
+            // --- خيارات تهيئة التقويم ---
+            const options = {
+                type: 'month', // عرض شهري
+                settings: {
+                    lang: 'ar-DZ', // اللغة العربية (الجزائر كمثال)
+                    iso8601: false, // الأحد أول الأسبوع
+                    range: {}, // يمكن تحديد نطاق التواريخ هنا لاحقًا (مثل تاريخ بداية ونهاية الخطة)
+                    selection: {
+                        day: false, // تعطيل اختيار الأيام بالنقر
+                    },
+                    visibility: {
+                        theme: 'light', // المظهر الفاتح
+                        weekend: false, // عدم تظليل عطلة نهاية الأسبوع بشكل خاص
+                        today: true, // تفعيل تظليل اليوم الحالي (المكتبة تقوم به + التنسيق الخاص بنا)
+                        monthShort: false, // لعرض اسم الشهر كاملاً (اختياري)
+                    },
+                    // --- تحديد تاريخ اليوم ليبدأ التقويم من الشهر الحالي ---
+                    selected: {
+                        dates: [todayStr], // تحديد تاريخ اليوم افتراضيًا لفتح الشهر الصحيح
+                        month: today.getMonth(), // تحديد الشهر الحالي (0 = يناير, 11 = ديسمبر)
+                        year: today.getFullYear(), // تحديد السنة الحالية
+                    }
+                },
+                // --- تمرير بيانات الأيام الملونة ---
+                // يجب أن يتطابق اسم الخاصية مع ما تتوقعه المكتبة (قد يكون dates أو highlightedDates أو غيره)
+                // بناءً على تجارب سابقة، 'dates.dates' يبدو هو الصحيح
+                dates: {
+                    dates: daysData, // تمرير مصفوفة الأيام التي حضرناها
+                },
+            };
+
+            calendarContainer.innerHTML = ''; // مسح المحتوى المؤقت قبل الإنشاء
 
             try {
-                // --- محاولة أبسط تهيئة ممكنة ---
-                console.log("Is VanillaCalendar defined BEFORE new?", typeof VanillaCalendar); // فحص هل الاسم معرف قبل الإنشاء
-                const basicCalendar = new VanillaCalendar(calendarContainer, {
-                    // خيارات قليلة جداً، نعتمد على الإعدادات الافتراضية
-                     settings: { lang: 'ar-DZ' } // يمكن ترك اللغة فقط
-                });
-
-                 if (basicCalendar) { // التأكد من أن الإنشاء لم يُرجع قيمة فارغة
-                     console.log("Basic calendar object created, attempting init...");
-                     basicCalendar.init(); // استدعاء التهيئة
-                     console.log("Basic calendar init() called successfully.");
-                     // إضافة رسالة نجاح مرئية للتأكد
-                     calendarContainer.innerHTML += '<p style="color: green; text-align: center; padding: 20px; border: 1px solid green; margin-top: 10px;">تم تحميل التقويم الأساسي بنجاح (لغرض الاختبار)!</p>';
-                     calendarInstance = basicCalendar; // تخزين النسخة للاستخدام لاحقاً إذا احتجنا
-                 } else {
-                      console.error("new VanillaCalendar() returned null/undefined?"); // إذا فشل الإنشاء لسبب ما
-                 }
+                // طباعة الخيارات في الكونسول للمساعدة في التشخيص إذا لزم الأمر
+                console.log("Initializing VanillaCalendar with options:", options);
+                // تهيئة التقويم
+                calendarInstance = new VanillaCalendar(calendarContainer, options);
+                calendarInstance.init();
+                console.log("Calendar initialized successfully.");
 
             } catch (error) {
-                console.error("Error initializing BASIC calendar:", error); // طباعة الخطأ في الكونسول
-                // عرض الخطأ داخل حاوية التقويم أيضاً
-                calendarContainer.innerHTML = `<p class="text" style="color:red; text-align:center; margin-top: 20px;">حدث خطأ فادح أثناء محاولة تهيئة التقويم الأساسي. (${error.message || 'خطأ غير محدد'})</p>`;
-                 console.log("Full error object:", error); // طباعة تفاصيل الخطأ الكاملة
+                console.error("Error initializing calendar:", error);
+                calendarContainer.innerHTML = `<p class="text" style="color:red; text-align:center; margin-top: 20px;">حدث خطأ أثناء تحميل التقويم. (${error.message || 'خطأ غير محدد'})</p>`;
+                console.log("Full error object:", error);
             }
         }
-
         // --- Remove the old applyDateModifiers function entirely ---
         // function applyDateModifiers(daysToHighlight) { /* ... REMOVE THIS ... */ } }
 
