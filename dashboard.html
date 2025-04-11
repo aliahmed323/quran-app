@@ -142,7 +142,7 @@
 
                 <section id="plan-progress" class="card">
                     <h3>الخطة والتقدم العام</h3>
-                    <p><strong>الخطة النشطة:</strong> <span id="current-plan-name">-</span></p>
+                    <p><strong>خطتك الحالية:</strong> <span id="current-plan-name">-</span></p>
                     <p><strong>التقدم الكلي:</strong></p>
                     <div class="progress-bar-container">
                         <div id="progress-bar-value" style="width: 0%; background-color: #28a745;">0%</div>
@@ -163,10 +163,10 @@
                 </section>
 
                 <section id="streak-level" class="card">
-                     <h3>🏅 همة نحو القمة: الإنجاز المتتالي</h3>
+                     <h3> همة نحو القمة: الإنجاز المتتالي</h3>
                      <div class="streak-info">
                          <div>أيام الإنجاز الحالية<strong id="current-streak">0</strong></div>
-                         <div>أطول سلسلة أيام<strong id="longest-streak">0</strong></div>
+                         <div> أطول سلسلة أيام حققتها<strong id="longest-streak">0</strong></div>
                      </div>
                      <div class="level-title-container">
                          <h4>لقبك الحالي: <span id="level-title">ابدأ رحلتك!</span> <span id="level-icon"></span></h4>
@@ -431,85 +431,73 @@
 
 
 function initializeCalendar(tableRows) {
-            console.log("Attempting to initialize FULL calendar..."); // رسالة تتبع
+            console.log("Attempting to initialize FULL calendar (for newer library version)...");
             if (!calendarContainer) {
                 console.error("Calendar container element not found!");
                 return;
             }
 
-            // تحضير بيانات الأيام الملونة
+            // --- تحضير بيانات الأيام الملونة (تبقى كما هي) ---
             const daysData = [];
             if (tableRows && Array.isArray(tableRows)) {
                 tableRows.forEach(row => {
                     let cssClass = '';
-                    // استخدام ?. للتأكد من وجود state قبل الوصول لـ completed
-                    if (row.type === 'plan' && row.state?.completed) {
-                        cssClass = 'day-completed'; // أخضر للإنجاز
-                    } else if (row.type === 'excuse') {
-                        cssClass = 'day-excused'; // أحمر للعذر
-                    }
-                    if (cssClass) {
-                        // التأكد من أن displayDate موجود قبل إضافته
-                        if (row.displayDate) {
-                            daysData.push({
-                                date: row.displayDate, // 'YYYY-MM-DD'
-                                modifier: cssClass
-                            });
-                        } else {
-                            console.warn("Row is missing displayDate, cannot highlight:", row);
-                        }
+                    if (row.type === 'plan' && row.state?.completed) { cssClass = 'day-completed'; }
+                    else if (row.type === 'excuse') { cssClass = 'day-excused'; }
+                    if (cssClass && row.displayDate) {
+                        daysData.push({
+                            date: row.displayDate, // 'YYYY-MM-DD'
+                            modifier: cssClass // اسم الفئة CSS للتلوين
+                        });
                     }
                 });
-            } else {
-                console.log("No tableRows data found for calendar highlighting.");
             }
-             console.log("Prepared highlighted days data:", daysData); // طباعة البيانات المحضرة
+            console.log("Prepared highlighted days data:", daysData);
 
-            // --- الحصول على تاريخ اليوم بتنسيق YYYY-MM-DD ---
-            const today = new Date(); // تاريخ اليوم: الجمعة, 11 أبريل 2025
-            const todayStr = formatDate(today); // استخدام الدالة الموجودة
-            console.log("Today's date for calendar:", todayStr);
+            // --- الحصول على تاريخ اليوم ---
+            const today = new Date();
 
-            // --- خيارات تهيئة التقويم ---
+            // --- خيارات الإصدار الأحدث (محاولة بناءً على التوثيق الشائع لـ v2.x) ---
             const options = {
-                type: 'month', // عرض شهري
+                // --- تحديد تاريخ البدء مباشرة ---
+                // (نفترض أن الشهر يبدأ من 0 ليناير وينتهي بـ 11 لديسمبر)
+                date: {
+                    month: today.getMonth(), // الشهر الحالي
+                    year: today.getFullYear(), // السنة الحالية
+                    // today: today // بعض الإصدارات قد تستخدم هذا بدلاً من ذلك
+                },
+
+                // --- نوع العرض ---
+                type: 'month', // نستمر في محاولة فرض عرض الشهر
+
+                // --- الأيام الملونة (تجربة استخدام 'markup.dates') ---
+                // يجب التحقق من التوثيق إذا كان 'modifier' هو الاسم الصحيح للخاصية هنا
+                markup: {
+                    dates: daysData, // تمرير مصفوفة الأيام هنا
+                },
+
+                // --- الإعدادات العامة (اللغة، إلخ) ---
                 settings: {
-                    lang: 'ar', // اللغة العربية (الجزائر كمثال)
+                    lang: 'ar', // 'ar' للأسماء العربية القياسية (إذا لم تكن قد غيرتها بالفعل)
                     iso8601: false, // الأحد أول الأسبوع
-                    range: {}, // يمكن تحديد نطاق التواريخ هنا لاحقًا (مثل تاريخ بداية ونهاية الخطة)
-                    selection: {
-                        day: false, // تعطيل اختيار الأيام بالنقر
-                    },
+                    selection: { day: false }, // تعطيل الاختيار
                     visibility: {
-                        theme: 'light', // المظهر الفاتح
-                        weekend: false, // عدم تظليل عطلة نهاية الأسبوع بشكل خاص
-                        today: true, // تفعيل تظليل اليوم الحالي (المكتبة تقوم به + التنسيق الخاص بنا)
-                        monthShort: false, // لعرض اسم الشهر كاملاً (اختياري)
+                        theme: 'light', // المظهر
+                        weekend: false, // عطلة نهاية الأسبوع
+                        today: true, // تظليل اليوم الحالي
+                        monthShort: false, // اسم الشهر كاملاً
                     },
-                    // --- تحديد تاريخ اليوم ليبدأ التقويم من الشهر الحالي ---
-                    selected: {
-                        dates: [todayStr], // تحديد تاريخ اليوم افتراضيًا لفتح الشهر الصحيح
-                        month: today.getMonth(), // تحديد الشهر الحالي (0 = يناير, 11 = ديسمبر)
-                        year: today.getFullYear(), // تحديد السنة الحالية
-                    }
                 },
-                // --- تمرير بيانات الأيام الملونة ---
-                // يجب أن يتطابق اسم الخاصية مع ما تتوقعه المكتبة (قد يكون dates أو highlightedDates أو غيره)
-                // بناءً على تجارب سابقة، 'dates.dates' يبدو هو الصحيح
-                dates: {
-                    dates: daysData, // تمرير مصفوفة الأيام التي حضرناها
-                },
+                // --- تمت إزالة الخيارات القديمة مثل 'dates: { dates: ... }' و 'settings.selected' ---
             };
 
-            calendarContainer.innerHTML = ''; // مسح المحتوى المؤقت قبل الإنشاء
+            calendarContainer.innerHTML = ''; // مسح المحتوى المؤقت
 
             try {
-                // طباعة الخيارات في الكونسول للمساعدة في التشخيص إذا لزم الأمر
-                console.log("Initializing VanillaCalendar with options:", options);
-                // تهيئة التقويم
+                console.log("Initializing NEWER VanillaCalendar with options:", options); // طباعة الخيارات للتحقق
                 calendarInstance = new VanillaCalendar(calendarContainer, options);
                 calendarInstance.init();
-                console.log("Calendar initialized successfully.");
+                console.log("Calendar initialized successfully (Newer Version Attempt).");
 
             } catch (error) {
                 console.error("Error initializing calendar:", error);
