@@ -431,73 +431,71 @@
 
 
 function initializeCalendar(tableRows) {
-    console.log("Attempting to initialize FULL calendar with original 'dates.dates' highlighting..."); // رسالة تتبع محدثة
+    console.log("Attempting calendar init with markup.dates and 'class' array..."); // رسالة تتبع جديدة
     if (!calendarContainer) {
         console.error("Calendar container element not found!");
         return;
     }
 
-    // --- تحضير بيانات الأيام الملونة (الكود يبقى كما هو) ---
+    // --- تحضير بيانات الأيام الملونة (تعديل هنا) ---
     const daysData = [];
     if (tableRows && Array.isArray(tableRows)) {
         tableRows.forEach(row => {
             let cssClass = '';
-            // استخدام ?. للتأكد من وجود state قبل الوصول لـ completed
             if (row.type === 'plan' && row.state?.completed) {
                 cssClass = 'day-completed'; // أخضر للإنجاز
             } else if (row.type === 'excuse') {
                 cssClass = 'day-excused'; // أحمر للعذر
             }
-            // التأكد من أن displayDate موجود قبل إضافته
+
+            // --- التغيير هنا: استخدام 'class' كمصفوفة ---
             if (cssClass && row.displayDate) {
                 daysData.push({
                     date: row.displayDate, // 'YYYY-MM-DD'
-                    modifier: cssClass // اسم الفئة CSS للتلوين
+                    class: [cssClass] // <<== استخدم 'class' وبداخلها مصفوفة تحتوي على اسم الكلاس
                 });
             } else if (cssClass && !row.displayDate) {
-                 // تحذير إذا لم يكن التاريخ موجوداً لصف يحتاج تلوين
-                 console.warn("Row needs highlighting but is missing displayDate:", row);
+                console.warn("Row needs highlighting but is missing displayDate:", row);
             }
         });
     } else {
         console.log("No tableRows data found for calendar highlighting.");
     }
-    // طباعة البيانات المحضرة للتحقق
-    console.log("Prepared highlighted days data:", daysData);
+    console.log("Prepared highlighted days data (using 'class' array):", daysData); // طباعة البيانات للتحقق
 
     // --- الحصول على تاريخ اليوم ---
-    const today = new Date(); // تاريخ اليوم: الجمعة, 11 أبريل 2025 EET
+    const today = new Date();
 
-    // --- خيارات الإصدار الأحدث مع محاولة استخدام 'dates.dates' للتلوين ---
+    // --- خيارات مع 'markup.dates' واستخدام 'class' array ---
     const options = {
         // --- تحديد تاريخ البدء ---
         date: {
-            month: today.getMonth(), // الشهر الحالي (0-11)
-            year: today.getFullYear(), // السنة الحالية
+            month: today.getMonth(),
+            year: today.getFullYear(),
         },
 
-        // --- الأيام الملونة (العودة إلى 'dates.dates') ---
-        dates: { // <<== استخدام هذا القسم لتمرير الألوان
-            dates: daysData // تمرير مصفوفة الأيام الملونة
+        // --- الأيام الملونة (تجربة 'markup.dates' مع 'class') ---
+        markup: { // <<== العودة إلى استخدام هذا الخيار
+            dates: daysData // تمرير البيانات المحضرة بالبنية الجديدة
         },
 
-        /* // <<== التأكد من أن هذا القسم محذوف أو معلق
-        markup: {
-            dates: daysData,
+        /* // <<== التأكد من حذف أو تعليق هذا القسم
+        dates: {
+            dates: daysData
         },
         */
 
-        // --- الإعدادات العامة ونوع العرض ---
+        // --- الإعدادات العامة ونوع العرض (كما هي من آخر تعديل ناجح) ---
         settings: {
-            type: 'month', // <<== التأكد أن النوع محدد هنا
-            lang: 'ar', // اللغة العربية القياسية
-            iso8601: false, // الأحد أول الأسبوع
-            selection: { day: false }, // تعطيل الاختيار
+            type: 'month', // <<== النوع يجب أن يبقى هنا
+            lang: 'ar',
+            iso8601: false,
+            selection: { day: false },
             visibility: {
-                theme: 'light', // المظهر
-                weekend: false, // نهاية الأسبوع
-                today: true, // اليوم الحالي
-                monthShort: false, // اسم الشهر كاملاً
+                theme: 'light',
+                weekend: false,
+                today: true,
+                monthShort: false,
             },
         },
     };
@@ -505,12 +503,10 @@ function initializeCalendar(tableRows) {
     calendarContainer.innerHTML = ''; // مسح المحتوى المؤقت
 
     try {
-        // طباعة الخيارات المستخدمة للتحقق
-        console.log("Initializing VanillaCalendar with REVISED options (using dates.dates):", options);
-        // تهيئة التقويم
+        console.log("Initializing VanillaCalendar with options (using markup.dates + class array):", options);
         calendarInstance = new VanillaCalendar(calendarContainer, options);
         calendarInstance.init();
-        console.log("Calendar initialized successfully (Revised Highlight Attempt).");
+        console.log("Calendar initialized successfully (Highlight Attempt with class array).");
 
     } catch (error) {
         console.error("Error initializing calendar:", error);
