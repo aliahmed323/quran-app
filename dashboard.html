@@ -173,7 +173,14 @@
 
     <script>
         // --- Firebase Config ---
-        const firebaseConfig = { /* ... نفس بيانات الإعداد الخاصة بك ... */ };
+        const firebaseConfig = {
+         apiKey: "AIzaSyDuUebu7Qzz3JnTfa-58EIPZjOcrkmdGHU",
+         authDomain: "quranplan2.firebaseapp.com",
+         projectId: "quranplan2",
+         storageBucket: "quranplan2.appspot.com",
+         messagingSenderId: "1098692856811",
+         appId: "1:1098692856811:web:923bca3a54fd78b1b267ae"
+        };
          try { firebase.initializeApp(firebaseConfig); } catch (e) { console.error("Firebase initialization error:", e); }
         const auth = firebase.auth();
         const db = firebase.firestore();
