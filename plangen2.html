@@ -561,39 +561,86 @@
         function updatePieChart() { const tableRows = document.querySelectorAll('#customTable tbody tr:not(.excuse-holder-row)'); let lmp = 0; let lpp = 0; tableRows.forEach(row => { const cc = row.cells[18]?.querySelector('input[type="checkbox"]'); const tc = row.cells[5]; const revc = row.cells[17]?.querySelector('input[type="checkbox"]'); const revtc = row.cells[15]; if (cc?.checked && tc?.textContent) { const tp = parseInt(tc.textContent); if (!isNaN(tp) && tp > lmp) lmp = tp; } if (revc?.checked && revtc?.textContent) { const rt = parseInt(revtc.textContent); if (!isNaN(rt) && rt > lpp) lpp = rt; } }); lmp = Math.min(lmp, totalQuranPages); lpp = Math.min(lpp, totalQuranPages); lpp = Math.min(lpp, lmp); /* Perfected cannot exceed memorized */ const perfected = lpp; const memorizedNotPerfected = Math.max(0, lmp - perfected); const notMemorized = Math.max(0, totalQuranPages - lmp); const ctx = document.getElementById('pieChart')?.getContext('2d'); if (!ctx) return; const data = { labels: ['متقن', 'محفوظ', 'غير محفوظ'], datasets: [{ data: [perfected, memorizedNotPerfected, notMemorized], backgroundColor: ['#28a745', '#ffc107', '#dc3545'], borderColor: '#fff', borderWidth: 1, hoverOffset: 4 }] }; if (window.pieChartInstance) { window.pieChartInstance.destroy(); } if (perfected === 0 && memorizedNotPerfected === 0 && notMemorized === 0 && totalQuranPages > 0) { const ca = document.getElementById('pieChart'); const co = ca.getContext('2d'); co.clearRect(0, 0, ca.width, ca.height); co.textAlign = 'center'; co.fillStyle = '#6c757d'; co.font = '13px Tajawal'; co.fillText('لا توجد بيانات بعد', ca.width / 2, ca.height / 2); window.pieChartInstance = null; } else if (perfected >= 0 && memorizedNotPerfected >= 0 && notMemorized >= 0) { window.pieChartInstance = new Chart(ctx, { type: 'doughnut', data: data, options: { responsive: true, maintainAspectRatio: false, cutout: '50%', plugins: { legend: { position: 'bottom', labels: { font: { size: 11, family: 'Tajawal' } } }, tooltip: { bodyFont: { family: 'Tajawal' }, callbacks: { label: function(ctx) { let l = ctx.label||''; if(l) l+=': '; const v = ctx.parsed||0; l += v + ' صفحة'; const t = ctx.dataset.data.reduce((a,b)=>a+b, 0); const p = t>0?((v/t)*100).toFixed(0)+'%':'0%'; l+=` (${p})`; return l; } } } } } }); } }
 
         // --- Excuse/Delete/Shift functions (Keep as provided, they rely on DOM and call saveCurrentTableState) ---
-        function handleExcuseSelection(row, excuseValue) {
-             const tableBody = document.querySelector('#customTable tbody'); const rowIndex = Array.from(tableBody.rows).indexOf(row); if (rowIndex === -1) return; const originalSequence = parseInt(row.dataset.originalSequence); const originalDate = new Date(row.cells[1].textContent + 'T00:00:00Z'); if (isNaN(originalDate.getTime())) { console.error("Invalid date in excuse row"); return; }
-             row.classList.add('excuse-holder-row'); row.classList.remove('disabled-row', 'completed-row'); const planIndices = [4, 5, 6, 11, 12, 14, 15, 16]; planIndices.forEach(idx => { if(row.cells[idx]) row.cells[idx].textContent = ''; }); const interactiveIndices = [3, 7, 8, 9, 10, 13, 17, 18]; interactiveIndices.forEach(idx => { const c = row.cells[idx]; if(c){ const co = c.querySelector('.button-group'); const ch = c.querySelector('input[type="checkbox"]'); if(co) c.removeChild(co); if(ch) c.removeChild(ch); c.textContent = ''; disableElement(c); c.style.pointerEvents = 'none'; } }); const excuseCell = row.cells[2]; excuseCell.textContent = excuseValue; excuseCell.style.fontWeight = 'bold'; excuseCell.setAttribute('data-excuse', excuseValue); const sel = excuseCell.querySelector('select'); if (sel) excuseCell.removeChild(sel);
-             const deleteCell = row.cells[19]; if (deleteCell) { deleteCell.innerHTML = ''; const deleteButton = createDeleteButton(row); deleteCell.appendChild(deleteButton); } else { console.error("Delete cell not found."); }
-             // Create and insert the new row for the shifted day
-             const newRow = document.createElement('tr'); const shiftedSeq = originalSequence; newRow.dataset.originalSequence = shiftedSeq; const newDate = new Date(originalDate); newDate.setUTCDate(originalDate.getUTCDate() + 1); const planDataNew = getPlanData(shiftedSeq); const repMax = (currentPlanData && currentPlanData.repetitionMax) ? currentPlanData.repetitionMax : 20;
-             const newSeqCell = document.createElement('td'); newRow.appendChild(newSeqCell); // Sequence cell, number set later
-             newRow.appendChild(createReadOnlyCell(formatDate(newDate))); // New date
-             const newExcCell = document.createElement('td'); newExcCell.appendChild(createExcuseSelect(newRow)); newRow.appendChild(newExcCell); // Excuse select
-             // Add all interactive cells, initialized to 0/false
-             newRow.appendChild(createCounterCell(0, 5, () => { validateSequence(newRow); saveCurrentTableState(); })); // YestRep
-             newRow.appendChild(createReadOnlyCell(planDataNew.fromPage)); newRow.appendChild(createReadOnlyCell(planDataNew.toPage)); newRow.appendChild(createReadOnlyCell(planDataNew.surah)); // Plan info
-             newRow.appendChild(createCounterCell(0, 3, () => { validateSequence(newRow); saveCurrentTableState(); })); // Listen
-             newRow.appendChild(createCheckboxCell(() => { validateSequence(newRow); saveCurrentTableState(); })); // Interp
-             newRow.appendChild(createCounterCell(0, 3, () => { validateSequence(newRow); saveCurrentTableState(); })); // Record
-             newRow.appendChild(createCounterCell(0, repMax, () => { validateSequence(newRow); saveCurrentTableState(); })); // Rep
-             newRow.appendChild(createReadOnlyCell(planDataNew.linkFrom)); newRow.appendChild(createReadOnlyCell(planDataNew.linkTo)); // Link info
-             newRow.appendChild(createCheckboxCell(() => { validateSequence(newRow); saveCurrentTableState(); }, planDataNew.linkTo !== '')); // Linked checkbox
-             const rf_n = createReadOnlyCell(planDataNew.reviewFrom); const rt_n = createReadOnlyCell(planDataNew.reviewTo); newRow.appendChild(rf_n); newRow.appendChild(rt_n); const rd_n = createReadOnlyCell(planDataNew.round); if (planDataNew.round !== '') { const rc = `round-${((planDataNew.round - 1) % 6 + 1)}`; rf_n.classList.add(rc); rt_n.classList.add(rc); rd_n.classList.add(rc); } newRow.appendChild(rd_n); // Review info
-             newRow.appendChild(createCheckboxCell(() => { validateSequence(newRow); saveCurrentTableState(); }, planDataNew.reviewTo !== '')); // Reviewed checkbox
-             const comp_n = createCheckboxCell(() => { const ich = comp_n.querySelector('input').checked; newRow.classList.toggle('completed-row', ich); saveCurrentTableState(); const nxr = newRow.nextElementSibling; if (ich && nxr) activateRow(nxr); else if (!ich && nxr && !nxr.classList.contains('excuse-holder-row')) { const nc = nxr.cells[18]?.querySelector('input'); if(!nc || !nc.checked) deactivateRow(nxr); } updateSummary(); }, true); newRow.appendChild(comp_n); // Completion checkbox
-             newRow.appendChild(document.createElement('td')); // Empty delete cell placeholder
-             tableBody.insertBefore(newRow, row.nextSibling); // Insert the new row
+     function handleExcuseSelection(row, excuseValue) {
+            const tableBody = document.querySelector('#customTable tbody');
+            const rowIndex = Array.from(tableBody.rows).indexOf(row);
+            if (rowIndex === -1) return;
+            const originalSequence = parseInt(row.dataset.originalSequence);
+            const originalDate = new Date(row.cells[1].textContent + 'T00:00:00Z');
+            if (isNaN(originalDate.getTime())) { console.error("Invalid date in excuse row"); return; }
 
-             // Renumber and shift dates AFTER inserting the new row
-             shiftRowsMetaDataForward(rowIndex + 2); // Shift starting from the inserted row
+            // --- Modify existing row to be excuse row ---
+            row.classList.add('excuse-holder-row'); row.classList.remove('disabled-row', 'completed-row');
+            const excuseRowNum = row.cells[0]?.textContent || '?'; // Store original number before clearing
+            // Clear excuse row cells (including sequence visually) and add delete button
+            const excuseCell = row.cells[2]; excuseCell.textContent = excuseValue; excuseCell.style.fontWeight = 'bold'; excuseCell.setAttribute('data-excuse', excuseValue); const sel = excuseCell.querySelector('select'); if (sel) excuseCell.removeChild(sel);
+            const deleteCell = row.cells[19]; if (deleteCell) { deleteCell.innerHTML = ''; const deleteButton = createDeleteButton(row); deleteCell.appendChild(deleteButton); }
+            const planIndices = [0, 4, 5, 6, 11, 12, 14, 15, 16]; // Also clear sequence cell text
+            planIndices.forEach(idx => { if(row.cells[idx]) row.cells[idx].textContent = ''; });
+            const interactiveIndices = [3, 7, 8, 9, 10, 13, 17, 18];
+            interactiveIndices.forEach(idx => { const c = row.cells[idx]; if(c){ const co = c.querySelector('.button-group'); const ch = c.querySelector('input[type="checkbox"]'); if(co) c.removeChild(co); if(ch) c.removeChild(ch); c.textContent = ''; disableElement(c); c.style.pointerEvents = 'none'; } });
+            // --- End modifying existing row ---
 
-             // Activate/Deactivate the new row based on the state of the excuse row (which is now considered 'complete' for flow)
-             // Since the excuse row allows flow, the new row should be active.
-             activateRow(newRow);
 
-             saveCurrentTableState(); // Save the entire new state (important!)
-             updateSummary();
+            // --- Create the new row (WITHOUT sequence cell initially) ---
+            const newRow = document.createElement('tr');
+            const shiftedSeq = originalSequence;
+            newRow.dataset.originalSequence = shiftedSeq;
+            const newDate = new Date(originalDate); newDate.setUTCDate(originalDate.getUTCDate() + 1);
+            const planDataNew = getPlanData(shiftedSeq);
+            const repMax = (currentPlanData && currentPlanData.repetitionMax) ? currentPlanData.repetitionMax : 20;
+
+            newRow.appendChild(document.createElement('td')); // <<< Placeholder for sequence cell
+
+            newRow.appendChild(createReadOnlyCell(formatDate(newDate))); // New date
+            const newExcCell = document.createElement('td'); newExcCell.appendChild(createExcuseSelect(newRow)); newRow.appendChild(newExcCell); // Excuse select
+            // Add all other cells (interactive and read-only)
+            newRow.appendChild(createCounterCell(0, 5, () => { validateSequence(newRow); saveCurrentTableState(); })); // YestRep
+            newRow.appendChild(createReadOnlyCell(planDataNew.fromPage)); newRow.appendChild(createReadOnlyCell(planDataNew.toPage)); newRow.appendChild(createReadOnlyCell(planDataNew.surah)); // Plan info
+            newRow.appendChild(createCounterCell(0, 3, () => { validateSequence(newRow); saveCurrentTableState(); })); // Listen
+            newRow.appendChild(createCheckboxCell(() => { validateSequence(newRow); saveCurrentTableState(); })); // Interp
+            newRow.appendChild(createCounterCell(0, 3, () => { validateSequence(newRow); saveCurrentTableState(); })); // Record
+            newRow.appendChild(createCounterCell(0, repMax, () => { validateSequence(newRow); saveCurrentTableState(); })); // Rep
+            newRow.appendChild(createReadOnlyCell(planDataNew.linkFrom)); newRow.appendChild(createReadOnlyCell(planDataNew.linkTo)); // Link info
+            newRow.appendChild(createCheckboxCell(() => { validateSequence(newRow); saveCurrentTableState(); }, planDataNew.linkTo !== '')); // Linked checkbox
+            const rf_n = createReadOnlyCell(planDataNew.reviewFrom); const rt_n = createReadOnlyCell(planDataNew.reviewTo); newRow.appendChild(rf_n); newRow.appendChild(rt_n); const rd_n = createReadOnlyCell(planDataNew.round); if (planDataNew.round !== '') { const rc = `round-${((planDataNew.round - 1) % 6 + 1)}`; rf_n.classList.add(rc); rt_n.classList.add(rc); rd_n.classList.add(rc); } newRow.appendChild(rd_n); // Review info
+            newRow.appendChild(createCheckboxCell(() => { validateSequence(newRow); saveCurrentTableState(); }, planDataNew.reviewTo !== '')); // Reviewed checkbox
+            const comp_n = createCheckboxCell(() => { const ich = comp_n.querySelector('input').checked; newRow.classList.toggle('completed-row', ich); saveCurrentTableState(); const nxr = newRow.nextElementSibling; if (ich && nxr) activateRow(nxr); else if (!ich && nxr && !nxr.classList.contains('excuse-holder-row')) { const nc = nxr.cells[18]?.querySelector('input'); if(!nc || !nc.checked) deactivateRow(nxr); } updateSummary(); }, true); newRow.appendChild(comp_n); // Completion checkbox
+            newRow.appendChild(document.createElement('td')); // Empty delete cell placeholder
+
+            // --- Insert the new row ---
+            tableBody.insertBefore(newRow, row.nextSibling);
+
+            // --- Shift metadata for rows AFTER the inserted row ---
+            shiftRowsMetaDataForward(rowIndex + 2); // Starts shifting from index AFTER new row
+
+            // --- >>> NOW set the sequence number for the new row (AFTER shifting others) <<< ---
+            const newlyInsertedRow = tableBody.rows[rowIndex + 1]; // Get reference to the new row (its index is rowIndex + 1)
+            const sequenceCellForNewRow = newlyInsertedRow?.cells[0]; // Get its first cell
+            if (sequenceCellForNewRow) {
+                let newSequenceNumber = '?';
+                const prevSeqNum = parseInt(excuseRowNum); // Use the number stored from the original excuse row
+                if (!isNaN(prevSeqNum) && prevSeqNum > 0) {
+                    newSequenceNumber = prevSeqNum + 1; // Calculate the correct sequence number
+                } else {
+                    // Fallback: try getting from row before excuse row if needed
+                    const rowBeforeExcuse = tableBody.rows[rowIndex - 1];
+                    if(rowBeforeExcuse) {
+                        const beforeSeq = parseInt(rowBeforeExcuse.cells[0]?.textContent || 'NaN');
+                        if(!isNaN(beforeSeq)) newSequenceNumber = beforeSeq + 2; // Should be 2 more than the row before the excuse
+                    }
+                }
+                sequenceCellForNewRow.textContent = newSequenceNumber; // Set the text content
+                sequenceCellForNewRow.classList.add('read-only'); // Add the read-only class for styling
+                console.log(`Set sequence for newly inserted row (index ${rowIndex + 1}) to ${newSequenceNumber}`);
+            }
+            // --- >>> End setting sequence number <<< ---
+
+            activateRow(newRow); // Activate the newly added row
+
+            saveCurrentTableState(); // Save the entire new state
+            updateSummary();
+        }
         }
         function deleteExcuse(excuseHolderRow) {
              const tableBody = document.querySelector('#customTable tbody'); const rowIndex = Array.from(tableBody.rows).indexOf(excuseHolderRow); if (rowIndex === -1 || !excuseHolderRow.classList.contains('excuse-holder-row')) return;
