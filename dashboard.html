@@ -62,7 +62,7 @@
         #calendar-view { min-height: 280px; }
         #calendar-container { margin-top: 15px; }
 
-        /* === بداية التعديلات الخاصة بالتقويم (محاولة الإصلاح الرابعة) === */
+        /* === بداية التعديلات الخاصة بالتقويم (محاولة الإصلاح الخامسة - استهداف padding المكتبة) === */
 
         /* 1. الإبقاء على تنسيق الخلية TD نفسها دائرية وملونة (كما كان أصلاً) */
         td.jsCalendar-day.day-completed {
@@ -85,47 +85,48 @@
              /* border: 1px solid #aed6f1 !important; */ /* أبقِ أو أزل الحد حسب الأصل */
          }
 
-        /* 2. تعديل القاعدة الخاصة بالخلية الأم TD بقوة أكبر */
+        /* 2. تعديل القاعدة الخاصة بالخلية الأم TD (الأهم: إلغاء padding المكتبة) */
         td.jsCalendar-day {
-            /* Reset شامل للأنماط المحتملة من المكتبة */
-            padding: 0 !important;
+            /* *** إلغاء padding الافتراضي للمكتبة (المشتبه به الرئيسي) *** */
+            padding: 3px 0 !important; /* إلغاء Padding الأفقي, إبقاء الرأسي البسيط */
+            /* أو جرب: padding: 0 !important; */
+
+            /* إعادة تعيين محتملة أخرى (احتياطي) */
             margin: 0 !important;
-            border: none !important; /* إعادة تعيين الحدود الافتراضية */
-            text-indent: 0 !important; /* إلغاء أي إزاحة للنص */
-            outline: none !important; /* إزالة أي حدود خارجية عند التركيز */
+            border: none !important; /* إلغاء حدود المكتبة، الاعتماد على border-radius المخصص */
+            text-indent: 0 !important;
+            outline: none !important;
 
             /* فرض سلوك الخلية والتوسيط */
-            display: table-cell !important; /* تأكيد سلوك الخلية */
-            text-align: center !important;     /* توسيط المحتوى الأفقي */
-            vertical-align: middle !important; /* توسيط المحتوى الرأسي */
-            position: relative !important;     /* للحاجة المحتملة لضبط الرقم الداخلي لاحقاً */
+            display: table-cell !important;
+            text-align: center !important;
+            vertical-align: middle !important;
+            position: relative !important; /* قد نحتاجه لضبط دقيق لاحقاً */
 
-            /* محاولة فرض حجم ثابت ومناسب - عدّل القيم إذا لزم الأمر */
-            min-width: 2.8em !important;  /* حجم أدنى للعرض */
-            min-height: 2.8em !important; /* حجم أدنى للارتفاع */
-            width: 2.8em !important;      /* فرض العرض */
-            height: 2.8em !important;     /* فرض الارتفاع */
-            box-sizing: border-box !important; /* لضمان أن الحجم يشمل padding/border */
-            overflow: hidden; /* إخفاء أي محتوى يفيض عن الخلية (احتياطي) */
+            /* الإبقاء على حجم أدنى قد يكون مفيداً للمظهر */
+            min-width: 2.5em !important;  /* يمكنك تعديل هذه القيمة إذا لزم الأمر */
+            min-height: 2.5em !important; /* يمكنك تعديل هذه القيمة إذا لزم الأمر */
+            /* إزالة الحجم المفروض width/height الذي سبب تباعد الخلايا */
+            /* width: 2.8em !important; */
+            /* height: 2.8em !important; */
+
+            box-sizing: border-box !important;
+            overflow: hidden; /* إخفاء أي محتوى يفيض */
         }
 
-        /* 3. تعديل القاعدة الخاصة بعنصر الرقم الداخلي بقوة أكبر */
+        /* 3. تعديل القاعدة الخاصة بعنصر الرقم الداخلي (تبسيط واعتماد على توسيط TD) */
         td.jsCalendar-day .jsCalendar-day-number {
-            /* Reset شامل للأنماط المحتملة */
+            display: inline-block !important; /* أبسط display للمحتوى النصي */
+            width: auto !important;           /* العرض حسب المحتوى */
+            line-height: 1.2 !important;      /* ارتفاع سطر طبيعي (يمكن تعديله) */
+            text-align: center !important;    /* تأكيد توسيط النص */
+            vertical-align: middle !important;/* محاذاة العنصر رأسياً */
             margin: 0 !important;
-            padding: 0 !important;
-            position: static !important; /* البدء بتموضع عادي */
+            padding: 0 !important;            /* لا padding إضافي على الرقم */
+            color: inherit !important;        /* يرث لون الخلية */
+            background-color: transparent !important;
+            position: static !important;      /* تموضع عادي */
             text-decoration: none !important; /* القاعدة: لا يوجد خط */
-            float: none !important;          /* إلغاء أي float */
-            top: auto !important; left: auto !important; right: auto !important; bottom: auto !important;
-
-            /* فرض العرض والتوسيط */
-            display: block !important;   /* اجعله block ليملأ العرض */
-            width: 100% !important;      /* يملأ عرض الخلية TD */
-            line-height: 1.2 !important; /* ارتفاع سطر معقول، اعتمد على vertical-align للخلية */
-            text-align: center !important;/* توسيط النص */
-            color: inherit !important;   /* يرث لون الخلية */
-            background-color: transparent !important; /* خلفية شفافة */
         }
 
         /* 4. إبقاء القاعدة الخاصة بالخط السفلي لليوم الحالي */
@@ -283,7 +284,8 @@
         let calendarInstance = null; // Store calendar instance globally
 
         // --- Data Arrays & Helper Functions (تبقى كما هي) ---
-        // (Arrays: surahs, linkFromData, linkToData, reviewFromData, reviewToData)
+        // (Arrays: surahs, linkFromData, linkToData, reviewFromData, reviewToData ...etc)
+        // ... (الكود الخاص بالمصفوفات الطويلة هنا) ...
         const surahs = ['الفاتحة والبقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة وآل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء والمائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة والأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأنفال', 'الأنفال', 'الأنفال', 'الأنفال', 'الأنفال', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة ويونس', 'يونس', 'يونس', 'يونس', 'يونس', 'يونس', 'يونس', 'يونس وهود', 'هود', 'هود', 'هود', 'هود', 'هود', 'هود', 'هود ويوسف', 'يوسف', 'يوسف', 'يوسف', 'يوسف', 'يوسف', 'يوسف', 'الرعد', 'الرعد', 'الرعد', 'إبراهيم', 'إبراهيم', 'إبراهيم', 'إبراهيم والحجر', 'الحجر', 'الحجر', 'الحجر والنحل', 'النحل', 'النحل', 'النحل', 'النحل', 'النحل', 'النحل', 'النحل والإسراء', 'الإسراء', 'الإسراء', 'الإسراء', 'الإسراء', 'الإسراء', 'الإسراء والكهف', 'الكهف', 'الكهف', 'الكهف', 'الكهف', 'الكهف', 'مريم', 'مريم', 'مريم', 'مريم وطه', 'طه', 'طه', 'طه', 'طه', 'طه والأنبياء', 'الأنبياء', 'الأنبياء', 'الأنبياء', 'الأنبياء', 'الأنبياء والحج', 'الحج', 'الحج', 'الحج', 'الحج', 'الحج والمؤمنون', 'المؤمنون', 'المؤمنون', 'المؤمنون', 'المؤمنون والنور', 'النور', 'النور', 'النور', 'النور', 'النور والفرقان', 'الفرقان', 'الفرقان', 'الفرقان', 'الشعراء', 'الشعراء', 'الشعراء', 'الشعراء', 'الشعراء', 'النمل', 'النمل', 'النمل', 'النمل', 'النمل والقصص', 'القصص', 'القصص', 'القصص', 'القصص', 'القصص والعنكبوت', 'العنكبوت', 'العنكبوت', 'العنكبوت', 'العنكبوت والروم', 'الروم', 'الروم', 'الروم', 'لقمان', 'لقمان', 'السجدة', 'السجدة والأحزاب', 'الأحزاب', 'الأحزاب', 'الأحزاب', 'الأحزاب', 'الأحزاب وسبأ', 'سبأ', 'سبأ', 'سبأ وفاطر', 'فاطر', 'فاطر', 'فاطر ويس', 'يس', 'يس', 'يس والصافات', 'الصافات', 'الصافات', 'الصافات', 'ص', 'ص', 'ص والزمر', 'الزمر', 'الزمر', 'الزمر', 'الزمر', 'غافر', 'غافر', 'غافر', 'غافر', 'غافر', 'فصلت', 'فصلت', 'فصلت', 'الشورى', 'الشورى', 'الشورى', 'الشورى والزخرف', 'الزخرف', 'الزخرف', 'الزخرف والدخان', 'الدخان', 'الجاثية', 'الجاثية والأحقاف', 'الأحقاف', 'الأحقاف', 'محمد', 'محمد', 'الفتح', 'الفتح', 'الفتح والحجرات', 'الحجرات و ق', 'ق', 'الذاريات', 'الذاريات والطور', 'الطور والنجم', 'النجم والقمر', 'القمر', 'القمر والرحمن', 'الرحمن والواقعة', 'الواقعة', 'الواقعة والحديد', 'الحديد', 'الحديد والمجادلة', 'المجادلة', 'المجادلة والحشر', 'الحشر', 'الممتحنة', 'الممتحنة والصف', 'الجمعة والمنافقون', 'المنافقون والتغابن', 'التغابن والطلاق', 'الطلاق والتحريم', 'التحريم والملك', 'الملك والقلم', 'القلم والحاقة', 'الحاقة والمعارج', 'المعارج ونوح', 'نوح والجن', 'الجن والمزمل', 'المزمل والمدثر', 'المدثر والقيامة والإنسان', 'الإنسان والمرسلات', 'المرسلات والنبأ', 'النبأ والنازعات', 'عبس والتكوير', 'الإنفطار والمطففين', 'الإنشقاق والبروج', 'الطارق والأعلى والغاشية', 'الفجر والبلد', 'الشمس والليل', 'الضحى إلى الناس', 'ختم القرآن'];
         const linkFromData = ['', '', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 13, 13, 13, 13, 13, 13, 25, 25, 25, 25, 25, 25, 37, 37, 37, 37, 37, 37, 49, 49, 49, 49, 49, 49, 61, 61, 61, 61, 61, 61, 73, 73, 73, 73, 73, 73, 85, 85, 85, 85, 85, 85, 97, 97, 97, 97, 97, 97, 109, 109, 109, 109, 109, 109, 121, 121, 121, 121, 121, 121, 133, 133, 133, 133, 133, 133, 145, 145, 145, 145, 145, 145, 157, 157, 157, 157, 157, 157, 169, 169, 169, 169, 169, 169, 181, 181, 181, 181, 181, 181, 193, 193, 193, 193, 193, 193, 205, 205, 205, 205, 205, 205, 217, 217, 217, 217, 217, 217, 229, 229, 229, 229, 229, 229, 241, 241, 241, 241, 241, 241, 253, 253, 253, 253, 253, 253, 265, 265, 265, 265, 265, 265, 277, 277, 277, 277, 277, 277, 289, 289, 289, 289, 289, 289, 301, 301, 301, 301, 301, 301, 313, 313, 313, 313, 313, 313, 325, 325, 325, 325, 325, 325, 337, 337, 337, 337, 337, 337, 349, 349, 349, 349, 349, 349, 361, 361, 361, 361, 361, 361, 373, 373, 373, 373, 373, 373, 385, 385, 385, 385, 385, 385, 397, 397, 397, 397, 397, 397, 409, 409, 409, 409, 409, 409, 421, 421, 421, 421, 421, 421, 433, 433, 433, 433, 433, 433, 445, 445, 445, 445, 445, 445, 457, 457, 457, 457, 457, 457, 469, 469, 469, 469, 469, 469, 481, 481, 481, 481, 481, 481, 493, 493, 493, 493, 493, 493, 505, 505, 505, 505, 505, 505, 517, 517, 517, 517, 517, 517, 529, 529, 529, 529, 529, 529, 541, 541, 541, 541, 541, 541, 553, 553, 553, 553, 553, 553, 565, 565, 565, 565, 565, 565, 577, 577, 577, 577, 577, 577];
         const linkToData = ['', '', 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122, 124, 126, 128, 130, 132, 134, 136, 138, 140, 142, 144, 146, 148, 150, 152, 154, 156, 158, 160, 162, 164, 166, 168, 170, 172, 174, 176, 178, 180, 182, 184, 186, 188, 190, 192, 194, 196, 198, 200, 202, 204, 206, 208, 210, 212, 214, 216, 218, 220, 222, 224, 226, 228, 230, 232, 234, 236, 238, 240, 242, 244, 246, 248, 250, 252, 254, 256, 258, 260, 262, 264, 266, 268, 270, 272, 274, 276, 278, 280, 282, 284, 286, 288, 290, 292, 294, 296, 298, 300, 302, 304, 306, 308, 310, 312, 314, 316, 318, 320, 322, 324, 326, 328, 330, 332, 334, 336, 338, 340, 342, 344, 346, 348, 350, 352, 354, 356, 358, 360, 362, 364, 366, 368, 370, 372, 374, 376, 378, 380, 382, 384, 386, 388, 390, 392, 394, 396, 398, 400, 402, 404, 406, 408, 410, 412, 414, 416, 418, 420, 422, 424, 426, 428, 430, 432, 434, 436, 438, 440, 442, 444, 446, 448, 450, 452, 454, 456, 458, 460, 462, 464, 466, 468, 470, 472, 474, 476, 478, 480, 482, 484, 486, 488, 490, 492, 494, 496, 498, 500, 502, 504, 506, 508, 510, 512, 514, 516, 518, 520, 522, 524, 526, 528, 530, 532, 534, 536, 538, 540, 542, 544, 546, 548, 550, 552, 554, 556, 558, 560, 562, 564, 566, 568, 570, 572, 574, 576, 578, 580, 582, 584, 586, 588, 590, 592, 594, 597, 600, 604];
@@ -388,9 +390,9 @@
         }
 
 
-        // --- Calendar Functions ---
+        // --- Calendar Functions (مع التعديل لإصلاح اختفاء الألوان) ---
 
-        // Function to apply highlights (unchanged, but will be called on month change)
+        // Function to apply highlights (unchanged)
         function applyCustomHighlights(tableRows) {
             // console.log("Applying jsCalendar highlights manually...");
             const calendarElement = document.getElementById('calendar-container');
@@ -429,7 +431,7 @@
             // console.log("Finished applying manual highlights.");
         }
 
-        // **MODIFIED** Calendar Initialization
+        // **MODIFIED** Calendar Initialization (to fix disappearing colors)
         function initializeCalendar(tableRows) {
             console.log("Initializing jsCalendar...");
             const calendarContainer = document.getElementById('calendar-container');
@@ -445,32 +447,14 @@
                 calendarInstance = new jsCalendar(targetElement, today, {
                     language: 'ar',
                     monthFormat: 'MMMM Olímpic', // Standard month year format
-                    fdotw: 6, // Saturday as First Day of the Week
-
-                    // *** ADDING EVENT LISTENER ***
-                    // This attempts to re-apply highlights after the month changes.
-                    // NOTE: jsCalendar documentation doesn't explicitly list an 'onMonthChange' event.
-                    // We might need to rely on observing clicks or using MutationObserver as fallback.
-                    // Let's try a common pattern first. If it doesn't work, we need another method.
-                    onMonthChange: function(eventData) {
-                        console.log("Month changed (attempting via onMonthChange), re-applying highlights...");
-                        // Use a small timeout to ensure the DOM is updated by the library
-                        setTimeout(() => {
-                            if (currentPlanData && currentPlanData.tableRows) {
-                                applyCustomHighlights(currentPlanData.tableRows);
-                            }
-                        }, 100); // Short delay
-                    }
-                    // ** Alternative using documented event (if 'onMonthChange' fails) **
-                    // We might need to use 'onDateClick' and check if month changed,
-                    // or more reliably, attach event listeners to the next/prev buttons manually.
-
+                    fdotw: 6 // Saturday as First Day of the Week
+                    // 'onMonthChange' event is unreliable/not documented well, using button listeners below
                 });
 
                 console.log("jsCalendar initialized successfully.");
 
                 // --- Manual Event Listeners for Month Change (More Reliable) ---
-                // Since 'onMonthChange' is not guaranteed, let's add listeners to arrows
+                // Find buttons within the specific calendar instance container
                 const prevButton = calendarContainer.querySelector('.jsCalendar-nav-left');
                 const nextButton = calendarContainer.querySelector('.jsCalendar-nav-right');
 
@@ -481,15 +465,19 @@
                          if (currentPlanData && currentPlanData.tableRows) {
                              applyCustomHighlights(currentPlanData.tableRows);
                          }
-                     }, 150); // Slightly longer delay might be needed after navigation
+                     }, 150); // Delay to ensure DOM update after click
                 }
 
                 if (prevButton) {
+                    // Remove potential previous listener before adding new one
+                    prevButton.removeEventListener('click', handleMonthNavigation);
                     prevButton.addEventListener('click', handleMonthNavigation);
                 } else {
                      console.warn("Could not find jsCalendar previous month button to attach listener.");
                 }
                 if (nextButton) {
+                     // Remove potential previous listener before adding new one
+                    nextButton.removeEventListener('click', handleMonthNavigation);
                     nextButton.addEventListener('click', handleMonthNavigation);
                 } else {
                      console.warn("Could not find jsCalendar next month button to attach listener.");
