@@ -1,0 +1,51 @@
+/*! jsCalendar v1.4.3 | MIT License | https://github.com/GramThanos/jsCalendar */
+.jsCalendar { position: relative; display: inline-block; font-family: sans-serif; font-size: 13px; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none }
+.jsCalendar * { box-sizing: border-box }
+.jsCalendar-title { position: relative; width: 100%; text-align: center; border-bottom: 1px solid transparent }
+.jsCalendar-title-name { display: inline-block; font-weight: bold; padding: 7px 10px; border: 1px solid transparent; border-bottom: none; cursor: default }
+.jsCalendar-nav-left, .jsCalendar-nav-right { position: absolute; top: 0; padding: 7px 10px; cursor: pointer }
+.jsCalendar-nav-left { left: 0 }
+.jsCalendar-nav-right { right: 0 }
+.jsCalendar-table { width: 100%; border-collapse: collapse; border-spacing: 0; border: 1px solid transparent }
+.jsCalendar-table td, .jsCalendar-table th { padding: 3px 5px; text-align: center; border: 1px solid transparent }
+.jsCalendar-table thead th { font-weight: bold }
+.jsCalendar-table tbody td { cursor: pointer }
+.jsCalendar-day:hover { background: rgba(0, 0, 0, .05) }
+.jsCalendar-day-selected { background: rgba(0, 0, 0, .1) }
+.jsCalendar-day-now { border: 1px solid rgba(0, 0, 0, .2) }
+.jsCalendar-day-disabled { color: rgba(0, 0, 0, .2); cursor: default }
+.jsCalendar-day-disabled:hover { background: transparent }
+.jsCalendar-week-number { cursor: default }
+.jsCalendar-week-number:hover { background: transparent }
+.jsCalendar-target-init .jsCalendar { position: absolute; display: block; z-index: 9999; background: #fff; padding: 5px; border: 1px solid rgba(0, 0, 0, .1); box-shadow: 0 2px 5px -1px rgba(0, 0, 0, .2); min-width: 220px }
+.jsCalendar-target-init .jsCalendar-title-name { cursor: pointer }
+.jsCalendar-target-init .jsCalendar-title-name:hover { background: rgba(0, 0, 0, .05) }
+.jsCalendar-target-init .jsCalendar-nav-left:hover, .jsCalendar-target-init .jsCalendar-nav-right:hover { background: rgba(0, 0, 0, .05) }
+.jsCalendar-target-init.jsCalendar-target-left .jsCalendar { left: 0 }
+.jsCalendar-target-init.jsCalendar-target-right .jsCalendar { right: 0 }
+.jsCalendar-months { position: absolute; left: 0; top: 0; padding: 5px; width: 100%; height: 100%; background: #fff; border: 1px solid rgba(0, 0, 0, .1) }
+.jsCalendar-months-cell { display: inline-block; width: calc(100%/3); padding: 10px 5px; text-align: center; font-weight: bold; cursor: pointer }
+.jsCalendar-months-cell:hover { background: rgba(0, 0, 0, .05) }
+.jsCalendar-months-cell-disabled { color: rgba(0, 0, 0, .2); cursor: default }
+.jsCalendar-months-cell-disabled:hover { background: transparent }
+.jsCalendar-theme-blue .jsCalendar-title-name { background: #e8f2fe; border-color: #bed9fb }
+.jsCalendar-theme-blue .jsCalendar-table { border-color: #bed9fb }
+.jsCalendar-theme-blue .jsCalendar-table td, .jsCalendar-theme-blue .jsCalendar-table th { border-color: #e8f2fe }
+.jsCalendar-theme-blue .jsCalendar-day-now { color: #0081ff; border-color: #0081ff }
+.jsCalendar-theme-blue .jsCalendar-day-selected { background: #bed9fb }
+.jsCalendar-theme-blue .jsCalendar-day-disabled { color: #bed9fb }
+.jsCalendar-theme-blue .jsCalendar-title-name:hover { background: #bed9fb }
+.jsCalendar-theme-blue .jsCalendar-nav-left:hover, .jsCalendar-theme-blue .jsCalendar-nav-right:hover { background: #e8f2fe }
+.jsCalendar-theme-blue .jsCalendar-day:hover { background: #e8f2fe }
+.jsCalendar-theme-blue.jsCalendar-target-init .jsCalendar { background: #fff; border-color: rgba(0, 0, 0, .1) }
+.jsCalendar-theme-blue.jsCalendar-target-init .jsCalendar-title-name { background: transparent; border-color: transparent }
+.jsCalendar-theme-blue.jsCalendar-target-init .jsCalendar-table { border-color: #bed9fb }
+.jsCalendar-theme-blue.jsCalendar-target-init .jsCalendar-day-now { border-color: #0081ff }
+.jsCalendar-theme-blue.jsCalendar-target-init .jsCalendar-day-selected { background: #bed9fb }
+.jsCalendar-theme-blue.jsCalendar-target-init .jsCalendar-day-disabled { color: #bed9fb }
+.jsCalendar-theme-blue.jsCalendar-target-init .jsCalendar-title-name:hover { background: #e8f2fe }
+.jsCalendar-theme-blue.jsCalendar-target-init .jsCalendar-nav-left:hover, .jsCalendar-theme-blue.jsCalendar-target-init .jsCalendar-nav-right:hover { background: #e8f2fe }
+.jsCalendar-theme-blue.jsCalendar-target-init .jsCalendar-day:hover { background: #e8f2fe }
+.jsCalendar-theme-blue .jsCalendar-months { background: #fff; border-color: rgba(0, 0, 0, .1) }
+.jsCalendar-theme-blue .jsCalendar-months-cell:hover { background: #e8f2fe }
+.jsCalendar-theme-blue .jsCalendar-months-cell-disabled { color: #bed9fb }
