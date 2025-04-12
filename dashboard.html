@@ -70,52 +70,51 @@
             color: #186a3b !important; /* نص أخضر أغمق */
             border-radius: 50% !important; /* دائري */
             font-weight: bold !important;
-            /* تأكد من تطابق باقي الخصائص مع ما كان لديك */
         }
         td.jsCalendar-day.day-excused {
             background-color: #fadbd8 !important; /* أحمر فاتح */
             color: #922b21 !important; /* نص أحمر أغمق */
             border-radius: 50% !important; /* دائري */
             font-weight: bold !important;
-            /* تأكد من تطابق باقي الخصائص مع ما كان لديك */
         }
-         /* تنسيق اليوم الحالي (قد يضاف الكلاس للـ TD أيضاً) */
+         /* تنسيق اليوم الحالي (الدائرة على الخلية TD) */
          td.jsCalendar-day.jsCalendar-today {
              background-color: #e3f2fd !important; /* أزرق فاتح */
-             /* border: 1px solid #aed6f1 !important; /* أبقِ أو أزل حسب الأصل */
              color: #1a5276 !important;
              border-radius: 50% !important; /* دائري */
-             /* تأكد من تطابق باقي الخصائص مع ما كان لديك */
+             /* border: 1px solid #aed6f1 !important; */ /* أبقِ أو أزل الحد حسب الأصل */
          }
 
-        /* 2. جعل الخلية TD قادرة على احتواء عنصر مطلق */
+        /* 2. تعديل القاعدة الخاصة بالخلية الأم TD للمساعدة في التوسيط */
         td.jsCalendar-day {
-            position: relative !important; /* ضروري لعمل التموضع المطلق للعنصر الداخلي */
-            padding: 0 !important;         /* إزالة أي padding من الخلية نفسها قد يسبب إزاحة */
-            vertical-align: middle !important; /* محاولة للمساعدة في المحاذاة الرأسية للخلية */
-            /* يمكنك تجربة تحديد حجم ثابت هنا إذا لم يعمل التوسيط التلقائي */
-            /* width: 2.5em; */
-            /* height: 2.5em; */
+            text-align: center !important;     /* لتوسيط المحتوى الأفقي (مثل inline-block) */
+            vertical-align: middle !important; /* لمحاذاة المحتوى الرأسي في المنتصف */
+            padding: 0 !important;             /* إزالة أي padding قديم من الخلية */
+            position: static !important;       /* تأكد من عدم وجود تموضع خاص هنا */
+            /* تحديد حجم أدنى قد يساعد في استقرار الشبكة */
+             min-width: 2.5em; /* يمكنك تعديل القيمة */
+             min-height: 2.5em; /* يمكنك تعديل القيمة */
         }
 
-        /* 3. تعديل القاعدة لضبط موضع الرقم داخل الخلية الدائرية */
+        /* 3. تعديل القاعدة الخاصة بعنصر الرقم الداخلي لمحاولة المحاذاة */
         td.jsCalendar-day .jsCalendar-day-number {
-            display: flex !important;         /* استخدام Flexbox لمحاولة التوسيط */
-            align-items: center !important;    /* توسيط رأسي */
-            justify-content: center !important; /* توسيط أفقي */
-            width: 100% !important;           /* اجعل العنصر يملأ الخلية أفقيًا */
-            height: 100% !important;          /* اجعل العنصر يملأ الخلية رأسيًا */
-            text-align: center !important;   /* ضمان توسيط النص أفقيًا */
-            position: absolute !important;   /* استخدام التموضع المطلق بالنسبة للخلية TD */
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            padding: 0 !important;           /* إزالة أي مسافات داخلية */
-            margin: 0 !important;            /* إزالة أي هوامش خارجية */
-            color: inherit !important;       /* ليرث لون النص المحدد في الخلية TD */
-            background-color: transparent !important; /* تأكد من أن خلفية الرقم شفافة */
-            box-sizing: border-box !important; /* لضمان أن padding/border لا يغير الأبعاد */
+            display: inline-block !important; /* اجعله كـ block ولكن يتدفق inline */
+            width: auto !important;           /* العرض يتحدد بالمحتوى */
+            line-height: normal !important;   /* استخدم ارتفاع السطر الطبيعي */
+            text-align: center !important;    /* توسيط النص داخل العنصر */
+            vertical-align: middle !important;/* محاذاة العنصر نفسه رأسياً */
+            margin: 0 !important;             /* إزالة الهوامش */
+            padding: 0 !important;            /* إزالة الحشو */
+            color: inherit !important;        /* يرث لون الخلية الأم */
+            background-color: transparent !important; /* خلفية شفافة */
+            position: static !important;      /* إلغاء أي تموضع خاص */
+            text-decoration: none !important; /* افتراضياً لا يوجد خط سفلي */
+        }
+
+        /* 4. إضافة القاعدة الجديدة لوضع الخط السفلي تحت رقم اليوم الحالي فقط */
+        td.jsCalendar-day.jsCalendar-today .jsCalendar-day-number {
+            text-decoration: underline !important;
+            /* font-weight: bold !important; */ /* اختياري: لزيادة التمييز */
         }
         /* === نهاية التعديلات الخاصة بالتقويم === */
 
@@ -310,8 +309,7 @@
             let currentStreak = 0; let longestStreak = 0; let currentRun = 0; const todayStr = formatDate(new Date()); let isStreakActiveToday = false; let lastProcessedDate = null;
             for (const row of sortedRows) {
                 if (row.displayDate > todayStr) break; // Don't process future dates
-                // Skip if we already processed this date (e.g., multiple entries for one day)
-                if (row.displayDate === lastProcessedDate) continue;
+                if (row.displayDate === lastProcessedDate) continue; // Skip duplicate dates
 
                 if (row.type === 'plan' && row.state?.completed) {
                      currentRun++;
@@ -347,27 +345,28 @@
                  lastStreakDate = row.displayDate;
             }
             // Check if the streak is broken by today being missed/incomplete
-             if (!isStreakActiveToday && lastStreakDate !== todayStr && lastStreakDate !== formatDate(new Date(Date.now() - 864e5)) /* not yesterday either */) {
-                 // If the last streak day wasn't today or yesterday, and today wasn't completed/excused, current streak is 0
-                 // This logic might need refinement depending on exact streak rules
-                 // Let's simplify: if today wasn't completed or excused, the current ongoing streak is 0.
-                  if(!isStreakActiveToday && !(sortedRows.find(r => r.displayDate === todayStr && r.type ==='excuse'))) {
-                     currentStreak = 0;
-                  } else {
-                      currentStreak = tempCurrentStreak;
-                  }
-
+             if (!isStreakActiveToday && !(sortedRows.find(r => r.displayDate === todayStr && r.type ==='excuse'))) {
+                // If today wasn't completed or excused, and the last streak day wasn't today or yesterday...
+                // Let's simplify: if today is not completed/excused, current streak is 0 unless last streak day was yesterday.
+                 const yesterdayStr = formatDate(new Date(Date.now() - 864e5));
+                 if(lastStreakDate !== yesterdayStr && lastStreakDate !== todayStr) {
+                    currentStreak = 0;
+                 } else {
+                    currentStreak = tempCurrentStreak; // It ended yesterday or earlier today
+                 }
              } else {
-                currentStreak = tempCurrentStreak;
+                currentStreak = tempCurrentStreak; // Active today or excused today
              }
-
 
              const levelIndex = Math.min(Math.floor(currentStreak / 10), levelTitles.length - 1);
              const currentTitle = levelTitles[levelIndex] || levelTitles[0];
-             const currentIcon = levelIcons[Math.floor(currentStreak / 10)] || ''; // Use streak count directly for icons
+             // Use currentStreak count for level icon mapping
+             const iconLevel = Math.floor(currentStreak / 10);
+             const currentIcon = levelIcons[iconLevel] || '';
 
              return { currentStreak: currentStreak, longestStreak: longestStreak, currentLevel: levelIndex, currentTitle: currentTitle, currentIcon: currentIcon };
         }
+
 
         // --- Calendar Functions (تبقى كما هي - تستخدم jsCalendar) ---
         function applyCustomHighlights(tableRows) {
@@ -397,24 +396,22 @@
                     try {
                         const dateObject = new Date(dateStringFromAttr);
                         if (isNaN(dateObject.getTime())) {
-                            console.warn(`Could not parse date from attribute: ${dateStringFromAttr}`);
-                            return;
+                            // console.warn(`Could not parse date from attribute: ${dateStringFromAttr}`);
+                            return; // Skip invalid dates quietly
                         }
                         const formattedDateKey = formatDate(dateObject); // Convert to YYYY-MM-DD
                         const status = dayStatus[formattedDateKey];
 
                         if (status === 'completed') {
-                            // console.log(`Applying 'day-completed' to TD for: ${formattedDateKey}`);
                             element.classList.add('day-completed');
                         } else if (status === 'excused') {
-                            // console.log(`Applying 'day-excused' to TD for: ${formattedDateKey}`);
                             element.classList.add('day-excused');
                         }
                     } catch(e) {
                         console.error(`Error processing date ${dateStringFromAttr}:`, e);
                     }
                 } else {
-                     console.warn(`TD element ${index} has no data-date attribute.`);
+                     // console.warn(`TD element ${index} has no data-date attribute.`); // Can be noisy
                 }
             });
             console.log("Finished applying manual highlights to TD elements.");
@@ -429,14 +426,14 @@
             }
             calendarContainer.innerHTML = ''; // Clear placeholder
 
-            const today = new Date();
+            const today = new Date(); // Current date: April 12, 2025
 
             try {
                 const targetElement = calendarContainer;
                 // Initialize jsCalendar
                 const calendarInstance = new jsCalendar(targetElement, today, {
                     language: 'ar',
-                    monthFormat: 'MMMM YYYY', // Correct format (YYYY instead of ?)
+                    monthFormat: 'MMMM yyyy', // Standard month year format
                     fdotw: 6 // Saturday as First Day of the Week
                 });
                 console.log("jsCalendar initialized successfully.");
@@ -519,17 +516,16 @@
 
         // --- Authentication Listener (تبقى كما هي) ---
         auth.onAuthStateChanged(user => {
-           // hideLoading(); // Loading hidden by loadDashboardData or error handler
+           // Loading hidden by loadDashboardData or error handler
             currentUser = user;
             if (user) {
                 console.log("Dashboard: Auth state OK.");
                 loadDashboardData(user);
             } else {
                 console.log("Dashboard: Not logged in.");
-                 showLoading("غير مسجل الدخول. يرجى تسجيل الدخول أولاً.");
-                // Delay hiding loading to show the message briefly? Or let loadDashboardData handle it?
-                // Let's display the dashboard structure but show login message
-                 if (typeof displayDashboard === 'function') displayDashboard(); // Show the overall layout
+                // showLoading("غير مسجل الدخول. يرجى تسجيل الدخول أولاً."); // Let loadDashboard handle UI
+                // Display the dashboard structure but show login message within it
+                 if (typeof displayDashboard === 'function') displayDashboard(); // Show the overall layout first
                  if(dailyTaskContent) dailyTaskContent.innerHTML = '<p style="color:red;">يرجى <a href="index.html">تسجيل الدخول</a> لعرض لوحة المتابعة.</p>';
                  const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level', 'competition-section', 'badges-section'];
                  sectionsToHide.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
