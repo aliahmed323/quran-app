@@ -62,7 +62,7 @@
         #calendar-view { min-height: 280px; }
         #calendar-container { margin-top: 15px; }
 
-        /* === بداية التعديلات الخاصة بالتقويم === */
+        /* === بداية التعديلات الخاصة بالتقويم (محاولة الإصلاح الرابعة) === */
 
         /* 1. الإبقاء على تنسيق الخلية TD نفسها دائرية وملونة (كما كان أصلاً) */
         td.jsCalendar-day.day-completed {
@@ -85,36 +85,52 @@
              /* border: 1px solid #aed6f1 !important; */ /* أبقِ أو أزل الحد حسب الأصل */
          }
 
-        /* 2. تعديل القاعدة الخاصة بالخلية الأم TD للمساعدة في التوسيط */
+        /* 2. تعديل القاعدة الخاصة بالخلية الأم TD بقوة أكبر */
         td.jsCalendar-day {
-            text-align: center !important;     /* لتوسيط المحتوى الأفقي (مثل inline-block) */
-            vertical-align: middle !important; /* لمحاذاة المحتوى الرأسي في المنتصف */
-            padding: 0 !important;             /* إزالة أي padding قديم من الخلية */
-            position: static !important;       /* تأكد من عدم وجود تموضع خاص هنا */
-            /* تحديد حجم أدنى قد يساعد في استقرار الشبكة */
-             min-width: 2.5em; /* يمكنك تعديل القيمة */
-             min-height: 2.5em; /* يمكنك تعديل القيمة */
+            /* Reset شامل للأنماط المحتملة من المكتبة */
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important; /* إعادة تعيين الحدود الافتراضية */
+            text-indent: 0 !important; /* إلغاء أي إزاحة للنص */
+            outline: none !important; /* إزالة أي حدود خارجية عند التركيز */
+
+            /* فرض سلوك الخلية والتوسيط */
+            display: table-cell !important; /* تأكيد سلوك الخلية */
+            text-align: center !important;     /* توسيط المحتوى الأفقي */
+            vertical-align: middle !important; /* توسيط المحتوى الرأسي */
+            position: relative !important;     /* للحاجة المحتملة لضبط الرقم الداخلي لاحقاً */
+
+            /* محاولة فرض حجم ثابت ومناسب - عدّل القيم إذا لزم الأمر */
+            min-width: 2.8em !important;  /* حجم أدنى للعرض */
+            min-height: 2.8em !important; /* حجم أدنى للارتفاع */
+            width: 2.8em !important;      /* فرض العرض */
+            height: 2.8em !important;     /* فرض الارتفاع */
+            box-sizing: border-box !important; /* لضمان أن الحجم يشمل padding/border */
+            overflow: hidden; /* إخفاء أي محتوى يفيض عن الخلية (احتياطي) */
         }
 
-        /* 3. تعديل القاعدة الخاصة بعنصر الرقم الداخلي لمحاولة المحاذاة */
+        /* 3. تعديل القاعدة الخاصة بعنصر الرقم الداخلي بقوة أكبر */
         td.jsCalendar-day .jsCalendar-day-number {
-            display: inline-block !important; /* اجعله كـ block ولكن يتدفق inline */
-            width: auto !important;           /* العرض يتحدد بالمحتوى */
-            line-height: normal !important;   /* استخدم ارتفاع السطر الطبيعي */
-            text-align: center !important;    /* توسيط النص داخل العنصر */
-            vertical-align: middle !important;/* محاذاة العنصر نفسه رأسياً */
-            margin: 0 !important;             /* إزالة الهوامش */
-            padding: 0 !important;            /* إزالة الحشو */
-            color: inherit !important;        /* يرث لون الخلية الأم */
+            /* Reset شامل للأنماط المحتملة */
+            margin: 0 !important;
+            padding: 0 !important;
+            position: static !important; /* البدء بتموضع عادي */
+            text-decoration: none !important; /* القاعدة: لا يوجد خط */
+            float: none !important;          /* إلغاء أي float */
+            top: auto !important; left: auto !important; right: auto !important; bottom: auto !important;
+
+            /* فرض العرض والتوسيط */
+            display: block !important;   /* اجعله block ليملأ العرض */
+            width: 100% !important;      /* يملأ عرض الخلية TD */
+            line-height: 1.2 !important; /* ارتفاع سطر معقول، اعتمد على vertical-align للخلية */
+            text-align: center !important;/* توسيط النص */
+            color: inherit !important;   /* يرث لون الخلية */
             background-color: transparent !important; /* خلفية شفافة */
-            position: static !important;      /* إلغاء أي تموضع خاص */
-            text-decoration: none !important; /* افتراضياً لا يوجد خط سفلي */
         }
 
-        /* 4. إضافة القاعدة الجديدة لوضع الخط السفلي تحت رقم اليوم الحالي فقط */
+        /* 4. إبقاء القاعدة الخاصة بالخط السفلي لليوم الحالي */
         td.jsCalendar-day.jsCalendar-today .jsCalendar-day-number {
             text-decoration: underline !important;
-            /* font-weight: bold !important; */ /* اختياري: لزيادة التمييز */
         }
         /* === نهاية التعديلات الخاصة بالتقويم === */
 
@@ -177,10 +193,10 @@
                 <section id="quick-stats" class="card">
                     <h3>إحصائيات سريعة</h3>
                     <ul>
-                        <li><strong>الصفحات المحفوظة:</strong> <span id="stat-memorized">0</span></li>
-                        <li><strong>الصفحات المتقنة:</strong> <span id="stat-perfected">0</span></li>
-                        <li><strong>الصفحات المربوطة:</strong> <span id="stat-linked">0</span></li>
-                        <li><strong>أيام الأعذار:</strong> <span id="stat-excuses">0</span></li>
+                         <li><strong>الصفحات المحفوظة:</strong> <span id="stat-memorized">0</span></li>
+                         <li><strong>الصفحات المتقنة:</strong> <span id="stat-perfected">0</span></li>
+                         <li><strong>الصفحات المربوطة:</strong> <span id="stat-linked">0</span></li>
+                         <li><strong>أيام الأعذار:</strong> <span id="stat-excuses">0</span></li>
                     </ul>
                 </section>
 
@@ -264,6 +280,7 @@
         // --- Global State (تبقى كما هي) ---
         let currentUser = null;
         let currentPlanData = null;
+        let calendarInstance = null; // Store calendar instance globally
 
         // --- Data Arrays & Helper Functions (تبقى كما هي) ---
         // (Arrays: surahs, linkFromData, linkToData, reviewFromData, reviewToData)
@@ -304,78 +321,81 @@
         const levelTitles = [ "ابدأ رحلتك!", "🌱 غرسة الإيمان", "✨ بادرة أمل", "🏃 ساعٍ للعلا", "⭐ نجم صاعد", "💪 مثابر مجتهد", "🧭 على الدرب", "💯 صاحب السبعين", "🚀 انطلاقة قوية", "💎 جوهرة مصقولة", "👑 صاحب المئة يوم", "📖 رفيق القرآن", "🕯️ منارة هدى", "🏔️ قمة شامخة", "🌳 شجرة طيبة", "⏳ عابر منتصف الطريق", "🎯 دقة والتزام", "🌊 بحر زاخر", "🌟 كوكب دري", "🧭 بوصلة الحق", "💯💯 المئتان لا تقفان!", "🤲 قلب خاشع", "🕊️ روح مطمئنة", "💖 محب للرحمن", "🙏 عبد شكور", "💡 بصيرة نافذة", "🕌 معمّر بيوت الله", "🌙 هلال الكمال", "✨ نور على نور", "🏁 قاب قوسين أو أدنى", "🏆 فارس الثلاثمائة", "🎉 مقترب من الختام", "🎊 خاتم مبارك" ];
         const levelIcons = { 10: '👑', 20: '💯', 30: '🏆', 32: '🎊' }; // Map level index to icon
         function calculateStreaksAndLevel(tableRows) {
-            if (!tableRows || tableRows.length === 0) { return { currentStreak: 0, longestStreak: 0, currentLevel: 0, currentTitle: levelTitles[0], currentIcon: '' }; }
-            const sortedRows = [...tableRows].sort((a, b) => new Date(a.displayDate) - new Date(b.displayDate));
-            let currentStreak = 0; let longestStreak = 0; let currentRun = 0; const todayStr = formatDate(new Date()); let isStreakActiveToday = false; let lastProcessedDate = null;
-            for (const row of sortedRows) {
-                if (row.displayDate > todayStr) break; // Don't process future dates
-                if (row.displayDate === lastProcessedDate) continue; // Skip duplicate dates
+             if (!tableRows || tableRows.length === 0) { return { currentStreak: 0, longestStreak: 0, currentLevel: 0, currentTitle: levelTitles[0], currentIcon: '' }; }
+             // Filter out future dates first for accurate streak calculation
+             const todayStr = formatDate(new Date());
+             const pastAndPresentRows = tableRows.filter(row => row.displayDate <= todayStr);
+             if (pastAndPresentRows.length === 0) { return { currentStreak: 0, longestStreak: 0, currentLevel: 0, currentTitle: levelTitles[0], currentIcon: '' }; }
 
-                if (row.type === 'plan' && row.state?.completed) {
+             const sortedRows = pastAndPresentRows.sort((a, b) => new Date(a.displayDate) - new Date(b.displayDate));
+
+             let currentStreak = 0; let longestStreak = 0; let currentRun = 0;
+             let lastProcessedDate = null;
+             let lastCompletedOrExcusedDate = null; // Track the last valid streak day
+
+             for (const row of sortedRows) {
+                 // Skip potential duplicate entries for the same date if logic allows them
+                 if (row.displayDate === lastProcessedDate) continue;
+
+                 let isDayCompleted = (row.type === 'plan' && row.state?.completed);
+                 let isDayExcused = (row.type === 'excuse');
+
+                 // Check for gap since last completed/excused day
+                 if (lastCompletedOrExcusedDate) {
+                     const dateDiff = (new Date(row.displayDate) - new Date(lastCompletedOrExcusedDate)) / 86400000; // Difference in days
+                     if (dateDiff > 1) {
+                         // Gap detected, streak broken before this day
+                         if (currentRun > longestStreak) { longestStreak = currentRun; }
+                         currentRun = 0;
+                     }
+                 }
+
+                 if (isDayCompleted) {
                      currentRun++;
-                     if(row.displayDate === todayStr) { isStreakActiveToday = true; }
-                } else if (row.type === 'excuse') {
-                     // Excused day continues the streak but doesn't increment it
-                     if(row.displayDate === todayStr){ isStreakActiveToday = false; } // Today is excused, streak not active *today*
-                } else { // Missed day or incomplete plan day
+                     lastCompletedOrExcusedDate = row.displayDate;
+                 } else if (isDayExcused) {
+                     // Excused day continues the possibility of a streak, doesn't break it, doesn't increment
+                      lastCompletedOrExcusedDate = row.displayDate;
+                 } else {
+                     // Missed day or incomplete plan day
                      if (currentRun > longestStreak) { longestStreak = currentRun; }
                      currentRun = 0;
-                     if(row.displayDate === todayStr) { isStreakActiveToday = false; }
-                }
-                lastProcessedDate = row.displayDate; // Mark date as processed
-            }
-            // Final check after loop
-            if (currentRun > longestStreak) { longestStreak = currentRun; }
-
-            // Calculate current streak ending today or yesterday
-            let tempCurrentStreak = 0;
-            let lastStreakDate = null;
-            for (let i = sortedRows.length - 1; i >= 0; i--) {
-                 const row = sortedRows[i];
-                 if (row.displayDate > todayStr) continue; // Skip future
-                 if (row.displayDate === lastStreakDate) continue; // Skip duplicate dates
-
-                 if (row.type === 'plan' && row.state?.completed) {
-                     tempCurrentStreak++;
-                 } else if (row.type === 'excuse') {
-                     continue; // Excused day doesn't break, doesn't count
-                 } else {
-                     break; // Streak broken
+                      // Don't update lastCompletedOrExcusedDate here
                  }
-                 lastStreakDate = row.displayDate;
-            }
-            // Check if the streak is broken by today being missed/incomplete
-             if (!isStreakActiveToday && !(sortedRows.find(r => r.displayDate === todayStr && r.type ==='excuse'))) {
-                // If today wasn't completed or excused, and the last streak day wasn't today or yesterday...
-                // Let's simplify: if today is not completed/excused, current streak is 0 unless last streak day was yesterday.
-                 const yesterdayStr = formatDate(new Date(Date.now() - 864e5));
-                 if(lastStreakDate !== yesterdayStr && lastStreakDate !== todayStr) {
-                    currentStreak = 0;
-                 } else {
-                    currentStreak = tempCurrentStreak; // It ended yesterday or earlier today
-                 }
-             } else {
-                currentStreak = tempCurrentStreak; // Active today or excused today
+                 lastProcessedDate = row.displayDate;
              }
+             // Final check after loop
+             if (currentRun > longestStreak) { longestStreak = currentRun; }
+
+             // Determine current streak
+             // Check if the last processed day (which is also the last valid streak day in this loop) is today or yesterday
+             const yesterdayStr = formatDate(new Date(Date.now() - 864e5));
+             if (lastCompletedOrExcusedDate === todayStr || lastCompletedOrExcusedDate === yesterdayStr) {
+                 // If the streak was valid up to today or yesterday, the current run is the current streak
+                 currentStreak = currentRun;
+             } else {
+                 // If the last valid streak day was before yesterday, the current streak is 0
+                 currentStreak = 0;
+             }
+
 
              const levelIndex = Math.min(Math.floor(currentStreak / 10), levelTitles.length - 1);
              const currentTitle = levelTitles[levelIndex] || levelTitles[0];
-             // Use currentStreak count for level icon mapping
-             const iconLevel = Math.floor(currentStreak / 10);
+             const iconLevel = Math.floor(currentStreak / 10); // Determine icon level based on current streak
              const currentIcon = levelIcons[iconLevel] || '';
 
              return { currentStreak: currentStreak, longestStreak: longestStreak, currentLevel: levelIndex, currentTitle: currentTitle, currentIcon: currentIcon };
         }
 
 
-        // --- Calendar Functions (تبقى كما هي - تستخدم jsCalendar) ---
+        // --- Calendar Functions ---
+
+        // Function to apply highlights (unchanged, but will be called on month change)
         function applyCustomHighlights(tableRows) {
-            console.log("Applying jsCalendar highlights manually...");
-            const calendarElement = document.getElementById('calendar-container'); // Target the container
-            if (!calendarElement || !tableRows) {
-                console.log("Cannot apply highlights: Missing container or tableRows.");
-                return;
-            }
+            // console.log("Applying jsCalendar highlights manually...");
+            const calendarElement = document.getElementById('calendar-container');
+            if (!calendarElement || !tableRows) { return; }
+
             const dayStatus = {};
             tableRows.forEach(row => {
                 if (row.displayDate) {
@@ -384,22 +404,18 @@
                 }
             });
 
-            // Find day elements (TDs with data-date)
             const dayElements = calendarElement.querySelectorAll('.jsCalendar-day[data-date]');
-            console.log(`Found ${dayElements.length} jsCalendar day TD elements to check.`);
+            // console.log(`Found ${dayElements.length} jsCalendar day TD elements to check.`);
 
-            dayElements.forEach((element, index) => {
+            dayElements.forEach((element) => {
                 const dateStringFromAttr = element.dataset.date;
-                element.classList.remove('day-completed', 'day-excused'); // Clear previous classes
+                element.classList.remove('day-completed', 'day-excused');
 
                 if (dateStringFromAttr) {
                     try {
                         const dateObject = new Date(dateStringFromAttr);
-                        if (isNaN(dateObject.getTime())) {
-                            // console.warn(`Could not parse date from attribute: ${dateStringFromAttr}`);
-                            return; // Skip invalid dates quietly
-                        }
-                        const formattedDateKey = formatDate(dateObject); // Convert to YYYY-MM-DD
+                        if (isNaN(dateObject.getTime())) { return; }
+                        const formattedDateKey = formatDate(dateObject);
                         const status = dayStatus[formattedDateKey];
 
                         if (status === 'completed') {
@@ -407,41 +423,86 @@
                         } else if (status === 'excused') {
                             element.classList.add('day-excused');
                         }
-                    } catch(e) {
-                        console.error(`Error processing date ${dateStringFromAttr}:`, e);
-                    }
-                } else {
-                     // console.warn(`TD element ${index} has no data-date attribute.`); // Can be noisy
+                    } catch(e) { /* console.error(`Error processing date ${dateStringFromAttr}:`, e); */ }
                 }
             });
-            console.log("Finished applying manual highlights to TD elements.");
+            // console.log("Finished applying manual highlights.");
         }
 
+        // **MODIFIED** Calendar Initialization
         function initializeCalendar(tableRows) {
             console.log("Initializing jsCalendar...");
             const calendarContainer = document.getElementById('calendar-container');
-            if (!calendarContainer) {
-                console.error("Calendar container element not found!");
-                return;
-            }
+            if (!calendarContainer) { console.error("Calendar container element not found!"); return; }
             calendarContainer.innerHTML = ''; // Clear placeholder
 
-            const today = new Date(); // Current date: April 12, 2025
+            const today = new Date();
 
             try {
                 const targetElement = calendarContainer;
-                // Initialize jsCalendar
-                const calendarInstance = new jsCalendar(targetElement, today, {
+
+                // Initialize jsCalendar and store the instance
+                calendarInstance = new jsCalendar(targetElement, today, {
                     language: 'ar',
-                    monthFormat: 'MMMM yyyy', // Standard month year format
-                    fdotw: 6 // Saturday as First Day of the Week
+                    monthFormat: 'MMMM Olímpic', // Standard month year format
+                    fdotw: 6, // Saturday as First Day of the Week
+
+                    // *** ADDING EVENT LISTENER ***
+                    // This attempts to re-apply highlights after the month changes.
+                    // NOTE: jsCalendar documentation doesn't explicitly list an 'onMonthChange' event.
+                    // We might need to rely on observing clicks or using MutationObserver as fallback.
+                    // Let's try a common pattern first. If it doesn't work, we need another method.
+                    onMonthChange: function(eventData) {
+                        console.log("Month changed (attempting via onMonthChange), re-applying highlights...");
+                        // Use a small timeout to ensure the DOM is updated by the library
+                        setTimeout(() => {
+                            if (currentPlanData && currentPlanData.tableRows) {
+                                applyCustomHighlights(currentPlanData.tableRows);
+                            }
+                        }, 100); // Short delay
+                    }
+                    // ** Alternative using documented event (if 'onMonthChange' fails) **
+                    // We might need to use 'onDateClick' and check if month changed,
+                    // or more reliably, attach event listeners to the next/prev buttons manually.
+
                 });
+
                 console.log("jsCalendar initialized successfully.");
 
-                // Apply highlights after a short delay to ensure DOM is ready
+                // --- Manual Event Listeners for Month Change (More Reliable) ---
+                // Since 'onMonthChange' is not guaranteed, let's add listeners to arrows
+                const prevButton = calendarContainer.querySelector('.jsCalendar-nav-left');
+                const nextButton = calendarContainer.querySelector('.jsCalendar-nav-right');
+
+                function handleMonthNavigation() {
+                    console.log("Month navigation button clicked, re-applying highlights...");
+                    // Use a small timeout to allow jsCalendar to redraw
+                    setTimeout(() => {
+                         if (currentPlanData && currentPlanData.tableRows) {
+                             applyCustomHighlights(currentPlanData.tableRows);
+                         }
+                     }, 150); // Slightly longer delay might be needed after navigation
+                }
+
+                if (prevButton) {
+                    prevButton.addEventListener('click', handleMonthNavigation);
+                } else {
+                     console.warn("Could not find jsCalendar previous month button to attach listener.");
+                }
+                if (nextButton) {
+                    nextButton.addEventListener('click', handleMonthNavigation);
+                } else {
+                     console.warn("Could not find jsCalendar next month button to attach listener.");
+                }
+                // --- End Manual Event Listeners ---
+
+
+                // Initial application of highlights
                 setTimeout(() => {
-                    applyCustomHighlights(tableRows);
-                }, 300); // Delay might need adjustment
+                    if (currentPlanData && currentPlanData.tableRows) {
+                         applyCustomHighlights(currentPlanData.tableRows);
+                     }
+                }, 300); // Initial delay
 
             } catch (error) {
                 console.error("Error initializing jsCalendar:", error);
@@ -472,7 +533,7 @@
                 hideLoading();
                 if (doc.exists) {
                     console.log("Dashboard: Plan data found.");
-                    currentPlanData = doc.data();
+                    currentPlanData = doc.data(); // Store plan data globally
                     // Basic validation of loaded data
                     if (!currentPlanData.startDate || !currentPlanData.planType || !currentPlanData.tableRows || !Array.isArray(currentPlanData.tableRows) /* || !currentPlanData.repetitionMax */) { // repetitionMax might not be essential for dashboard display
                         console.error("Loaded data missing required fields (startDate, planType, tableRows).");
@@ -516,15 +577,12 @@
 
         // --- Authentication Listener (تبقى كما هي) ---
         auth.onAuthStateChanged(user => {
-           // Loading hidden by loadDashboardData or error handler
             currentUser = user;
             if (user) {
                 console.log("Dashboard: Auth state OK.");
                 loadDashboardData(user);
             } else {
                 console.log("Dashboard: Not logged in.");
-                // showLoading("غير مسجل الدخول. يرجى تسجيل الدخول أولاً."); // Let loadDashboard handle UI
-                // Display the dashboard structure but show login message within it
                  if (typeof displayDashboard === 'function') displayDashboard(); // Show the overall layout first
                  if(dailyTaskContent) dailyTaskContent.innerHTML = '<p style="color:red;">يرجى <a href="index.html">تسجيل الدخول</a> لعرض لوحة المتابعة.</p>';
                  const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level', 'competition-section', 'badges-section'];
