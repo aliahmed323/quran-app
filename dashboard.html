@@ -61,36 +61,35 @@
         /* --- Calendar Styles (jsCalendar) --- */
         #calendar-view { min-height: 280px; }
         #calendar-container { margin-top: 15px; }
-        /* --- تمت إزالة تنسيقات Vanilla Calendar القديمة --- */
 
-        /* --- تنسيقات التلوين الجديدة لـ jsCalendar --- */
-        /* تستهدف عنصر رقم اليوم الذي تضيف له المكتبة الكلاس */
-        .jsCalendar-day-number.day-completed {
+        /* --- تنسيقات التلوين الجديدة لـ jsCalendar (تستهدف TD) --- */
+        td.jsCalendar-day.day-completed { /* استهداف الخلية TD مباشرة */
             background-color: #abebc6 !important; /* أخضر فاتح */
             color: #186a3b !important; /* نص أخضر أغمق */
             border-radius: 50% !important; /* دائري */
             font-weight: bold !important;
-            display: inline-block !important;
-            width: 1.9em !important; /* قد تحتاج لتعديل */
-            line-height: 1.9em !important; /* قد تحتاج لتعديل */
-            text-align: center !important;
         }
-        .jsCalendar-day-number.day-excused {
+        td.jsCalendar-day.day-excused { /* استهداف الخلية TD مباشرة */
             background-color: #fadbd8 !important; /* أحمر فاتح */
             color: #922b21 !important; /* نص أحمر أغمق */
             border-radius: 50% !important; /* دائري */
             font-weight: bold !important;
-            display: inline-block !important;
-            width: 1.9em !important;
-            line-height: 1.9em !important;
-            text-align: center !important;
         }
-         /* تنسيق اليوم الحالي الافتراضي لـ jsCalendar */
-        .jsCalendar-day-number.jsCalendar-today {
+         /* تنسيق اليوم الحالي (قد يضاف الكلاس للـ TD أيضاً) */
+         td.jsCalendar-day.jsCalendar-today {
              background-color: #e3f2fd !important; /* أزرق فاتح */
              border: 1px solid #aed6f1 !important;
              color: #1a5276 !important;
              border-radius: 50% !important;
+         }
+         /* التأكد من ظهور الرقم داخل الخلية الملونة */
+         td.jsCalendar-day .jsCalendar-day-number {
+              /* يمكن إلغاء تعليق هذه إذا كان الرقم يختفي */
+              /* background-color: transparent !important; */
+              /* color: inherit !important; */
+              display: inline-block !important;
+              width: 100%;
+              text-align: center;
          }
         /* --- نهاية تنسيقات jsCalendar --- */
 
@@ -293,55 +292,68 @@
         // --- *** START: الدوال الجديدة للتقويم (jsCalendar + التلوين اليدوي) *** ---
 
         // --- دالة جديدة لتطبيق التلوين يدويًا بعد إنشاء التقويم ---
-       // --- دالة تطبيق التلوين مع إضافة أوامر طباعة للتشخيص ---
-function applyCustomHighlights(tableRows) {
-    console.log("[Highlight Debug] محاولة تطبيق التلوين اليدوي..."); // هل بدأت الدالة؟
-    const calendarContainer = document.getElementById('calendar-container');
-    if (!calendarContainer || !tableRows) {
-        console.error("[Highlight Debug] فشل: الحاوية أو بيانات الصفوف مفقودة.");
-        return;
-    }
-
-    const dayStatus = {};
-    tableRows.forEach(row => {
-        if (row.displayDate) {
-            if (row.type === 'plan' && row.state?.completed) { dayStatus[row.displayDate] = 'completed'; }
-            else if (row.type === 'excuse') { dayStatus[row.displayDate] = 'excused'; }
-        }
-    });
-    console.log("[Highlight Debug] بيانات حالة الأيام المحضرة:", dayStatus); // هل البيانات صحيحة؟
-
-    const dayElements = calendarContainer.querySelectorAll('.jsCalendar-day-number'); // هل هذا هو المحدد الصحيح؟
-    console.log(`[Highlight Debug] تم العثور على ${dayElements.length} عنصر يوم.`); // هل وجد العناصر؟
-
-    let appliedCount = 0; // عداد للتحقق
-    dayElements.forEach((element, index) => {
-        const date = element.dataset.date; // هل يحتوي العنصر على تاريخ؟
-        element.classList.remove('day-completed', 'day-excused'); // مسح الكلاسات القديمة
-
-        if (date) {
-            const status = dayStatus[date];
-             // console.log(`[Highlight Debug] فحص العنصر ${index}, التاريخ: ${date}, الحالة: ${status}`); // يمكن إلغاء التعليق لطباعة كل يوم
-
-            if (status === 'completed') {
-                console.log(`[Highlight Debug] >> تطبيق 'day-completed' على: ${date}`); // هل يحاول التطبيق؟
-                element.classList.add('day-completed');
-                appliedCount++;
-            } else if (status === 'excused') {
-                console.log(`[Highlight Debug] >> تطبيق 'day-excused' على: ${date}`); // هل يحاول التطبيق؟
-                element.classList.add('day-excused');
-                appliedCount++;
+        function applyCustomHighlights(tableRows) {
+            console.log("Applying jsCalendar highlights manually...");
+            const calendarContainer = document.getElementById('calendar-container'); // نحتاج للوصول للحاوية هنا أيضًا
+            if (!calendarContainer || !tableRows) {
+                console.log("Cannot apply highlights: Missing container or tableRows.");
+                return;
             }
-        } else {
-             console.warn(`[Highlight Debug] العنصر ${index} لا يحتوي على خاصية data-date.`); // هل هناك مشكلة في قراءة التاريخ؟
+
+            // --- تحضير بيانات حالة الأيام لتسهيل البحث ---
+            const dayStatus = {};
+            tableRows.forEach(row => {
+                if (row.displayDate) {
+                    if (row.type === 'plan' && row.state?.completed) { dayStatus[row.displayDate] = 'completed'; }
+                    else if (row.type === 'excuse') { dayStatus[row.displayDate] = 'excused'; }
+                }
+            });
+            // console.log("Manual highlight lookup data:", dayStatus); // يمكنك إلغاء التعليق للتحقق
+
+            // --- العثور على جميع عناصر الأيام داخل التقويم ---
+            // الكلاس المستهدف هو '.jsCalendar-day' الذي يحتوي على 'data-date'
+            const dayElements = calendarContainer.querySelectorAll('.jsCalendar-day'); // *** تم تغيير المحدد هنا ***
+            console.log(`Found ${dayElements.length} jsCalendar day TD elements to check.`); // *** تم تغيير الرسالة ***
+
+            dayElements.forEach((element, index) => {
+                // التاريخ يكون في خاصية 'data-date' للعنصر TD
+                const dateStringFromAttr = element.dataset.date; // e.g., "Sun Apr 13 2025"
+                // --- إزالة الكلاسات القديمة أولاً ---
+                element.classList.remove('day-completed', 'day-excused');
+
+                if (dateStringFromAttr) {
+                    try {
+                        // --- تحويل صيغة التاريخ ---
+                        const dateObject = new Date(dateStringFromAttr); // محاولة تحليل النص
+                        if (isNaN(dateObject.getTime())) {
+                             console.warn(`[Highlight Debug V2] Could not parse date from attribute: ${dateStringFromAttr}`);
+                             return; // تجاهل إذا كان التاريخ غير صالح
+                        }
+                        const formattedDateKey = formatDate(dateObject); // تحويل إلى YYYY-MM-DD
+
+                        // --- البحث عن الحالة باستخدام الصيغة الصحيحة ---
+                        const status = dayStatus[formattedDateKey];
+                        // console.log(`[Highlight Debug V2] Checking TD ${index}, AttrDate: ${dateStringFromAttr}, FormatDate: ${formattedDateKey}, Status: ${status}`);
+
+                        if (status === 'completed') {
+                            console.log(`[Highlight Debug V2] Applying 'day-completed' to TD for: ${formattedDateKey}`);
+                            element.classList.add('day-completed'); // إضافة الكلاس للخلية TD
+                        } else if (status === 'excused') {
+                            console.log(`[Highlight Debug V2] Applying 'day-excused' to TD for: ${formattedDateKey}`);
+                            element.classList.add('day-excused'); // إضافة الكلاس للخلية TD
+                        }
+                    } catch(e) {
+                         console.error(`[Highlight Debug V2] Error processing date ${dateStringFromAttr}:`, e);
+                    }
+                } else {
+                     console.warn(`[Highlight Debug V2] TD element ${index} has no data-date attribute.`);
+                }
+            });
+            console.log("Finished applying manual highlights to TD elements.");
+            // تذكير بالتحقق من CSS
+            console.warn("If colors don't appear, ensure CSS rules target the TD element, e.g., td.jsCalendar-day.day-completed");
         }
-    });
-    console.log(`[Highlight Debug] انتهى تطبيق التلوين. تم تطبيق ${appliedCount} كلاس.`);
-    if (appliedCount === 0 && Object.keys(dayStatus).length > 0) {
-         console.warn("[Highlight Debug] لم يتم تطبيق أي تلوين، ولكن توجد حالات أيام مسجلة. تحقق من تطابق التواريخ والمحددات.");
-    }
-     console.warn("[Highlight Debug] تذكير: تأكد أن قواعد CSS تستهدف .jsCalendar-day-number.day-completed / .day-excused");
-}
+
         // --- دالة تهيئة التقويم الجديدة (لاستخدام jsCalendar والتلوين اليدوي) ---
         function initializeCalendar(tableRows) {
             console.log("Initializing jsCalendar, highlights will be applied AFTER init manually...");
@@ -360,21 +372,18 @@ function applyCustomHighlights(tableRows) {
                  const targetElement = calendarContainer;
 
                  // إنشاء نسخة التقويم باستخدام new
-                 // *** تم تصحيح هذا السطر لاستخدام new ***
                  const calendarInstance = new jsCalendar(targetElement, today, {
                       language: 'ar', // تحديد اللغة العربية
-                      monthFormat: 'MMMM<y_bin_46>' // <<== تم تصحيح التنسيق هنا أيضًا
+                      monthFormat: 'MMMM<y_bin_46>', // تنسيق عنوان الشهر والسنة المصحح
+                      fdotw: 6 // <<== إضافة هذا الخيار لجعل السبت أول أيام الأسبوع
                  });
 
-                 // jsCalendar v1.x لا تحتاج استدعاء .init() منفصل عادةً
                  console.log("jsCalendar initialized successfully (using new).");
 
                  // --- استدعاء دالة التلوين اليدوي بعد التهيئة مع تأخير بسيط ---
-                 // للتأكد من أن المكتبة انتهت تمامًا من رسم التقويم في الصفحة
                  setTimeout(() => {
-                     // نمرر tableRows للدالة الجديدة لتعرف حالة الأيام
                      applyCustomHighlights(tableRows);
-                 }, 150); // تأخير 150 ميلي ثانية
+                 }, 300); // <<== زيادة التأخير قليلاً (300ms)
 
             } catch (error) {
                 console.error("Error initializing jsCalendar:", error);
