@@ -61,30 +61,33 @@
         /* --- Calendar Styles (jsCalendar) --- */
         #calendar-view { min-height: 280px; }
         #calendar-container { margin-top: 15px; }
+        /* --- تمت إزالة تنسيقات Vanilla Calendar القديمة --- */
 
         /* --- تنسيقات التلوين الجديدة لـ jsCalendar --- */
+        /* تستهدف عنصر رقم اليوم الذي تضيف له المكتبة الكلاس */
         .jsCalendar-day-number.day-completed {
-            background-color: #abebc6 !important;
-            color: #186a3b !important;
-            border-radius: 50% !important;
+            background-color: #abebc6 !important; /* أخضر فاتح */
+            color: #186a3b !important; /* نص أخضر أغمق */
+            border-radius: 50% !important; /* دائري */
             font-weight: bold !important;
             display: inline-block !important;
-            width: 1.9em !important;
-            line-height: 1.9em !important;
+            width: 1.9em !important; /* قد تحتاج لتعديل */
+            line-height: 1.9em !important; /* قد تحتاج لتعديل */
             text-align: center !important;
         }
         .jsCalendar-day-number.day-excused {
-            background-color: #fadbd8 !important;
-            color: #922b21 !important;
-            border-radius: 50% !important;
+            background-color: #fadbd8 !important; /* أحمر فاتح */
+            color: #922b21 !important; /* نص أحمر أغمق */
+            border-radius: 50% !important; /* دائري */
             font-weight: bold !important;
             display: inline-block !important;
             width: 1.9em !important;
             line-height: 1.9em !important;
             text-align: center !important;
         }
+         /* تنسيق اليوم الحالي الافتراضي لـ jsCalendar */
         .jsCalendar-day-number.jsCalendar-today {
-             background-color: #e3f2fd !important;
+             background-color: #e3f2fd !important; /* أزرق فاتح */
              border: 1px solid #aed6f1 !important;
              color: #1a5276 !important;
              border-radius: 50% !important;
@@ -351,10 +354,10 @@
                  const targetElement = calendarContainer;
 
                  // إنشاء نسخة التقويم باستخدام new
-                 // *** هذا هو السطر الذي تم تصحيحه ***
+                 // *** تم تصحيح هذا السطر لاستخدام new ***
                  const calendarInstance = new jsCalendar(targetElement, today, {
                       language: 'ar', // تحديد اللغة العربية
-                      monthFormat: 'MMMM<y_bin_46>' // <<== تم تصحيح التنسيق هنا
+                      monthFormat: 'MMMM<y_bin_46>' // <<== تم تصحيح التنسيق هنا أيضًا
                  });
 
                  // jsCalendar v1.x لا تحتاج استدعاء .init() منفصل عادةً
@@ -472,13 +475,3 @@
 
 </body>
 </html>
-```
-
-**الخلاصة:**
-
-* هذا الكود يستخدم مكتبة `jsCalendar` (التي يجب أن تكون ملفاتها `jsCalendar.min.css` و `jsCalendar.min.js` موجودة محليًا في نفس المجلد).
-* يستخدم طريقة التلوين اليدوي بعد إنشاء التقويم.
-* تم تصحيح خطأ استدعاء المكتبة (`new jsCalendar(...)`).
-* تم التأكد من وجود جميع الدوال الأخرى اللازمة لعمل الصفحة.
-
-الآن، يجب أن تعمل الصفحة بشكل صحيح ويعرض التقويم مع الألوان. جرب هذا الكود النها
