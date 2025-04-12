@@ -58,35 +58,33 @@
         #streak-level #level-icon { font-size: 1.5em; margin-left: 10px; }
 
         /* --- Calendar Styles (الجديدة - لمكتبة jsCalendar) --- */
-        #calendar-view { min-height: 280px; /* يمكن تعديل الارتفاع حسب الحاجة */ }
+        #calendar-view { min-height: 280px; }
         #calendar-container { margin-top: 15px; }
         /* --- تمت إزالة تنسيقات Vanilla Calendar القديمة --- */
 
         /* --- تنسيقات التلوين الجديدة لـ jsCalendar --- */
-        /* تستهدف عنصر رقم اليوم الذي تضيف له المكتبة الكلاس */
         .jsCalendar-day-number.day-completed {
-            background-color: #abebc6 !important; /* أخضر فاتح */
-            color: #186a3b !important; /* نص أخضر أغمق */
-            border-radius: 50% !important; /* دائري */
-            font-weight: bold !important;
-            display: inline-block !important;
-            width: 1.9em !important; /* قد تحتاج لتعديل */
-            line-height: 1.9em !important; /* قد تحتاج لتعديل */
-            text-align: center !important;
-        }
-        .jsCalendar-day-number.day-excused {
-            background-color: #fadbd8 !important; /* أحمر فاتح */
-            color: #922b21 !important; /* نص أحمر أغمق */
-            border-radius: 50% !important; /* دائري */
+            background-color: #abebc6 !important;
+            color: #186a3b !important;
+            border-radius: 50% !important;
             font-weight: bold !important;
             display: inline-block !important;
             width: 1.9em !important;
             line-height: 1.9em !important;
             text-align: center !important;
         }
-         /* تنسيق اليوم الحالي الافتراضي لـ jsCalendar */
+        .jsCalendar-day-number.day-excused {
+            background-color: #fadbd8 !important;
+            color: #922b21 !important;
+            border-radius: 50% !important;
+            font-weight: bold !important;
+            display: inline-block !important;
+            width: 1.9em !important;
+            line-height: 1.9em !important;
+            text-align: center !important;
+        }
         .jsCalendar-day-number.jsCalendar-today {
-             background-color: #e3f2fd !important; /* أزرق فاتح */
+             background-color: #e3f2fd !important;
              border: 1px solid #aed6f1 !important;
              color: #1a5276 !important;
              border-radius: 50% !important;
@@ -368,18 +366,15 @@
                  const targetElement = calendarContainer;
 
                  // إنشاء نسخة التقويم
-                 // لا نمرر أي خيارات تلوين معقدة هنا
                  const calendarInstance = jsCalendar(targetElement, today, {
                       language: 'ar', // تحديد اللغة العربية
-                      monthFormat: 'month<y_bin_46> // تنسيق عنوان الشهر والسنة
+                      monthFormat: 'MMMM YYYY' // <<== تم تصحيح الخطأ هنا
                  });
 
                  console.log("jsCalendar initialized successfully (basic).");
 
                  // --- استدعاء دالة التلوين اليدوي بعد التهيئة مع تأخير بسيط ---
-                 // للتأكد من أن المكتبة انتهت تمامًا من رسم التقويم في الصفحة
                  setTimeout(() => {
-                     // نمرر tableRows للدالة الجديدة لتعرف حالة الأيام
                      applyCustomHighlights(tableRows);
                  }, 150); // تأخير 150 ميلي ثانية
 
@@ -425,20 +420,18 @@
                          return;
                      }
                     // Process Data & Update UI
-                    // *** التأكد من أن calculateDashboardStats معرفة قبل استدعائها ***
+                    // *** التأكد من أن الدوال معرفة قبل استدعائها ***
                     const stats = typeof calculateDashboardStats === 'function' ? calculateDashboardStats(currentPlanData.tableRows) : { memorizedPages: 0, linkedTasks: 0, perfectedTasks: 0, excuseCount: 0 };
                     const streakData = typeof calculateStreaksAndLevel === 'function' ? calculateStreaksAndLevel(currentPlanData.tableRows) : { currentStreak: 0, longestStreak: 0, currentLevel: 0, currentTitle: levelTitles[0], currentIcon: '' };
 
-                    // *** التأكد من أن دوال العرض معرفة قبل استدعائها ***
-                    if (typeof displayDailyTask === 'function') displayDailyTask();
-                    if (typeof displayProgress === 'function') displayProgress(stats);
-                    if (typeof displayStats === 'function') displayStats(stats);
-                    if (typeof displayStreakAndLevel === 'function') displayStreakAndLevel(streakData);
+                    if (typeof displayDailyTask === 'function') displayDailyTask(); else console.error("displayDailyTask is not defined");
+                    if (typeof displayProgress === 'function') displayProgress(stats); else console.error("displayProgress is not defined");
+                    if (typeof displayStats === 'function') displayStats(stats); else console.error("displayStats is not defined");
+                    if (typeof displayStreakAndLevel === 'function') displayStreakAndLevel(streakData); else console.error("displayStreakAndLevel is not defined");
                     if (typeof initializeCalendar === 'function') initializeCalendar(currentPlanData.tableRows); // استدعاء دالة التقويم الجديدة
                     else console.error("initializeCalendar function is not defined!");
 
-                    if (typeof displayDashboard === 'function') displayDashboard();
-                    else console.error("displayDashboard function is not defined!");
+                    if (typeof displayDashboard === 'function') displayDashboard(); else console.error("displayDashboard function is not defined!");
 
                 } else {
                      // No plan found logic
