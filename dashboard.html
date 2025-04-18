@@ -29,13 +29,23 @@
         .dashboard-header { display: flex; justify-content: center; align-items: center; padding: 10px 20px; margin-bottom: 25px; border-bottom: 2px solid #aed6f1; background-color: #fff; border-radius: 0 0 8px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .dashboard-header .logo h1 { margin: 0; font-size: 1.8em; color: #1a5276; }
 
-        /* --- Dashboard Layout --- */
-        .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: auto; gap: 25px; }
-        #daily-task { grid-column: span 2; }
-        #plan-progress { grid-column: 1 / 2; grid-row: 2 / 3; }
-        #quick-stats { grid-column: 1 / 2; grid-row: 3 / 4; }
-        #streak-level { grid-column: 2 / 4; grid-row: 2 / 3; }
-        #calendar-view { grid-column: 2 / 4; grid-row: 3 / 4; }
+        /* --- !! START: REVISED Dashboard Layout !! --- */
+        .dashboard-grid {
+            display: grid;
+            /* تخصيص الأعمدة: الأول يأخذ مساحة أكبر قليلاً، الأخيران متساويان */
+            grid-template-columns: 1.2fr 1fr 1fr;
+            grid-template-rows: auto auto auto; /* تحديد الصفوف تلقائيًا أو حسب الحاجة */
+            gap: 25px;
+        }
+
+        /* توزيع العناصر على الشبكة الجديدة */
+        #daily-task { grid-column: 1 / 4; grid-row: 1 / 2;} /* المهمة اليومية تمتد على عرض الصفحة */
+        #plan-progress { grid-column: 1 / 2; grid-row: 2 / 3; } /* العمود الأول، الصف الثاني */
+        #quick-stats { grid-column: 1 / 2; grid-row: 3 / 4; } /* العمود الأول، الصف الثالث */
+        #streak-level { grid-column: 2 / 3; grid-row: 2 / 4; } /* العمود الثاني، يمتد على الصفين 2 و 3 */
+        #calendar-view { grid-column: 3 / 4; grid-row: 2 / 4; } /* العمود الثالث، يمتد على الصفين 2 و 3 */
+        /* --- !! END: REVISED Dashboard Layout !! --- */
+
 
         /* --- Section Specific Styles --- */
         #daily-task h3 { color: #1e8449; font-size: 1.3em; border-bottom: 2px solid #aed6f1; padding-bottom: 8px;}
@@ -55,96 +65,94 @@
 
         /* --- Streak & Level Styles --- */
         #streak-level .streak-info { display: flex; justify-content: space-around; text-align: center; margin: 15px 0; }
-        #streak-level .streak-info div { background-color: #eaf2f8; padding: 10px 15px; border-radius: 6px; border: 1px solid #d4e6f1; }
+        #streak-level .streak-info div { background-color: #eaf2f8; padding: 10px 15px; border-radius: 6px; border: 1px solid #d4e6f1; flex: 1; margin: 0 5px; } /* Added flex for equal width */
         #streak-level .streak-info strong { display: block; font-size: 1.5em; color: #1e8449; }
         #streak-level .level-title-container { text-align: center; margin-top: 15px; }
         #streak-level #level-title { font-size: 1.2em; color: #2c3e50; font-weight: bold; }
         #streak-level #level-icon { font-size: 1.5em; margin-left: 10px; }
 
-        /* --- Calendar Styles --- */
-        #calendar-view { min-height: 280px; }
-        #calendar-container { margin-top: 15px; direction: ltr; } /* LTR for calendar library */
 
-        /* Base Vanilla Calendar Styles (Optional: you might rely on library defaults) */
-        .vanilla-calendar { border: 1px solid #ddd; border-radius: 4px; }
-        .vanilla-calendar .vcal-header { background-color: #aed6f1; padding: 10px 0; border-bottom: 1px solid #ddd;}
-        .vanilla-calendar .vcal-header__label { color: #1a5276; font-weight: bold; }
-        .vanilla-calendar .vcal-arrow { background-color: #ffffff; border-radius: 50%; width: 30px; height: 30px; line-height: 30px; border: 1px solid #ccc; }
-        .vanilla-calendar .vcal-arrow::before { border-color: #1a5276; }
-        .vanilla-calendar .vcal-week { background-color: #eaf2f8; padding: 5px 0; display: flex; justify-content: space-around; }
-        .vanilla-calendar .vcal-week span { color: #1a5276; font-weight: bold; font-size: 0.85em; text-align: center; flex: 1; }
-        .vanilla-calendar .vcal-body { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; padding: 5px; }
-        .vanilla-calendar .vcal-day { display: flex; justify-content: center; align-items: center; }
-
-        /* --- !! START: REVISED Calendar Day Coloring CSS !! --- */
-
-        /* القاعدة الأساسية لزر اليوم */
-        .vanilla-calendar .vanilla-calendar-day__btn {
-            border: 1px solid transparent; /* حدود شفافة افتراضية */
-            background-color: transparent; /* خلفية شفافة افتراضية */
-            cursor: pointer;
-            width: 34px; /* مثال للحجم - عدله حسب الحاجة */
-            height: 34px; /* مثال للحجم - عدله حسب الحاجة */
-            padding: 0;
+        /* --- Calendar Section Header & Today Button --- */
+         #calendar-view { min-height: 280px; display: flex; flex-direction: column;} /* Make card flex column */
+         #calendar-view .card-header {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            font-size: 0.9em; /* حجم الخط داخل الزر */
-            position: relative;
-            border-radius: 50%; /* جعل الشكل دائريًا */
-            transition: background-color 0.2s, color 0.2s, border-color 0.2s; /* انتقالات ناعمة */
-            color: #333; /* لون النص الافتراضي */
+            margin-bottom: 15px; /* Space below header */
+            flex-shrink: 0; /* Prevent header from shrinking */
         }
-
-        /* تطبيق الخلفية واللون مباشرة على الزر المكتمل */
-        .vanilla-calendar .vanilla-calendar-day__btn.day-completed {
-          background-color: #abebc6 !important; /* أخضر فاتح مع أولوية قصوى */
-          color: #186a3b !important; /* لون نص أغمق */
-          font-weight: bold;
-          border-color: #82e0aa !important; /* لون حدود متناسق (اختياري) */
+        #calendar-view .card-header h3 {
+            margin-bottom: 0; /* Remove default margin */
         }
-
-        /* تطبيق الخلفية واللون مباشرة على الزر المعذور */
-        .vanilla-calendar .vanilla-calendar-day__btn.day-excused {
-          background-color: #fadbd8 !important; /* أحمر فاتح مع أولوية قصوى */
-          color: #922b21 !important; /* لون نص أغمق */
-          font-weight: bold;
-          border-color: #f5b7b1 !important; /* لون حدود متناسق (اختياري) */
+        .today-button {
+            font-family: 'Tajawal', sans-serif;
+            font-size: 0.8em;
+            padding: 4px 10px;
+            background-color: #eaf2f8;
+            border: 1px solid #aed6f1;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #1a5276;
+            transition: background-color 0.2s;
+            white-space: nowrap; /* Prevent wrapping */
         }
-
-        /* تعديل حالة الـ Hover للأيام الملونة */
-        .vanilla-calendar .vanilla-calendar-day__btn.day-completed:hover {
-          background-color: #82e0aa !important; /* أخضر أغمق عند المرور */
-          border-color: #5fcf8f !important;
+        .today-button:hover {
+            background-color: #d4e6f1;
+            border-color: #aed6f1;
         }
-        .vanilla-calendar .vanilla-calendar-day__btn.day-excused:hover {
-          background-color: #f5b7b1 !important; /* أحمر أغمق عند المرور */
-          border-color: #e59894 !important;
-        }
-
-        /* تعديل حالة Hover للأيام العادية (غير الملونة) */
-         .vanilla-calendar .vanilla-calendar-day__btn:not(.day-completed):not(.day-excused):not([data-calendar-is-today]):hover {
-             background-color: #e9ecef !important; /* لون رمادي فاتح عند المرور */
-             border-color: #dee2e6 !important;
+         #calendar-container {
+             margin-top: 0; /* Removed top margin as header has bottom margin */
+             direction: ltr;
+             flex-grow: 1; /* Allow container to grow */
+             min-height: 250px; /* Ensure minimum height for calendar */
          }
 
 
-        /* تعديل تنسيق اليوم الحالي ليتوافق مع الألوان المخصصة */
-        /* استخدم data-calendar-is-today أو الكلاس الذي تضيفه المكتبة لليوم الحالي */
-        .vanilla-calendar .vanilla-calendar-day__btn[data-calendar-is-today]:not(.day-completed):not(.day-excused) {
-            /* تطبيق تنسيق "اليوم" فقط إذا لم يكن اليوم مكتملاً أو معذورًا */
-            background-color: #aed6f1 !important; /* لون أزرق فاتح */
-            border: 1px solid #1a5276 !important; /* حدود أغمق */
-            color: #1a5276 !important; /* لون نص أغمق */
-            font-weight: bold;
+        /* --- Base Calendar Styles (Vanilla Calendar) --- */
+        .vanilla-calendar { border: 1px solid #ddd; border-radius: 4px; height: 100%; display: flex; flex-direction: column;} /* Make calendar fill height */
+        .vanilla-calendar .vcal-header { background-color: #aed6f1; padding: 10px 0; border-bottom: 1px solid #ddd; flex-shrink: 0;}
+        .vanilla-calendar .vcal-header__label { color: #1a5276; font-weight: bold; cursor: pointer; } /* Make clickable */
+        .vanilla-calendar .vcal-arrow { background-color: #ffffff; border-radius: 50%; width: 30px; height: 30px; line-height: 30px; border: 1px solid #ccc; cursor: pointer;}
+        .vanilla-calendar .vcal-arrow::before { border-color: #1a5276; }
+        .vanilla-calendar .vcal-week { background-color: #eaf2f8; padding: 5px 0; display: flex; justify-content: space-around; flex-shrink: 0;}
+        .vanilla-calendar .vcal-week span { color: #1a5276; font-weight: bold; font-size: 0.85em; text-align: center; flex: 1; }
+        .vanilla-calendar .vcal-body { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; padding: 5px; flex-grow: 1; } /* Allow body to grow */
+        .vanilla-calendar .vcal-day { display: flex; justify-content: center; align-items: center; }
+
+
+        /* --- !! START: Calendar Day Coloring CSS (Keep as is) !! --- */
+        .vanilla-calendar .vanilla-calendar-day__btn {
+            border: 1px solid transparent; background-color: transparent; cursor: pointer;
+            width: 34px; height: 34px; padding: 0; display: flex; justify-content: center;
+            align-items: center; font-size: 0.9em; position: relative; border-radius: 50%;
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s; color: #333;
         }
-        /* تأكد من أن الأيام الملونة تزيل أي حدود قد تأتي من تنسيق "اليوم" إذا لزم الأمر */
+        .vanilla-calendar .vanilla-calendar-day__btn.day-completed {
+            background-color: #abebc6 !important; color: #186a3b !important; font-weight: bold;
+            border-color: #82e0aa !important;
+        }
+        .vanilla-calendar .vanilla-calendar-day__btn.day-excused {
+            background-color: #fadbd8 !important; color: #922b21 !important; font-weight: bold;
+            border-color: #f5b7b1 !important;
+        }
+        .vanilla-calendar .vanilla-calendar-day__btn.day-completed:hover {
+            background-color: #82e0aa !important; border-color: #5fcf8f !important;
+        }
+        .vanilla-calendar .vanilla-calendar-day__btn.day-excused:hover {
+            background-color: #f5b7b1 !important; border-color: #e59894 !important;
+        }
+        .vanilla-calendar .vanilla-calendar-day__btn:not(.day-completed):not(.day-excused):not([data-calendar-is-today]):hover {
+             background-color: #e9ecef !important; border-color: #dee2e6 !important;
+         }
+        .vanilla-calendar .vanilla-calendar-day__btn[data-calendar-is-today]:not(.day-completed):not(.day-excused) {
+            background-color: #aed6f1 !important; border: 1px solid #1a5276 !important;
+            color: #1a5276 !important; font-weight: bold;
+        }
         .vanilla-calendar .vanilla-calendar-day__btn.day-completed[data-calendar-is-today],
         .vanilla-calendar .vanilla-calendar-day__btn.day-excused[data-calendar-is-today] {
-             border-width: 1px; /* أبقينا على الحدود الملونة المخصصة */
+             border-width: 1px; /* Keep colored border */
         }
-
-        /* --- !! END: REVISED Calendar Day Coloring CSS !! --- */
+        /* --- !! END: Calendar Day Coloring CSS !! --- */
 
 
         /* Placeholder Styles */
@@ -162,25 +170,40 @@
         /* Loading Indicator */
         #loading-indicator { text-align: center; padding: 50px; font-size: 1.3em; color: #1a5276; display: block; }
 
-        /* Responsive Adjustments */
-        @media (max-width: 992px) {
-            .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
-            #daily-task { grid-column: span 2; }
-            #plan-progress, #quick-stats { grid-column: span 1; grid-row: auto; }
-            #streak-level, #calendar-view { grid-column: span 1; grid-row: auto; }
+
+        /* --- !! START: REVISED Responsive Adjustments !! --- */
+        @media (max-width: 992px) { /* تخطيط لـ 2 أعمدة */
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr); /* عمودان */
+                grid-template-rows: auto auto auto; /* إعادة تعيين الصفوف التلقائية */
+            }
+            #daily-task { grid-column: span 2; grid-row: 1 / 2; } /* المهمة اليومية تمتد عرضًا */
+            #plan-progress { grid-column: 1 / 2; grid-row: 2 / 3; } /* عمود 1، صف 2 */
+            #quick-stats { grid-column: 1 / 2; grid-row: 3 / 4; } /* عمود 1، صف 3 */
+            #streak-level { grid-column: 2 / 3; grid-row: 2 / 3; } /* عمود 2، صف 2 */
+            #calendar-view { grid-column: 2 / 3; grid-row: 3 / 4; } /* عمود 2، صف 3 */
         }
-        @media (max-width: 768px) {
-            #streak-level .streak-info { flex-direction: column; gap: 10px; }
-            #streak-level .streak-info div { width: 80%; margin: 0 auto; }
-        }
-        @media (max-width: 600px) {
-            .dashboard-header .logo h1 { font-size: 1.5em;}
-            .dashboard-grid { grid-template-columns: 1fr; }
-            #daily-task, #plan-progress, #quick-stats, #calendar-view, #streak-level, #competition-section, #badges-section { grid-column: span 1; }
-            .card { padding: 15px; }
-            h2 { font-size: 1.4em; }
-            h3 { font-size: 1.1em; }
-        }
+
+         @media (max-width: 768px) { /* تخطيط لعمود واحد */
+             .dashboard-grid {
+                 grid-template-columns: 1fr; /* عمود واحد فقط */
+             }
+             /* جميع العناصر تمتد على عرض العمود وتأخذ صفها تلقائيًا */
+             #daily-task, #plan-progress, #quick-stats, #calendar-view, #streak-level {
+                 grid-column: span 1;
+                 grid-row: auto;
+             }
+             /* تعديل تنسيق عنوان التقويم للشاشات الصغيرة */
+             #calendar-view .card-header {
+                flex-direction: column; /* جعل العنوان فوق الزر */
+                align-items: flex-start; /* محاذاة لليمين */
+                gap: 8px; /* مسافة بين العنوان والزر */
+            }
+            #streak-level .streak-info { flex-direction: column; gap: 10px; } /* Stack streak boxes */
+            #streak-level .streak-info div { width: auto; margin: 0; } /* Reset width/margin */
+         }
+        /* --- !! END: REVISED Responsive Adjustments !! --- */
+
     </style>
 </head>
 <body>
@@ -237,8 +260,12 @@
                         <h4>لقبك الحالي: <span id="level-title">ابدأ رحلتك!</span> <span id="level-icon"></span></h4>
                     </div>
                 </section>
+
                 <section id="calendar-view" class="card">
-                    <h3>التقويم والتتبع المرئي</h3>
+                    <div class="card-header">
+                      <h3>التقويم والتتبع المرئي</h3>
+                      <button id="goto-today-btn" class="today-button" title="العودة إلى اليوم">اليوم</button>
+                    </div>
                     <div id="calendar-container">
                         <p class="text" style="text-align: center; margin-top: 20px;">(جاري تحميل التقويم...)</p>
                     </div>
@@ -299,17 +326,18 @@
         const longestStreakSpan = document.getElementById('longest-streak');
         const levelTitleSpan = document.getElementById('level-title');
         const levelIconSpan = document.getElementById('level-icon');
-        const currentYearSpan = document.getElementById('current-year'); // For footer year
+        const currentYearSpan = document.getElementById('current-year');
+        // Note: todayBtn is fetched inside initializeAndColorCalendar now
 
         // --- Constants ---
         const totalQuranPages = 604;
-        const initialTotalRows = 320;
+        const initialTotalRows = 320; // Ensure this matches your plan logic
 
         // --- Global State ---
         let currentUser = null;
         let currentPlanData = null;
         let calendarInstance = null;
-        let dayStatus = {}; // Global for calendar coloring
+        let dayStatus = {};
 
         // --- Data Arrays & Helper Functions (Ensure these are complete/correct) ---
         const surahs = ['الفاتحة والبقرة', 'آل عمران', 'النساء', 'المائدة', 'الأنعام', 'الأعراف', 'الأنفال', 'التوبة', 'يونس', 'هود', 'يوسف', 'الرعد', 'إبراهيم', 'الحجر', 'النحل', 'الإسراء', 'الكهف', 'مريم', 'طه', 'الأنبياء', 'الحج', 'المؤمنون', 'النور', 'الفرقان', 'الشعراء', 'النمل', 'القصص', 'العنكبوت', 'الروم', 'لقمان', 'السجدة', 'الأحزاب', 'سبأ', 'فاطر', 'يس', 'الصافات', 'ص', 'الزمر', 'غافر', 'فصلت', 'الشورى', 'الزخرف', 'الدخان', 'الجاثية', 'الأحقاف', 'محمد', 'الفتح', 'الحجرات', 'ق', 'الذاريات', 'الطور', 'النجم', 'القمر', 'الرحمن', 'الواقعة', 'الحديد', 'المجادلة', 'الحشر', 'الممتحنة', 'الصف', 'الجمعة', 'المنافقون', 'التغابن', 'الطلاق', 'التحريم', 'الملك', 'القلم', 'الحاقة', 'المعارج', 'نوح', 'الجن', 'المزمل', 'المدثر', 'القيامة', 'الإنسان', 'المرسلات', 'النبأ', 'النازعات', 'عبس', 'التكوير', 'الإنفطار', 'المطففين', 'الإنشقاق', 'البروج', 'الطارق', 'الأعلى', 'الغاشية', 'الفجر', 'البلد', 'الشمس', 'الليل', 'الضحى', 'الشرح', 'التين', 'العلق', 'القدر', 'البينة', 'الزلزلة', 'العاديات', 'القارعة', 'التكاثر', 'العصر', 'الهمزة', 'الفيل', 'قريش', 'الماعون', 'الكوثر', 'الكافرون', 'النصر', 'المسد', 'الإخلاص', 'الفلق', 'الناس', 'ختم القرآن'];
@@ -345,7 +373,7 @@
         }
 
         // --- START: Streak, Level Functions ---
-        const levelTitles = [
+        const levelTitles = [ /* ... الألقاب كما هي ... */
             "ابدأ رحلتك!", "🌱 غرسة الإيمان", "✨ بادرة أمل", "🏃 ساعٍ للعلا", "⭐ نجم صاعد",
             "💪 مثابر مجتهد", "🧭 على الدرب", "💯 صاحب السبعين", "🚀 انطلاقة قوية", "💎 جوهرة مصقولة",
             "👑 صاحب المئة يوم", "📖 رفيق القرآن", "🕯️ منارة هدى", "🏔️ قمة شامخة", "🌳 شجرة طيبة",
@@ -363,171 +391,128 @@
              const sortedRows = [...tableRows].sort((a, b) => new Date(a.displayDate) - new Date(b.displayDate));
              let currentStreak = 0; let longestStreak = 0; let currentRun = 0;
              const todayStr = formatDate(new Date());
-             let isStreakActiveToday = false; // Flag if today contributes positively
-
              for (const row of sortedRows) {
-                 if (row.displayDate > todayStr) break; // Only process up to today
-
-                 if (row.type === 'plan' && row.state?.completed) {
-                     currentRun++;
-                     if(row.displayDate === todayStr) isStreakActiveToday = true;
-                 } else if (row.type === 'excuse') {
-                     if (currentRun > longestStreak) longestStreak = currentRun;
-                      // Excuses pause the streak but don't break the historical run for longestStreak
-                     // They also don't count towards the current streak's days
-                     if(row.displayDate === todayStr) isStreakActiveToday = false; // Excuse today doesn't count
-                     // Don't reset currentRun
-                 } else { // Missed day or non-plan/excuse row
-                     if (currentRun > longestStreak) longestStreak = currentRun;
-                     currentRun = 0; // Reset the current run
-                     isStreakActiveToday = false;
-                 }
+                 if (row.displayDate > todayStr) break;
+                 if (row.type === 'plan' && row.state?.completed) { currentRun++; }
+                 else if (row.type === 'excuse') { if (currentRun > longestStreak) longestStreak = currentRun; /* Pause, don't reset run */ }
+                 else { if (currentRun > longestStreak) longestStreak = currentRun; currentRun = 0; }
              }
-             // Final check for longest streak after loop ends
              if (currentRun > longestStreak) longestStreak = currentRun;
-
-             // Recalculate the *actual current* streak ending today (or yesterday)
-             let tempCurrentStreak = 0;
-             let streakBroken = false;
-             // Iterate backwards from the last relevant day (today or earlier)
+             let tempCurrentStreak = 0; let streakBroken = false;
              for (let i = sortedRows.length - 1; i >= 0; i--) {
                  const row = sortedRows[i];
-                 if (row.displayDate > todayStr) continue; // Skip future dates
-
-                 if (row.type === 'plan' && row.state?.completed) {
-                     if (!streakBroken) { // Only count if the streak wasn't broken on a later day
-                         tempCurrentStreak++;
-                     }
-                 } else if (row.type === 'excuse') {
-                     // Excuses don't break the chain when counting backwards, but don't add to the count
-                     continue;
-                 } else {
-                     // Any other type of day (missed, not yet done) breaks the streak definitively.
-                     streakBroken = true;
-                      // If the break happened today, the current streak is 0
-                     if (row.displayDate === todayStr) {
-                         tempCurrentStreak = 0;
-                     }
-                     // Optimization: if streak is broken before today, we can stop counting backwards earlier
-                     // For simplicity, we let it finish, but tempCurrentStreak won't increase further.
-                     break; // Stop counting backwards for the current streak
-                 }
+                 if (row.displayDate > todayStr) continue;
+                 if (row.type === 'plan' && row.state?.completed) { if (!streakBroken) tempCurrentStreak++; }
+                 else if (row.type === 'excuse') { continue; }
+                 else { streakBroken = true; if (row.displayDate === todayStr) tempCurrentStreak = 0; break; }
              }
              currentStreak = tempCurrentStreak;
-
-
              const levelIndex = Math.min(Math.floor(currentStreak / 10), levelTitles.length - 1);
              const currentTitle = levelTitles[levelIndex] || levelTitles[0];
              const currentIcon = levelIcons[levelIndex] || '';
-
              return { currentStreak: currentStreak, longestStreak: longestStreak, currentLevel: levelIndex, currentTitle: currentTitle, currentIcon: currentIcon };
         }
 
 
-        // --- START: Calendar Coloring Functions (Corrected JS + Expecting Corrected CSS) ---
+        // --- START: Calendar Coloring and Initialization Functions ---
 
         /**
          * Applies custom CSS classes to calendar days based on the dayStatus object.
-         * Version using corrected selectors based on user inspection.
          */
         function applyCustomColoring() {
-           // console.log("Attempting to apply custom coloring (Corrected)...");
-            setTimeout(() => {
-                if (!calendarContainer) {
-                    // console.error("Coloring failed: Calendar container not found.");
-                     return;
-                }
-
-                // --- Using the CORRECTED selector ---
+            setTimeout(() => { // Delay to ensure DOM is ready
+                if (!calendarContainer) { return; }
                 const dayButtonElements = calendarContainer.querySelectorAll('.vanilla-calendar-day__btn');
-               // console.log(`Found ${dayButtonElements.length} day button elements with selector '.vanilla-calendar-day__btn'.`);
-
-                if (dayButtonElements.length === 0 && calendarContainer.innerHTML !== '') {
-                    // console.warn("Coloring issue: No day elements found. Is the calendar fully rendered?");
-                }
-
+                if (dayButtonElements.length === 0 && calendarContainer.innerHTML !== '' && !calendarContainer.querySelector('.text')) {
+                     console.warn("applyCustomColoring: No day button elements found. Calendar might not be fully rendered yet.");
+                 }
                 let appliedCount = 0;
-                dayButtonElements.forEach((buttonElement, index) => {
-                    // --- Getting date DIRECTLY from the button using CORRECTED attribute ---
+                dayButtonElements.forEach((buttonElement) => {
                     const dateAttribute = buttonElement.dataset.calendarDay;
-
-                    if (!dateAttribute || !/^\d{4}-\d{2}-\d{2}$/.test(dateAttribute)) {
-                         return; // Skip if date attribute is invalid
-                    }
-
-                    // Remove old classes first
-                    buttonElement.classList.remove('day-completed', 'day-excused');
-
-                    // Check status and apply class
+                    if (!dateAttribute || !/^\d{4}-\d{2}-\d{2}$/.test(dateAttribute)) { return; }
+                    buttonElement.classList.remove('day-completed', 'day-excused'); // Clear previous
                     const status = dayStatus[dateAttribute];
-                    if (status === 'completed') {
-                        buttonElement.classList.add('day-completed');
-                        appliedCount++;
-                    } else if (status === 'excused') {
-                        buttonElement.classList.add('day-excused');
-                        appliedCount++;
-                    }
+                    if (status === 'completed') { buttonElement.classList.add('day-completed'); appliedCount++; }
+                    else if (status === 'excused') { buttonElement.classList.add('day-excused'); appliedCount++; }
                 });
-              // console.log(`Custom coloring logic finished. Applied colors to ${appliedCount} days.`);
-
-            }, 150); // Reduced delay back slightly, adjust if needed
+               // if(appliedCount > 0) console.log(`Applied coloring to ${appliedCount} days.`);
+            }, 150); // 150ms delay
         }
 
         /**
-         * Initializes Vanilla Calendar and sets up the custom coloring mechanism.
+         * Initializes Vanilla Calendar, enables navigation, adds "Today" button functionality.
          */
         function initializeAndColorCalendar(tableRows) {
-           // console.log("Initializing calendar with manual coloring approach...");
+            const calendarContainer = document.getElementById('calendar-container');
+            const todayBtn = document.getElementById('goto-today-btn'); // Get "Today" button
 
             if (!calendarContainer) {
                 console.error("Calendar container '#calendar-container' not found!");
                 return;
             }
 
-            // 1. Prepare the global dayStatus object
+            // 1. Prepare dayStatus object
             dayStatus = {};
             if (tableRows && Array.isArray(tableRows)) {
                 tableRows.forEach(row => {
                     if (row.displayDate && /^\d{4}-\d{2}-\d{2}$/.test(row.displayDate)) {
-                        if (row.type === 'plan' && row.state?.completed) {
-                            dayStatus[row.displayDate] = 'completed';
-                        } else if (row.type === 'excuse') {
-                            dayStatus[row.displayDate] = 'excused';
-                        }
+                        if (row.type === 'plan' && row.state?.completed) { dayStatus[row.displayDate] = 'completed'; }
+                        else if (row.type === 'excuse') { dayStatus[row.displayDate] = 'excused'; }
                     }
                 });
-               // console.log("Prepared dayStatus object:", JSON.stringify(dayStatus, null, 2));
-            } else {
-               // console.log("No tableRows data provided for calendar status.");
             }
 
-            // 2. Set up basic Vanilla Calendar options
+            // 2. Setup Vanilla Calendar options (with navigation enabled)
             const options = {
-                settings: { lang: 'ar', iso8601: false, range: { disablePast: false, disableGaps: false, }, selection: { day: false, month: false, year: false, }, visibility: { theme: 'light', weekend: false, today: true, }, },
+                settings: {
+                    lang: 'ar',
+                    iso8601: false,
+                    range: { disablePast: false, disableGaps: false },
+                    // *** Enable month/year selection for navigation ***
+                    selection: { day: false, month: true, year: true },
+                    visibility: { theme: 'light', weekend: false, today: true },
+                },
                 actions: {
                     update: (calendar) => {
-                       // console.log('Calendar updated, reapplying coloring.');
-                        applyCustomColoring(); // Re-apply coloring on month change
+                        // This is triggered after init, month change, year change, .today() call
+                        applyCustomColoring(); // Always reapply colors on update
                     },
-                     clickDay(event, dates) { /* Optional action */ },
+                    clickDay(event, dates) { /* Optional */ },
+                    // clickMonth, clickYear callbacks are also available if needed
                 }
             };
 
             calendarContainer.innerHTML = ''; // Clear placeholder
 
             try {
-               // console.log("Initializing VanillaCalendar instance...");
-                // Destroy previous instance if exists to prevent issues
+                // Destroy previous instance cleanly if it exists
                 if (calendarInstance && typeof calendarInstance.destroy === 'function') {
                      calendarInstance.destroy();
-                   // console.log("Previous calendar instance destroyed.");
                 }
                 calendarInstance = new VanillaCalendar(calendarContainer, options);
-                calendarInstance.init();
-               // console.log("Vanilla Calendar initialized successfully.");
+                calendarInstance.init(); // Initialize the calendar
 
-                // 3. Apply coloring for the first time
-                applyCustomColoring();
+                // NOTE: applyCustomColoring is now called via the 'update' action triggered by init()
+
+                // 3. Attach "Go to Today" button listener
+                if (todayBtn && calendarInstance) {
+                    // Remove previous listener if any to prevent duplicates
+                    todayBtn.replaceWith(todayBtn.cloneNode(true)); // Simple way to remove all listeners
+                    const newTodayBtn = document.getElementById('goto-today-btn'); // Get the new clone
+
+                    newTodayBtn.addEventListener('click', () => {
+                        if (calendarInstance && typeof calendarInstance.today === 'function') {
+                           // console.log('Navigating calendar to today.');
+                            calendarInstance.today();
+                            // The 'update' action will handle recoloring
+                        } else {
+                            console.error('Cannot go to today, calendar instance or method missing.');
+                        }
+                    });
+                   // console.log('Go to Today button event listener attached.');
+                } else if (!todayBtn) {
+                   // console.warn('Go to Today button (#goto-today-btn) not found.');
+                }
 
             } catch (error) {
                 console.error("Error initializing Vanilla Calendar:", error);
@@ -535,10 +520,10 @@
             }
         }
 
-        // --- END: Calendar Coloring Functions ---
+        // --- END: Calendar Coloring and Initialization Functions ---
 
 
-        // --- MODIFIED Functions to Update Dashboard Sections ---
+        // --- Dashboard Display Functions (Update UI) ---
         function displayDailyTask() {
             if (!dailyTaskContent || !currentPlanData || !currentPlanData.tableRows) {
                 if(dailyTaskContent) dailyTaskContent.innerHTML = '<p><i>جاري تحميل بيانات الخطة...</i></p>';
@@ -546,23 +531,16 @@
                 return;
             }
             const tableRows = currentPlanData.tableRows;
-            const today = new Date();
-            const todayStr = formatDate(today);
+            const todayStr = formatDate(new Date());
             if (todayDateSpan) todayDateSpan.textContent = todayStr;
             const todayRow = tableRows.find(row => row.displayDate === todayStr);
-
             if (!todayRow) { dailyTaskContent.innerHTML = '<p>لا يوجد واجب مقرر في الخطة لهذا اليوم.</p>'; }
             else if (todayRow.type === 'excuse') { dailyTaskContent.innerHTML = `<p style="color: orange; font-weight:bold;">لديك عذر مسجل لهذا اليوم (${todayRow.excuseType || ''}).</p>`; }
             else if (todayRow.type === 'plan' && todayRow.state?.completed) { dailyTaskContent.innerHTML = '<p style="color: green; font-weight: bold;">✅ الحمد لله، لقد أتممت واجب هذا اليوم!</p>'; }
-            else if (todayRow.type === 'plan' && (!todayRow.state || !todayRow.state.completed)) { // Handle missing state or not completed
+            else if (todayRow.type === 'plan' && (!todayRow.state || !todayRow.state.completed)) {
                 const taskDetails = getPlanData(todayRow.originalSequence);
-                if (taskDetails) {
-                    let taskHTML = `<h4>المطلوب إنجازه اليوم (${todayStr}):</h4>`;
-                    taskHTML += `<p><strong>الحفظ الجديد:</strong> ${taskDetails.fromPage ? `ص ${taskDetails.fromPage} - ${taskDetails.toPage}` : 'لا يوجد'} (${taskDetails.surah || 'مراجعة'})</p>`;
-                    taskHTML += `<p><strong>الربط:</strong> ${taskDetails.linkFrom ? `من ${taskDetails.linkFrom} إلى ${taskDetails.linkTo}` : 'لا يوجد'}</p>`;
-                    taskHTML += `<p><strong>المراجعة:</strong> ${taskDetails.reviewFrom ? `من ${taskDetails.reviewFrom} إلى ${taskDetails.reviewTo}` : 'لا يوجد'} ${taskDetails.round ? `(ج${taskDetails.round})` : ''}</p>`;
-                    dailyTaskContent.innerHTML = taskHTML;
-                } else { dailyTaskContent.innerHTML = `<p><i>خطأ: لم يتم العثور على تفاصيل الواجب للفهرس ${todayRow.originalSequence}.</i></p>`; }
+                if (taskDetails) { let taskHTML = `<h4>المطلوب إنجازه اليوم (${todayStr}):</h4>`; taskHTML += `<p><strong>الحفظ الجديد:</strong> ${taskDetails.fromPage ? `ص ${taskDetails.fromPage} - ${taskDetails.toPage}` : 'لا يوجد'} (${taskDetails.surah || 'مراجعة'})</p>`; taskHTML += `<p><strong>الربط:</strong> ${taskDetails.linkFrom ? `من ${taskDetails.linkFrom} إلى ${taskDetails.linkTo}` : 'لا يوجد'}</p>`; taskHTML += `<p><strong>المراجعة:</strong> ${taskDetails.reviewFrom ? `من ${taskDetails.reviewFrom} إلى ${taskDetails.reviewTo}` : 'لا يوجد'} ${taskDetails.round ? `(ج${taskDetails.round})` : ''}</p>`; dailyTaskContent.innerHTML = taskHTML; }
+                else { dailyTaskContent.innerHTML = `<p><i>خطأ: لم يتم العثور على تفاصيل الواجب للفهرس ${todayRow.originalSequence}.</i></p>`; }
             } else { dailyTaskContent.innerHTML = '<p><i>واجب اليوم لم يكتمل بعد أو حالته غير معروفة.</i></p>'; }
         }
         function displayProgress(stats) {
@@ -593,16 +571,11 @@
             if (!user) return;
             const uid = user.uid;
             const planRef = db.collection("quranPlans").doc(uid);
-           // console.log("Dashboard: Checking Firestore for plan:", uid);
             showLoading("جاري تحميل بيانات خطتك...");
-
             planRef.get().then((doc) => {
                 hideLoading();
                 if (doc.exists) {
-                  //  console.log("Dashboard: Plan data found.");
                     currentPlanData = doc.data();
-
-                    // Validate crucial data
                     if (!currentPlanData.startDate || !currentPlanData.planType || !currentPlanData.tableRows || !Array.isArray(currentPlanData.tableRows) || !currentPlanData.repetitionMax) {
                         console.error("Loaded data missing required fields.", currentPlanData);
                         dashboardContent.style.display = 'block';
@@ -611,33 +584,24 @@
                         sectionsToHideOnError.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
                         return;
                     }
-
-                    // --- Process Data & Update UI ---
                     const stats = calculateDashboardStats(currentPlanData.tableRows);
                     const streakData = calculateStreaksAndLevel(currentPlanData.tableRows);
-
                     displayDailyTask();
                     displayProgress(stats);
                     displayStats(stats);
                     displayStreakAndLevel(streakData);
-
-                    // Initialize Calendar (which will then call applyCustomColoring)
-                    initializeAndColorCalendar(currentPlanData.tableRows);
-
-                    displayDashboard(); // Show content after all updates
-
-                } else {
-                   // console.log("Dashboard: No plan data found.");
+                    initializeAndColorCalendar(currentPlanData.tableRows); // Init calendar
+                    displayDashboard();
+                } else { /* No plan found logic */
                     displayDashboard();
                     dailyTaskContent.innerHTML = '<p style="color:orange; font-weight:bold;">لم تقم باختيار أو إنشاء خطة بعد!</p><p>اذهب إلى <a href="index.html">صفحة البداية</a> لاختيار خطتك.</p>';
                     const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level'];
                     sectionsToHide.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
                 }
-            }).catch((error) => {
+            }).catch((error) => { /* Error handling */
                 console.error("Error getting plan document:", error);
-                hideLoading();
-                displayDashboard();
-                dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">حدث خطأ أثناء تحميل بيانات الخطة. (${error.code || 'UNKNOWN'})</p><p>يرجى المحاولة مرة أخرى أو التأكد من اتصالك بالإنترنت وقواعد الأمان في Firestore. <a href="index.html">العودة للرئيسية</a></p>`;
+                hideLoading(); displayDashboard();
+                dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">حدث خطأ أثناء تحميل بيانات الخطة. (${error.code || 'UNKNOWN'})</p><p>يرجى المحاولة مرة أخرى. <a href="index.html">العودة للرئيسية</a></p>`;
                 const sectionsToHideOnError = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level'];
                 sectionsToHideOnError.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
             });
@@ -646,26 +610,22 @@
         // --- Authentication Listener ---
         auth.onAuthStateChanged(user => {
            currentUser = user;
-           if (user) {
-              // console.log("Dashboard: Auth state OK.");
-               loadDashboardData(user);
-           } else {
-              // console.log("Dashboard: Not logged in.");
+           if (user) { loadDashboardData(user); }
+           else { /* Not logged in logic */
                showLoading("غير مسجل الدخول. يرجى تسجيل الدخول أولاً.");
                if(dashboardContent) dashboardContent.style.display = 'block';
                if(dailyTaskContent) dailyTaskContent.innerHTML = '<p style="color:red;">يرجى <a href="index.html">تسجيل الدخول</a> لعرض لوحة المتابعة.</p>';
                const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level'];
                sectionsToHide.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
-               hideLoading(); // Hide spinner after showing message
+               if (calendarInstance && typeof calendarInstance.destroy === 'function') { calendarInstance.destroy(); calendarInstance = null;} // Clean up calendar if logged out
+               hideLoading();
            }
         });
 
         // --- Initial Load & Footer Year ---
         document.addEventListener('DOMContentLoaded', () => {
             showLoading("جاري التحقق من تسجيل الدخول...");
-            if(currentYearSpan) {
-                currentYearSpan.textContent = new Date().getFullYear(); // Update footer year
-            }
+            if(currentYearSpan) { currentYearSpan.textContent = new Date().getFullYear(); }
             // Auth listener handles data loading
         });
 
