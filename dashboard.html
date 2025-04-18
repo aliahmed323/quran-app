@@ -91,7 +91,7 @@
             display: block; font-size: 1.0em; color: #2c3e50; /* Same color */
             font-weight: bold; line-height: 1.4; /* Same font */
         }
-         .streak-info-condensed .level-number-display { margin-bottom: 3px; }
+         .streak-info-condensed .level-number-display { margin-bottom: 3px; } /* Space below level */
          .streak-info-condensed .level-title-display .level-icon { font-size: 1.1em; margin-right: 3px; vertical-align: middle; }
         /* Info Icon Styling */
         .info-icon {
@@ -130,8 +130,7 @@
 
 
         /* --- Calendar Day Coloring CSS --- */
-        /* This part uses the library's mechanism (settings.dates) */
-        /* Styles should target the classes added by the library */
+        /* These styles rely on the JS adding the classes */
         .vanilla-calendar .vanilla-calendar-day__btn { border: 1px solid transparent; background-color: transparent; cursor: pointer; width: 34px; height: 34px; padding: 0; display: flex; justify-content: center; align-items: center; font-size: 0.9em; position: relative; border-radius: 50%; transition: background-color 0.2s, color 0.2s, border-color 0.2s; color: #333; }
         .vanilla-calendar .vanilla-calendar-day__btn.day-completed { background-color: #abebc6 !important; color: #186a3b !important; font-weight: bold; border-color: #82e0aa !important; }
         .vanilla-calendar .vanilla-calendar-day__btn.day-excused { background-color: #fadbd8 !important; color: #922b21 !important; font-weight: bold; border-color: #f5b7b1 !important; }
@@ -272,6 +271,7 @@
         let currentPlanData = null;
         let calendarInstance = null;
         let dayStatus = {};
+        let calendarObserver = null; // Variable for the MutationObserver
 
         // --- Data Arrays & Helper Functions ---
         const surahs = [ /* ... كما هي ... */ 'الفاتحة والبقرة', 'آل عمران', 'النساء', 'المائدة', 'الأنعام', 'الأعراف', 'الأنفال', 'التوبة', 'يونس', 'هود', 'يوسف', 'الرعد', 'إبراهيم', 'الحجر', 'النحل', 'الإسراء', 'الكهف', 'مريم', 'طه', 'الأنبياء', 'الحج', 'المؤمنون', 'النور', 'الفرقان', 'الشعراء', 'النمل', 'القصص', 'العنكبوت', 'الروم', 'لقمان', 'السجدة', 'الأحزاب', 'سبأ', 'فاطر', 'يس', 'الصافات', 'ص', 'الزمر', 'غافر', 'فصلت', 'الشورى', 'الزخرف', 'الدخان', 'الجاثية', 'الأحقاف', 'محمد', 'الفتح', 'الحجرات', 'ق', 'الذاريات', 'الطور', 'النجم', 'القمر', 'الرحمن', 'الواقعة', 'الحديد', 'المجادلة', 'الحشر', 'الممتحنة', 'الصف', 'الجمعة', 'المنافقون', 'التغابن', 'الطلاق', 'التحريم', 'الملك', 'القلم', 'الحاقة', 'المعارج', 'نوح', 'الجن', 'المزمل', 'المدثر', 'القيامة', 'الإنسان', 'المرسلات', 'النبأ', 'النازعات', 'عبس', 'التكوير', 'الإنفطار', 'المطففين', 'الإنشقاق', 'البروج', 'الطارق', 'الأعلى', 'الغاشية', 'الفجر', 'البلد', 'الشمس', 'الليل', 'الضحى', 'الشرح', 'التين', 'العلق', 'القدر', 'البينة', 'الزلزلة', 'العاديات', 'القارعة', 'التكاثر', 'العصر', 'الهمزة', 'الفيل', 'قريش', 'الماعون', 'الكوثر', 'الكافرون', 'النصر', 'المسد', 'الإخلاص', 'الفلق', 'الناس', 'ختم القرآن'];
@@ -299,48 +299,65 @@
         function calculateStreaksAndLevel(tableRows) { /* ... كما هي ... */ if (!tableRows || tableRows.length === 0) { return { currentStreak: 0, longestStreak: 0, currentLevel: 0, currentTitle: levelTitles[0], currentIcon: '' }; } const sortedRows = [...tableRows].sort((a, b) => new Date(a.displayDate) - new Date(b.displayDate)); let currentStreak = 0; let longestStreak = 0; let currentRun = 0; const todayStr = formatDate(new Date()); for (const row of sortedRows) { if (row.displayDate > todayStr) break; if (row.type === 'plan' && row.state?.completed) { currentRun++; } else if (row.type === 'excuse') { if (currentRun > longestStreak) longestStreak = currentRun; } else { if (currentRun > longestStreak) longestStreak = currentRun; currentRun = 0; } } if (currentRun > longestStreak) longestStreak = currentRun; let tempCurrentStreak = 0; let streakBroken = false; for (let i = sortedRows.length - 1; i >= 0; i--) { const row = sortedRows[i]; if (row.displayDate > todayStr) continue; if (row.type === 'plan' && row.state?.completed) { if (!streakBroken) tempCurrentStreak++; } else if (row.type === 'excuse') { continue; } else { streakBroken = true; if (row.displayDate === todayStr) tempCurrentStreak = 0; break; } } currentStreak = tempCurrentStreak; const levelIndex = Math.min(Math.floor(currentStreak / 10), levelTitles.length - 1); const currentTitle = levelTitles[levelIndex] || levelTitles[0]; const currentIcon = levelIcons[levelIndex] || ''; return { currentStreak: currentStreak, longestStreak: longestStreak, currentLevel: levelIndex, /* Return 0-based index */ currentTitle: currentTitle, currentIcon: currentIcon }; }
 
 
-        // --- START: Calendar Initialization (Using settings.dates) ---
-
-        // !! Function applyCustomColoring REMOVED !!
-        // !! Function attachTodayButtonListener REMOVED !!
+        // --- START: Calendar Coloring and Initialization Functions (Using MutationObserver) ---
 
         /**
-         * Initializes Vanilla Calendar using the built-in 'settings.dates' option
-         * to apply classes for completed/excused days.
+         * Applies custom CSS classes to calendar days. (Manual method)
+         */
+        function applyCustomColoring() {
+            console.log("[applyCustomColoring] Function called.");
+            setTimeout(() => {
+                if (!calendarContainer) { console.error("[applyCustomColoring] Error: Calendar container not found."); return; }
+                const dayButtonElements = calendarContainer.querySelectorAll('.vanilla-calendar-day__btn');
+                console.log(`[applyCustomColoring] Found ${dayButtonElements.length} elements.`);
+
+                if (dayButtonElements.length === 0 && calendarContainer.innerHTML !== '' && !calendarContainer.querySelector('.text')) {
+                     console.warn("[applyCustomColoring] No day elements found.");
+                     return;
+                 }
+
+                let appliedCount = 0;
+                dayButtonElements.forEach((buttonElement) => {
+                    const dateAttribute = buttonElement.dataset.calendarDay;
+                    if (!dateAttribute || !/^\d{4}-\d{2}-\d{2}$/.test(dateAttribute)) { return; }
+                    buttonElement.classList.remove('day-completed', 'day-excused'); // Clear first
+                    const status = dayStatus[dateAttribute];
+                    if (status === 'completed') { buttonElement.classList.add('day-completed'); appliedCount++; }
+                    else if (status === 'excused') { buttonElement.classList.add('day-excused'); appliedCount++; }
+                });
+                if(appliedCount > 0 || dayButtonElements.length > 0) {
+                     console.log(`[applyCustomColoring] Finished. Applied colors to ${appliedCount} days.`);
+                 }
+            }, 300); // Moderate delay
+        }
+
+        /**
+         * Initializes Vanilla Calendar and sets up MutationObserver for persistent coloring.
          */
         function initializeAndColorCalendar(tableRows) {
-            console.log("[initializeAndColorCalendar] Initializing using settings.dates method...");
+            console.log("[initializeAndColorCalendar] Initializing with MutationObserver approach...");
             const calendarContainer = document.getElementById('calendar-container');
             if (!calendarContainer) { console.error("[initializeAndColorCalendar] Calendar container not found!"); return false; }
 
-            // 1. Prepare dayStatus object (as before)
+            // 1. Prepare dayStatus object
             dayStatus = {};
             if (tableRows && Array.isArray(tableRows)) {
                 tableRows.forEach(row => { /* ... */ if (row.displayDate && /^\d{4}-\d{2}-\d{2}$/.test(row.displayDate)) { if (row.type === 'plan' && row.state?.completed) { dayStatus[row.displayDate] = 'completed'; } else if (row.type === 'excuse') { dayStatus[row.displayDate] = 'excused'; } } });
                  console.log("[initializeAndColorCalendar] Prepared dayStatus object:", Object.keys(dayStatus).length > 0 ? "Contains data" : "Empty");
             }
 
-            // 2. Build settings.dates object
-            const calendarDatesOption = {};
-            for (const date in dayStatus) {
-                if (dayStatus[date] === 'completed') { calendarDatesOption[date] = { class: ['day-completed'] }; }
-                else if (dayStatus[date] === 'excused') { calendarDatesOption[date] = { class: ['day-excused'] }; }
-            }
-            console.log("[initializeAndColorCalendar] Generated calendarDatesOption for settings:", calendarDatesOption);
-
-            // 3. Setup Vanilla Calendar options
+            // 2. Setup Vanilla Calendar options (Manual coloring, nav enabled)
             const options = {
-                settings: {
-                    lang: 'ar', iso8601: false,
-                    range: { disablePast: false, disableGaps: false },
-                    selection: { day: false, month: true, year: true },
-                    visibility: { theme: 'light', weekend: false, today: true },
-                    dates: calendarDatesOption // Pass the generated object here
-                },
-                actions: {
-                     // No update action needed for coloring when using settings.dates
+                settings: { lang: 'ar', iso8601: false, range: { disablePast: false, disableGaps: false }, selection: { day: false, month: true, year: true }, visibility: { theme: 'light', weekend: false, today: true }, },
+                 actions: {
+                     // Keep update as a potential trigger, but rely more on Observer
+                     update: (calendar) => {
+                         console.log("[VanillaCalendar Action] 'update' event fired (backup coloring trigger).");
+                         applyCustomColoring();
+                     },
                      clickDay(event, dates) { /* Optional */ },
                  }
+                 // No settings.dates here
             };
 
             calendarContainer.innerHTML = ''; // Clear placeholder
@@ -348,13 +365,21 @@
             try {
                 console.log("[initializeAndColorCalendar] Destroying previous instance...");
                 if (calendarInstance && typeof calendarInstance.destroy === 'function') { calendarInstance.destroy(); calendarInstance = null; }
+                if (calendarObserver) { calendarObserver.disconnect(); console.log("[initializeAndColorCalendar] Disconnected previous observer."); } // Disconnect old observer
 
-                console.log("[initializeAndColorCalendar] Creating new VanillaCalendar instance with settings.dates...");
+                console.log("[initializeAndColorCalendar] Creating new VanillaCalendar instance...");
                 calendarInstance = new VanillaCalendar(calendarContainer, options);
 
                 console.log("[initializeAndColorCalendar] Calling calendarInstance.init()...");
                 calendarInstance.init();
-                 console.log("[initializeAndColorCalendar] Calendar initialized via settings.dates.");
+                 console.log("[initializeAndColorCalendar] Calendar initialized.");
+
+                // --- Explicitly call initial coloring AFTER init ---
+                 console.log("[initializeAndColorCalendar] Calling initial applyCustomColoring().");
+                 applyCustomColoring();
+
+                // --- Setup MutationObserver AFTER initializing calendar ---
+                setupCalendarObserver();
 
                  return true; // Signal success
 
@@ -362,21 +387,67 @@
                 console.error("[initializeAndColorCalendar] Error:", error);
                 calendarContainer.innerHTML = `<p class="text" style="color:red;">Error initializing calendar. (${error.message})</p>`;
                 calendarInstance = null;
-                return false; // Signal failure
+                if (calendarObserver) { calendarObserver.disconnect(); } // Disconnect observer on error
+                return false;
             }
         }
-        // --- END: Calendar Initialization ---
 
+        /**
+         * Sets up the MutationObserver to watch for changes in the calendar container.
+         */
+        function setupCalendarObserver() {
+            if (!calendarContainer || !window.MutationObserver) {
+                console.warn("[setupCalendarObserver] Container not found or MutationObserver not supported.");
+                return;
+             }
 
-        // --- Display Streak Info (Rearranged, New Level Format, Unicode Icon) ---
+            // Debounce function to prevent excessive calls
+            let debounceTimeout;
+            const debouncedApplyColoring = () => {
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(() => {
+                    console.log("[MutationObserver Debounced] Applying colors after DOM change.");
+                    applyCustomColoring();
+                }, 150); // Debounce delay
+            };
+
+            const config = { childList: true, subtree: true }; // Watch for node additions/removals
+
+            const callback = function(mutationsList, observer) {
+                let relevantChangeDetected = false;
+                for(const mutation of mutationsList) {
+                    // Check if day buttons were likely added or removed
+                     if (mutation.type === 'childList' && (mutation.addedNodes.length > 0 || mutation.removedNodes.length > 0)) {
+                        // Simple check: Does the change involve the calendar body or day buttons?
+                        if (mutation.target.classList?.contains('vcal-body') ||
+                            mutation.target.querySelector?.('.vanilla-calendar-day__btn') ||
+                            Array.from(mutation.addedNodes).some(node => node.nodeType === 1 && (node.classList?.contains('vanilla-calendar-day__btn') || node.querySelector?.('.vanilla-calendar-day__btn'))) ||
+                             Array.from(mutation.removedNodes).some(node => node.nodeType === 1 && node.classList?.contains('vanilla-calendar-day__btn')))
+                        {
+                             relevantChangeDetected = true;
+                             break; // Found a relevant change, no need to check further mutations in this batch
+                         }
+                     }
+                }
+                if (relevantChangeDetected) {
+                    console.log('[MutationObserver] Detected relevant change in calendar, triggering debounced coloring.');
+                    debouncedApplyColoring();
+                }
+            };
+
+            calendarObserver = new MutationObserver(callback);
+            calendarObserver.observe(calendarContainer, config);
+            console.log("[setupCalendarObserver] MutationObserver is now watching #calendar-container.");
+        }
+
+        // --- Display Streak Info (Rearranged, Level starts at 1, Unicode Icon) ---
         function displayStreakInfoInCalendarCard(streakData) {
             const targetDiv = document.getElementById('calendar-streak-info');
             if (!targetDiv) { console.warn("Target div #calendar-streak-info not found."); return; }
 
             const currentStreakTitle = "عدد الأيام المتتالية التي أكملت فيها واجبك حتى اليوم.";
             const longestStreakTitle = "أطول سلسلة أيام متتالية أكملت فيها واجبك خلال الخطة.";
-            // Calculate display level (starts from 1)
-            const displayLevel = streakData.currentLevel + 1;
+            const displayLevel = streakData.currentLevel + 1; // Display level starting from 1
             const levelExplanation = `يعتمد مستواك (${displayLevel}) ولقبك على عدد أيام إنجازك المتتالية الحالية.`;
             const infoIconHTML = `<span class="info-icon" title="${levelExplanation}">&#x2139;</span>`; // Unicode Info Icon
 
@@ -397,7 +468,8 @@
                 <div class="level-display-wrapper" title="${levelExplanation}">
                     <span class="level-number-display">مستواك الحالي: ${displayLevel}</span>
                     <span class="level-title-display">لقبك الحالي: ${streakData.currentTitle} ${streakData.currentIcon}</span>
-                     ${infoIconHTML} </div>
+                     ${infoIconHTML}
+                </div>
             `;
             targetDiv.innerHTML = content;
             targetDiv.style.display = 'block';
@@ -427,8 +499,8 @@
                      displayDailyTask();
                      displayProgress(stats);
                      displayStats(stats);
-                     displayStreakInfoInCalendarCard(streakData); // Use updated function
-                     // Initialize calendar using settings.dates method
+                     displayStreakInfoInCalendarCard(streakData);
+                     // Initialize calendar - Observer is set up inside this function
                      initializeAndColorCalendar(currentPlanData.tableRows);
                      displayDashboard();
                  } else { /* No plan found logic */
@@ -456,6 +528,8 @@
                  if(dailyTaskContent) dailyTaskContent.innerHTML = '<p style="color:red;">يرجى <a href="index.html">تسجيل الدخول</a> لعرض لوحة المتابعة.</p>';
                  const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view'];
                  sectionsToHide.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
+                 // Disconnect observer if user logs out
+                 if (calendarObserver) { calendarObserver.disconnect(); calendarObserver = null; console.log("Disconnected observer on logout.");}
                  if (calendarInstance && typeof calendarInstance.destroy === 'function') { calendarInstance.destroy(); calendarInstance = null;}
                  hideLoading();
              }
