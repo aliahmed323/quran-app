@@ -395,113 +395,137 @@
         /**
          * Applies custom CSS classes to calendar days based on the dayStatus object.
          */
-        function applyCustomColoring() {
-            setTimeout(() => { // Short delay to ensure DOM rendering
-                if (!calendarContainer) return;
-
-                // Selector for the clickable day buttons in Vanilla Calendar v2
-                const dayElements = calendarContainer.querySelectorAll('.vcal-day__btn');
-
-                dayElements.forEach(buttonElement => {
-                    // Find the inner element holding the date attribute
-                    const dateSpan = buttonElement.querySelector('[data-calendar-date]');
-                    if (!dateSpan) return;
-
-                    const dateAttribute = dateSpan.dataset.calendarDate; // Get the 'YYYY-MM-DD' date
-                    if (!dateAttribute) return;
-
-                    // Remove old classes first to prevent duplicates
-                    buttonElement.classList.remove('day-completed', 'day-excused');
-
-                    // Check status in the global dayStatus object and apply the class to the button
-                    if (dayStatus[dateAttribute] === 'completed') {
-                        buttonElement.classList.add('day-completed');
-                    } else if (dayStatus[dateAttribute] === 'excused') {
-                        buttonElement.classList.add('day-excused');
-                    }
-                });
-               // console.log('Custom calendar coloring applied.'); // For debugging
-
-            }, 150); // Delay in milliseconds (adjust if needed)
+/**
+ * تطبق كلاسات CSS المخصصة على أيام التقويم بناءً على كائن dayStatus.
+ */
+function applyCustomColoring() {
+    console.log("Attempting to apply custom coloring..."); // <-- سجل المحاولة
+    setTimeout(() => {
+        if (!calendarContainer) {
+             console.error("Coloring failed: Calendar container not found.");
+             return;
         }
 
-        /**
-         * Initializes Vanilla Calendar and sets up the custom coloring mechanism.
-         * @param {Array} tableRows - The plan data rows from Firestore.
-         */
-        function initializeAndColorCalendar(tableRows) {
-            console.log("Initializing calendar with manual coloring approach...");
+        // المحدد لعناصر الأيام القابلة للنقر في Vanilla Calendar v2
+        const dayElements = calendarContainer.querySelectorAll('.vcal-day__btn');
+        console.log(`Found ${dayElements.length} day button elements with selector '.vcal-day__btn'.`); // <-- سجل عدد العناصر
 
-            if (!calendarContainer) {
-                console.error("Calendar container '#calendar-container' not found!");
-                return;
-            }
-
-            // 1. Prepare the global dayStatus object from tableRows
-            dayStatus = {}; // Reset the object before filling
-            if (tableRows && Array.isArray(tableRows)) {
-                tableRows.forEach(row => {
-                    // Ensure date format is correct (YYYY-MM-DD)
-                    if (row.displayDate && /^\d{4}-\d{2}-\d{2}$/.test(row.displayDate)) {
-                        if (row.type === 'plan' && row.state?.completed) {
-                            dayStatus[row.displayDate] = 'completed';
-                        } else if (row.type === 'excuse') {
-                            dayStatus[row.displayDate] = 'excused';
-                        }
-                    }
-                });
-               // console.log("Prepared dayStatus object:", dayStatus); // For debugging
-            } else {
-                console.log("No tableRows data provided for calendar status.");
-            }
-
-            // 2. Set up basic Vanilla Calendar options (NO built-in coloring)
-            const options = {
-                settings: {
-                    lang: 'ar', // Arabic language
-                    iso8601: false, // Sunday as first day of week
-                    range: { disablePast: false, disableGaps: false }, // Disable range selection features
-                    selection: { day: false, month: false, year: false }, // Disable date selection by click
-                    visibility: {
-                        theme: 'light', // Use light theme
-                        weekend: false, // Do not highlight weekends
-                        today: true,    // Highlight the current day
-                    },
-                },
-                actions: {
-                    // --- !! IMPORTANT: Re-apply coloring when the calendar view updates (e.g., month change) !! ---
-                    update: (calendar) => {
-                        console.log('Calendar updated (e.g., month changed), reapplying coloring.');
-                        applyCustomColoring(); // Re-run the coloring function
-                    },
-                     clickDay(event, dates) {
-                         // Optional: Add functionality if needed when a day is clicked
-                         // console.log('Clicked day:', dates[0]);
-                     },
-                }
-                // Note: Removed date, markup.dates, popups etc. from options
-            };
-
-            calendarContainer.innerHTML = ''; // Clear any placeholder text
-
-            try {
-               // console.log("Initializing VanillaCalendar with options (manual coloring):", options);
-                // Destroy previous instance if exists
-                if (calendarInstance && typeof calendarInstance.destroy === 'function') {
-                     calendarInstance.destroy();
-                }
-                calendarInstance = new VanillaCalendar(calendarContainer, options);
-                calendarInstance.init();
-                console.log("Vanilla Calendar initialized successfully.");
-
-                // 3. Apply coloring for the first time right after initialization
-                applyCustomColoring();
-
-            } catch (error) {
-                console.error("Error initializing Vanilla Calendar:", error);
-                calendarContainer.innerHTML = `<p class="text" style="color:red;">Error initializing calendar. (${error.message})</p>`;
-            }
+        if (dayElements.length === 0) {
+            console.warn("Coloring issue: No day elements found. Check the selector '.vcal-day__btn' or wait longer?");
+            // يمكنك محاولة محدد أوسع مؤقتًا للتشخيص، مثل:
+            // const allElements = calendarContainer.querySelectorAll('*');
+            // console.log('All elements inside container:', allElements);
         }
+
+        let appliedCount = 0;
+        dayElements.forEach((buttonElement, index) => {
+            // البحث عن العنصر الداخلي الذي يحمل التاريخ
+            const dateSpan = buttonElement.querySelector('[data-calendar-date]');
+
+            // --- تشخيص إضافي ---
+            if (!dateSpan) {
+                // إذا لم نجد التاريخ، سجل العنصر الأب لنرى هيكله
+                // console.log(`Index ${index}: Button found, but inner element with [data-calendar-date] NOT found. Button HTML:`, buttonElement.outerHTML);
+                return; // انتقل للعنصر التالي
+            }
+
+            const dateAttribute = dateSpan.dataset.calendarDate; // الحصول على التاريخ 'YYYY-MM-DD'
+
+            if (!dateAttribute || !/^\d{4}-\d{2}-\d{2}$/.test(dateAttribute)) {
+                 console.warn(`Index ${index}: Found date attribute, but format is invalid: '${dateAttribute}'. Expected YYYY-MM-DD.`);
+                 return; // انتقل للعنصر التالي
+            }
+            // --- نهاية التشخيص الإضافي ---
+
+            // إزالة الكلاسات القديمة لضمان عدم التراكم
+            buttonElement.classList.remove('day-completed', 'day-excused');
+
+            // التحقق من الحالة في كائن dayStatus وتطبيق الكلاس الجديد على الزر نفسه
+            const status = dayStatus[dateAttribute]; // احصل على الحالة
+            if (status === 'completed') {
+                buttonElement.classList.add('day-completed');
+                // console.log(`Applied 'day-completed' to ${dateAttribute}`); // <-- سجل عند التطبيق
+                appliedCount++;
+            } else if (status === 'excused') {
+                buttonElement.classList.add('day-excused');
+                // console.log(`Applied 'day-excused' to ${dateAttribute}`); // <-- سجل عند التطبيق
+                appliedCount++;
+            }
+        });
+       console.log(`Custom coloring logic finished. Applied colors to ${appliedCount} days.`); // <-- سجل النتيجة النهائية
+
+    }, 300); // <-- زدنا التأخير قليلاً للتجربة (300ms)
+}
+
+/**
+ * تهيئة Vanilla Calendar وتطبيق التلوين المخصص.
+ * @param {Array} tableRows - مصفوفة بيانات الصفوف من Firestore.
+ */
+function initializeAndColorCalendar(tableRows) {
+    console.log("Initializing calendar with manual coloring approach...");
+    const calendarContainer = document.getElementById('calendar-container');
+
+    if (!calendarContainer) {
+        console.error("Calendar container '#calendar-container' not found!");
+        return;
+    }
+
+    // 1. تحضير كائن dayStatus من tableRows
+    dayStatus = {}; // إعادة تعيين الكائن قبل ملئه
+    if (tableRows && Array.isArray(tableRows)) {
+        tableRows.forEach(row => {
+            if (row.displayDate && /^\d{4}-\d{2}-\d{2}$/.test(row.displayDate)) {
+                if (row.type === 'plan' && row.state?.completed) {
+                    dayStatus[row.displayDate] = 'completed';
+                } else if (row.type === 'excuse') {
+                    dayStatus[row.displayDate] = 'excused';
+                }
+            }
+        });
+        // !! سجل الكائن الناتج للتحقق منه !!
+        console.log("Prepared dayStatus object:", JSON.stringify(dayStatus, null, 2));
+        if (Object.keys(dayStatus).length === 0) {
+            console.warn("dayStatus object is empty. No days will be colored.");
+        }
+    } else {
+        console.log("No tableRows data provided for calendar status.");
+    }
+
+    const today = new Date();
+
+    // 2. إعداد خيارات Vanilla Calendar الأساسية (بدون تلوين مدمج)
+    const options = {
+        settings: { lang: 'ar', iso8601: false, range: { disablePast: false, disableGaps: false, }, selection: { day: false, month: false, year: false, }, visibility: { theme: 'light', weekend: false, today: true, }, },
+        actions: {
+            update: (calendar) => {
+                console.log('Calendar updated (e.g., month changed), reapplying coloring.');
+                applyCustomColoring(); // إعادة تطبيق التلوين
+            },
+             clickDay(event, dates) { /* يمكنك إضافة وظيفة هنا */ },
+        }
+    };
+
+    calendarContainer.innerHTML = ''; // مسح المحتوى المؤقت
+
+    try {
+        console.log("Initializing VanillaCalendar instance...");
+        // Destroy previous instance if exists
+        if (calendarInstance && typeof calendarInstance.destroy === 'function') {
+             calendarInstance.destroy();
+             console.log("Previous calendar instance destroyed.");
+        }
+        calendarInstance = new VanillaCalendar(calendarContainer, options);
+        calendarInstance.init();
+        console.log("Vanilla Calendar initialized successfully.");
+
+        // 3. تطبيق التلوين لأول مرة بعد التهيئة مباشرة
+        applyCustomColoring();
+
+    } catch (error) {
+        console.error("Error initializing Vanilla Calendar:", error);
+        calendarContainer.innerHTML = `<p class="text" style="color:red;">Error initializing calendar. (${error.message})</p>`;
+    }
+}
 
         // --- END: !! NEW Calendar Coloring Code !! ---
 
