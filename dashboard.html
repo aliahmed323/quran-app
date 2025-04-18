@@ -16,7 +16,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
 
     <style>
-        /* --- CSS Styles (General Styles) --- */
+        /* --- General Styles --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Tajawal', sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.7; }
         .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
@@ -29,21 +29,20 @@
         .dashboard-header { display: flex; justify-content: center; align-items: center; padding: 10px 20px; margin-bottom: 25px; border-bottom: 2px solid #aed6f1; background-color: #fff; border-radius: 0 0 8px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .dashboard-header .logo h1 { margin: 0; font-size: 1.8em; color: #1a5276; }
 
-        /* --- !! START: REVISED Dashboard Layout !! --- */
+        /* --- !! START: REVISED Dashboard Layout (Simpler) !! --- */
         .dashboard-grid {
             display: grid;
-            /* تخصيص الأعمدة: الأول يأخذ مساحة أكبر قليلاً، الأخيران متساويان */
-            grid-template-columns: 1.2fr 1fr 1fr;
-            grid-template-rows: auto auto auto; /* تحديد الصفوف تلقائيًا أو حسب الحاجة */
+            grid-template-columns: repeat(3, 1fr); /* 3 columns */
+            grid-template-rows: auto auto auto; /* Auto rows */
             gap: 25px;
         }
-
-        /* توزيع العناصر على الشبكة الجديدة */
-        #daily-task { grid-column: 1 / 4; grid-row: 1 / 2;} /* المهمة اليومية تمتد على عرض الصفحة */
-        #plan-progress { grid-column: 1 / 2; grid-row: 2 / 3; } /* العمود الأول، الصف الثاني */
-        #quick-stats { grid-column: 1 / 2; grid-row: 3 / 4; } /* العمود الأول، الصف الثالث */
-        #streak-level { grid-column: 2 / 3; grid-row: 2 / 4; } /* العمود الثاني، يمتد على الصفين 2 و 3 */
-        #calendar-view { grid-column: 3 / 4; grid-row: 2 / 4; } /* العمود الثالث، يمتد على الصفين 2 و 3 */
+        /* Row 1 */
+        #daily-task { grid-column: 1 / 4; grid-row: 1 / 2; } /* Daily task spans full width */
+        /* Row 2 */
+        #plan-progress { grid-column: 1 / 2; grid-row: 2 / 3; }
+        #quick-stats { grid-column: 1 / 2; grid-row: 3 / 4; } /* Stats below progress */
+        /* Calendar spans remaining columns */
+        #calendar-view { grid-column: 2 / 4; grid-row: 2 / 4; } /* Span cols 2 & 3, rows 2 & 3 */
         /* --- !! END: REVISED Dashboard Layout !! --- */
 
 
@@ -55,7 +54,7 @@
         #daily-task .plan-link { margin-top: 15px; display: inline-block; font-size: 0.9em; background-color: #5dade2; color: white; padding: 5px 10px; border-radius: 4px; }
         #daily-task .plan-link:hover { background-color: #3498db; }
 
-        #plan-progress h3, #quick-stats h3, #calendar-view h3, #competition-section h3, #badges-section h3, #streak-level h3 { font-size: 1.15em; }
+        #plan-progress h3, #quick-stats h3, #calendar-view h3, #competition-section h3, #badges-section h3 { font-size: 1.15em; }
         #plan-progress .progress-bar-container { background-color: #e9ecef; border-radius: 0.25rem; height: 25px; overflow: hidden; margin-top: 10px; border: 1px solid #ccc; }
         #plan-progress .progress-bar-value { background-color: #28a745; height: 100%; width: 0%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9em; font-weight: bold; transition: width 0.6s ease-in-out; }
         #quick-stats ul { list-style: none; padding: 0; margin-top: 15px;}
@@ -63,64 +62,91 @@
         #quick-stats ul li strong { margin-left: 5px; color: #1a5276; min-width: 110px; display: inline-block;}
         #quick-stats ul li span { color: #1e8449; font-weight: bold;}
 
-        /* --- Streak & Level Styles --- */
-        #streak-level .streak-info { display: flex; justify-content: space-around; text-align: center; margin: 15px 0; }
-        #streak-level .streak-info div { background-color: #eaf2f8; padding: 10px 15px; border-radius: 6px; border: 1px solid #d4e6f1; flex: 1; margin: 0 5px; } /* Added flex for equal width */
-        #streak-level .streak-info strong { display: block; font-size: 1.5em; color: #1e8449; }
-        #streak-level .level-title-container { text-align: center; margin-top: 15px; }
-        #streak-level #level-title { font-size: 1.2em; color: #2c3e50; font-weight: bold; }
-        #streak-level #level-icon { font-size: 1.5em; margin-left: 10px; }
+        /* --- Style for Streak Info INSIDE Calendar Card --- */
+        .streak-info-condensed {
+            border-top: 1px solid #eee; /* Separator line */
+            margin-top: 15px;
+            padding-top: 15px;
+            text-align: center;
+        }
+        .streak-info-condensed h4 { /* Title: "الانجاز المتتالي" */
+             font-size: 1.05em;
+             color: #1a5276;
+             margin-bottom: 10px;
+        }
+        .streak-info-condensed .streak-boxes {
+            display: flex;
+            justify-content: space-around; /* Distribute boxes */
+            gap: 10px; /* Space between boxes */
+            margin-bottom: 15px;
+        }
+        .streak-info-condensed .streak-box {
+            background-color: #eaf2f8;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #d4e6f1;
+            font-size: 0.9em;
+            flex: 1; /* Allow boxes to take equal space */
+        }
+         .streak-info-condensed .streak-box strong {
+            display: block;
+            font-size: 1.4em; /* Larger number */
+            color: #1e8449;
+            margin-top: 2px;
+        }
+        .streak-info-condensed .level-display { /* Display for current title */
+             font-size: 1em;
+             color: #2c3e50;
+             font-weight: bold;
+        }
+         .streak-info-condensed .level-display #level-icon {
+             font-size: 1.3em;
+             margin-left: 5px;
+             vertical-align: middle;
+         }
+         /* --- End Streak Info Style --- */
 
 
         /* --- Calendar Section Header & Today Button --- */
-         #calendar-view { min-height: 280px; display: flex; flex-direction: column;} /* Make card flex column */
+         #calendar-view { display: flex; flex-direction: column; } /* Allow content to stack vertically */
          #calendar-view .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px; /* Space below header */
-            flex-shrink: 0; /* Prevent header from shrinking */
+            margin-bottom: 15px;
+            flex-shrink: 0;
         }
-        #calendar-view .card-header h3 {
-            margin-bottom: 0; /* Remove default margin */
-        }
+        #calendar-view .card-header h3 { margin-bottom: 0; }
         .today-button {
-            font-family: 'Tajawal', sans-serif;
-            font-size: 0.8em;
-            padding: 4px 10px;
-            background-color: #eaf2f8;
-            border: 1px solid #aed6f1;
-            border-radius: 4px;
-            cursor: pointer;
-            color: #1a5276;
-            transition: background-color 0.2s;
-            white-space: nowrap; /* Prevent wrapping */
+            font-family: 'Tajawal', sans-serif; font-size: 0.8em; padding: 4px 10px;
+            background-color: #eaf2f8; border: 1px solid #aed6f1; border-radius: 4px;
+            cursor: pointer; color: #1a5276; transition: background-color 0.2s; white-space: nowrap;
         }
-        .today-button:hover {
-            background-color: #d4e6f1;
-            border-color: #aed6f1;
-        }
+        .today-button:hover { background-color: #d4e6f1; border-color: #aed6f1; }
          #calendar-container {
-             margin-top: 0; /* Removed top margin as header has bottom margin */
+             margin-top: 0;
              direction: ltr;
-             flex-grow: 1; /* Allow container to grow */
-             min-height: 250px; /* Ensure minimum height for calendar */
+             min-height: 300px; /* Ensure minimum height */
+             height: auto; /* Allow height to adjust */
+             flex-shrink: 0; /* Prevent shrinking if card has fixed height */
          }
 
 
         /* --- Base Calendar Styles (Vanilla Calendar) --- */
-        .vanilla-calendar { border: 1px solid #ddd; border-radius: 4px; height: 100%; display: flex; flex-direction: column;} /* Make calendar fill height */
-        .vanilla-calendar .vcal-header { background-color: #aed6f1; padding: 10px 0; border-bottom: 1px solid #ddd; flex-shrink: 0;}
-        .vanilla-calendar .vcal-header__label { color: #1a5276; font-weight: bold; cursor: pointer; } /* Make clickable */
+        /* Resetting flex properties that might cause issues */
+        .vanilla-calendar { border: 1px solid #ddd; border-radius: 4px; /* Removed height, display:flex */ }
+        .vanilla-calendar .vcal-header { background-color: #aed6f1; padding: 10px 0; border-bottom: 1px solid #ddd; /* Removed flex-shrink */ }
+        .vanilla-calendar .vcal-header__label { color: #1a5276; font-weight: bold; cursor: pointer; }
         .vanilla-calendar .vcal-arrow { background-color: #ffffff; border-radius: 50%; width: 30px; height: 30px; line-height: 30px; border: 1px solid #ccc; cursor: pointer;}
         .vanilla-calendar .vcal-arrow::before { border-color: #1a5276; }
-        .vanilla-calendar .vcal-week { background-color: #eaf2f8; padding: 5px 0; display: flex; justify-content: space-around; flex-shrink: 0;}
+        .vanilla-calendar .vcal-week { background-color: #eaf2f8; padding: 5px 0; display: flex; justify-content: space-around; /* Removed flex-shrink */ }
         .vanilla-calendar .vcal-week span { color: #1a5276; font-weight: bold; font-size: 0.85em; text-align: center; flex: 1; }
-        .vanilla-calendar .vcal-body { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; padding: 5px; flex-grow: 1; } /* Allow body to grow */
-        .vanilla-calendar .vcal-day { display: flex; justify-content: center; align-items: center; }
+        .vanilla-calendar .vcal-body { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; padding: 5px; /* Removed flex-grow */ }
+        .vanilla-calendar .vcal-day { display: flex; justify-content: center; align-items: center; min-height: 36px; /* Ensure minimum day height */ }
 
 
         /* --- !! START: Calendar Day Coloring CSS (Keep as is) !! --- */
+        /* This part should be correct now */
         .vanilla-calendar .vanilla-calendar-day__btn {
             border: 1px solid transparent; background-color: transparent; cursor: pointer;
             width: 34px; height: 34px; padding: 0; display: flex; justify-content: center;
@@ -180,16 +206,18 @@
             #daily-task { grid-column: span 2; grid-row: 1 / 2; } /* المهمة اليومية تمتد عرضًا */
             #plan-progress { grid-column: 1 / 2; grid-row: 2 / 3; } /* عمود 1، صف 2 */
             #quick-stats { grid-column: 1 / 2; grid-row: 3 / 4; } /* عمود 1، صف 3 */
-            #streak-level { grid-column: 2 / 3; grid-row: 2 / 3; } /* عمود 2، صف 2 */
-            #calendar-view { grid-column: 2 / 3; grid-row: 3 / 4; } /* عمود 2، صف 3 */
-        }
+            /* Calendar now takes full column */
+            #calendar-view { grid-column: 2 / 3; grid-row: 2 / 4; } /* عمود 2، صف 2 & 3 */
+             /* Hide streak info on this layout? Or display it below calendar? */
+             /* Let's keep it inside calendar view */
+         }
 
          @media (max-width: 768px) { /* تخطيط لعمود واحد */
              .dashboard-grid {
                  grid-template-columns: 1fr; /* عمود واحد فقط */
              }
              /* جميع العناصر تمتد على عرض العمود وتأخذ صفها تلقائيًا */
-             #daily-task, #plan-progress, #quick-stats, #calendar-view, #streak-level {
+             #daily-task, #plan-progress, #quick-stats, #calendar-view {
                  grid-column: span 1;
                  grid-row: auto;
              }
@@ -199,8 +227,8 @@
                 align-items: flex-start; /* محاذاة لليمين */
                 gap: 8px; /* مسافة بين العنوان والزر */
             }
-            #streak-level .streak-info { flex-direction: column; gap: 10px; } /* Stack streak boxes */
-            #streak-level .streak-info div { width: auto; margin: 0; } /* Reset width/margin */
+             /* Stack streak boxes vertically inside calendar card */
+             .streak-info-condensed .streak-boxes { flex-direction: column; gap: 8px; }
          }
         /* --- !! END: REVISED Responsive Adjustments !! --- */
 
@@ -222,9 +250,7 @@
 
                 <section id="daily-task" class="card">
                     <h3>🌟 واجب اليوم (<span id="today-date-display">...</span>)</h3>
-                    <div id="daily-task-content">
-                        <p><i>يتم تحديد الواجب...</i></p>
-                    </div>
+                    <div id="daily-task-content"> <p><i>يتم تحديد الواجب...</i></p> </div>
                     <a href="plangen2.html" class="plan-link">الذهاب إلى جدول الخطة التفصيلي &raquo;</a>
                 </section>
 
@@ -250,17 +276,6 @@
                     </ul>
                 </section>
 
-                <section id="streak-level" class="card">
-                    <h3> همة نحو القمة: الإنجاز المتتالي</h3>
-                    <div class="streak-info">
-                        <div>أيام الإنجاز الحالية<strong id="current-streak">0</strong></div>
-                        <div> أطول سلسلة أيام حققتها<strong id="longest-streak">0</strong></div>
-                    </div>
-                    <div class="level-title-container">
-                        <h4>لقبك الحالي: <span id="level-title">ابدأ رحلتك!</span> <span id="level-icon"></span></h4>
-                    </div>
-                </section>
-
                 <section id="calendar-view" class="card">
                     <div class="card-header">
                       <h3>التقويم والتتبع المرئي</h3>
@@ -269,20 +284,11 @@
                     <div id="calendar-container">
                         <p class="text" style="text-align: center; margin-top: 20px;">(جاري تحميل التقويم...)</p>
                     </div>
+                    <div id="calendar-streak-info" class="streak-info-condensed" style="display: none;"> </div>
                 </section>
 
-                <section id="competition-section" class="card" style="display: none;"> <h3>المنافسة</h3>
-                    <div class="placeholder-box">
-                        <div class="icon">🏆</div>
-                        <div class="text">(قريباً: لوحة الصدارة)</div>
-                    </div>
-                </section>
-                <section id="badges-section" class="card" style="display: none;"> <h3>الأوسمة</h3>
-                    <div class="placeholder-box">
-                        <div class="icon">🏅</div>
-                        <div class="text">(قريباً: نظام الأوسمة والحوافز)</div>
-                    </div>
-                </section>
+                <section id="competition-section" class="card" style="display: none;">...</section>
+                <section id="badges-section" class="card" style="display: none;">...</section>
 
             </div>
         </main>
@@ -295,8 +301,8 @@
 
     <script>
         // --- Firebase Config ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyDuUebu7Qzz3JnTfa-58EIPZjOcrkmdGHU", // Consider security rules
+        const firebaseConfig = { /* ... كما هي ... */
+            apiKey: "AIzaSyDuUebu7Qzz3JnTfa-58EIPZjOcrkmdGHU",
             authDomain: "quranplan2.firebaseapp.com",
             projectId: "quranplan2",
             storageBucket: "quranplan2.appspot.com",
@@ -322,16 +328,18 @@
         const statExcuses = document.getElementById('stat-excuses');
         const todayDateSpan = document.getElementById('today-date-display');
         const calendarContainer = document.getElementById('calendar-container');
-        const currentStreakSpan = document.getElementById('current-streak');
-        const longestStreakSpan = document.getElementById('longest-streak');
-        const levelTitleSpan = document.getElementById('level-title');
-        const levelIconSpan = document.getElementById('level-icon');
+        // !! References for streak info inside calendar card (used later) !!
+        const calendarStreakInfoDiv = document.getElementById('calendar-streak-info');
+        // !! Remove old streak refs if they existed !!
+        // const currentStreakSpan = document.getElementById('current-streak');
+        // const longestStreakSpan = document.getElementById('longest-streak');
+        // const levelTitleSpan = document.getElementById('level-title');
+        // const levelIconSpan = document.getElementById('level-icon');
         const currentYearSpan = document.getElementById('current-year');
-        // Note: todayBtn is fetched inside initializeAndColorCalendar now
 
         // --- Constants ---
         const totalQuranPages = 604;
-        const initialTotalRows = 320; // Ensure this matches your plan logic
+        const initialTotalRows = 320;
 
         // --- Global State ---
         let currentUser = null;
@@ -339,12 +347,12 @@
         let calendarInstance = null;
         let dayStatus = {};
 
-        // --- Data Arrays & Helper Functions (Ensure these are complete/correct) ---
-        const surahs = ['الفاتحة والبقرة', 'آل عمران', 'النساء', 'المائدة', 'الأنعام', 'الأعراف', 'الأنفال', 'التوبة', 'يونس', 'هود', 'يوسف', 'الرعد', 'إبراهيم', 'الحجر', 'النحل', 'الإسراء', 'الكهف', 'مريم', 'طه', 'الأنبياء', 'الحج', 'المؤمنون', 'النور', 'الفرقان', 'الشعراء', 'النمل', 'القصص', 'العنكبوت', 'الروم', 'لقمان', 'السجدة', 'الأحزاب', 'سبأ', 'فاطر', 'يس', 'الصافات', 'ص', 'الزمر', 'غافر', 'فصلت', 'الشورى', 'الزخرف', 'الدخان', 'الجاثية', 'الأحقاف', 'محمد', 'الفتح', 'الحجرات', 'ق', 'الذاريات', 'الطور', 'النجم', 'القمر', 'الرحمن', 'الواقعة', 'الحديد', 'المجادلة', 'الحشر', 'الممتحنة', 'الصف', 'الجمعة', 'المنافقون', 'التغابن', 'الطلاق', 'التحريم', 'الملك', 'القلم', 'الحاقة', 'المعارج', 'نوح', 'الجن', 'المزمل', 'المدثر', 'القيامة', 'الإنسان', 'المرسلات', 'النبأ', 'النازعات', 'عبس', 'التكوير', 'الإنفطار', 'المطففين', 'الإنشقاق', 'البروج', 'الطارق', 'الأعلى', 'الغاشية', 'الفجر', 'البلد', 'الشمس', 'الليل', 'الضحى', 'الشرح', 'التين', 'العلق', 'القدر', 'البينة', 'الزلزلة', 'العاديات', 'القارعة', 'التكاثر', 'العصر', 'الهمزة', 'الفيل', 'قريش', 'الماعون', 'الكوثر', 'الكافرون', 'النصر', 'المسد', 'الإخلاص', 'الفلق', 'الناس', 'ختم القرآن'];
-        const linkFromData = ['', '', 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 577 ];
-        const linkToData = ['', '', 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 300, 604 ];
-        const reviewFromData = [...Array(32).fill(''), 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 481];
-        const reviewToData = [...Array(32).fill(''), 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 576];
+        // --- Data Arrays & Helper Functions ---
+        const surahs = [ /* ... كما هي ... */ 'الفاتحة والبقرة', 'آل عمران', 'النساء', 'المائدة', 'الأنعام', 'الأعراف', 'الأنفال', 'التوبة', 'يونس', 'هود', 'يوسف', 'الرعد', 'إبراهيم', 'الحجر', 'النحل', 'الإسراء', 'الكهف', 'مريم', 'طه', 'الأنبياء', 'الحج', 'المؤمنون', 'النور', 'الفرقان', 'الشعراء', 'النمل', 'القصص', 'العنكبوت', 'الروم', 'لقمان', 'السجدة', 'الأحزاب', 'سبأ', 'فاطر', 'يس', 'الصافات', 'ص', 'الزمر', 'غافر', 'فصلت', 'الشورى', 'الزخرف', 'الدخان', 'الجاثية', 'الأحقاف', 'محمد', 'الفتح', 'الحجرات', 'ق', 'الذاريات', 'الطور', 'النجم', 'القمر', 'الرحمن', 'الواقعة', 'الحديد', 'المجادلة', 'الحشر', 'الممتحنة', 'الصف', 'الجمعة', 'المنافقون', 'التغابن', 'الطلاق', 'التحريم', 'الملك', 'القلم', 'الحاقة', 'المعارج', 'نوح', 'الجن', 'المزمل', 'المدثر', 'القيامة', 'الإنسان', 'المرسلات', 'النبأ', 'النازعات', 'عبس', 'التكوير', 'الإنفطار', 'المطففين', 'الإنشقاق', 'البروج', 'الطارق', 'الأعلى', 'الغاشية', 'الفجر', 'البلد', 'الشمس', 'الليل', 'الضحى', 'الشرح', 'التين', 'العلق', 'القدر', 'البينة', 'الزلزلة', 'العاديات', 'القارعة', 'التكاثر', 'العصر', 'الهمزة', 'الفيل', 'قريش', 'الماعون', 'الكوثر', 'الكافرون', 'النصر', 'المسد', 'الإخلاص', 'الفلق', 'الناس', 'ختم القرآن'];
+        const linkFromData = [ /* ... كما هي ... */ '', '', 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 577 ];
+        const linkToData = [ /* ... كما هي ... */ '', '', 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 300, 604 ];
+        const reviewFromData = [ /* ... كما هي ... */ ...Array(32).fill(''), 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 481];
+        const reviewToData = [ /* ... كما هي ... */ ...Array(32).fill(''), 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 576];
 
         function formatDate(date) { if (!(date instanceof Date)) date = new Date(date); if (isNaN(date.getTime())) return ""; const year = date.getFullYear(); const month = String(date.getMonth() + 1).padStart(2, '0'); const day = String(date.getDate()).padStart(2, '0'); return `${year}-${month}-${day}`; }
         function getPlanData(originalIndex) { const index = parseInt(originalIndex); if (isNaN(index) || index < 0 || index >= initialTotalRows) { return null; } let fromPage = '', toPage = ''; if (index < 299) { fromPage = index * 2 + 1; toPage = fromPage + 1; } else if (index === 299) { fromPage = 601; toPage = 604; } return { fromPage: fromPage, toPage: toPage, surah: surahs[index] || '', linkFrom: linkFromData[index] ?? '', linkTo: linkToData[index] ?? '', reviewFrom: reviewFromData[index] ?? '', reviewTo: reviewToData[index] ?? '', round: calculateRoundNumber(index) }; }
@@ -355,8 +363,8 @@
         function hideLoading() { if(loadingIndicator) loadingIndicator.style.display = 'none'; }
         function displayDashboard() { hideLoading(); if(dashboardContent) dashboardContent.style.display = 'block'; }
 
-        // --- Functions to Calculate Stats from tableRows ---
-        function calculateDashboardStats(tableRows) {
+        // --- Stats Calculation ---
+        function calculateDashboardStats(tableRows) { /* ... كما هي ... */
             let lastCompletedPage = 0; let linkedTasks = 0; let perfectedTasks = 0; let excuseCount = 0;
             if (!tableRows) return { memorizedPages: 0, linkedTasks: 0, perfectedTasks: 0, excuseCount: 0 };
             tableRows.forEach(row => {
@@ -370,9 +378,9 @@
             });
             const memorizedPages = Math.min(lastCompletedPage, totalQuranPages);
             return { memorizedPages: memorizedPages, linkedTasks: linkedTasks, perfectedTasks: perfectedTasks, excuseCount: excuseCount };
-        }
+         }
 
-        // --- START: Streak, Level Functions ---
+        // --- Streak Calculation ---
         const levelTitles = [ /* ... الألقاب كما هي ... */
             "ابدأ رحلتك!", "🌱 غرسة الإيمان", "✨ بادرة أمل", "🏃 ساعٍ للعلا", "⭐ نجم صاعد",
             "💪 مثابر مجتهد", "🧭 على الدرب", "💯 صاحب السبعين", "🚀 انطلاقة قوية", "💎 جوهرة مصقولة",
@@ -384,7 +392,7 @@
         ];
         const levelIcons = { 10: '👑', 20: '💯', 30: '🏆', 32: '🎊' };
 
-        function calculateStreaksAndLevel(tableRows) {
+        function calculateStreaksAndLevel(tableRows) { /* ... كما هي ... */
              if (!tableRows || tableRows.length === 0) {
                  return { currentStreak: 0, longestStreak: 0, currentLevel: 0, currentTitle: levelTitles[0], currentIcon: '' };
              }
@@ -411,45 +419,52 @@
              const currentTitle = levelTitles[levelIndex] || levelTitles[0];
              const currentIcon = levelIcons[levelIndex] || '';
              return { currentStreak: currentStreak, longestStreak: longestStreak, currentLevel: levelIndex, currentTitle: currentTitle, currentIcon: currentIcon };
-        }
+         }
 
 
-        // --- START: Calendar Coloring and Initialization Functions ---
+        // --- START: Calendar Coloring and Initialization Functions (REVISED) ---
 
         /**
-         * Applies custom CSS classes to calendar days based on the dayStatus object.
+         * Applies custom CSS classes to calendar days. Includes console logs for debugging.
          */
         function applyCustomColoring() {
-            setTimeout(() => { // Delay to ensure DOM is ready
+            console.log("Attempting to apply custom coloring..."); // <-- Log for debugging
+            setTimeout(() => {
                 if (!calendarContainer) { return; }
                 const dayButtonElements = calendarContainer.querySelectorAll('.vanilla-calendar-day__btn');
+                console.log(`Found ${dayButtonElements.length} day button elements.`); // <-- Log for debugging
+
                 if (dayButtonElements.length === 0 && calendarContainer.innerHTML !== '' && !calendarContainer.querySelector('.text')) {
-                     console.warn("applyCustomColoring: No day button elements found. Calendar might not be fully rendered yet.");
+                    console.warn("applyCustomColoring: No day button elements found. Retrying in 500ms...");
+                    // Retry once after a longer delay if elements weren't found initially
+                     setTimeout(applyCustomColoring, 500);
+                     return; // Exit this attempt
                  }
+
                 let appliedCount = 0;
                 dayButtonElements.forEach((buttonElement) => {
                     const dateAttribute = buttonElement.dataset.calendarDay;
                     if (!dateAttribute || !/^\d{4}-\d{2}-\d{2}$/.test(dateAttribute)) { return; }
-                    buttonElement.classList.remove('day-completed', 'day-excused'); // Clear previous
+                    // --- !! التأكد من إزالة الكلاسات القديمة قبل الإضافة !! ---
+                    buttonElement.classList.remove('day-completed', 'day-excused');
                     const status = dayStatus[dateAttribute];
                     if (status === 'completed') { buttonElement.classList.add('day-completed'); appliedCount++; }
                     else if (status === 'excused') { buttonElement.classList.add('day-excused'); appliedCount++; }
                 });
-               // if(appliedCount > 0) console.log(`Applied coloring to ${appliedCount} days.`);
-            }, 150); // 150ms delay
+                console.log(`Applied coloring to ${appliedCount} days.`); // <-- Log for debugging
+            }, 150); // Initial delay
         }
 
         /**
          * Initializes Vanilla Calendar, enables navigation, adds "Today" button functionality.
+         * Includes extra checks and explicit coloring call.
          */
         function initializeAndColorCalendar(tableRows) {
+            console.log("Initializing calendar..."); // <-- Log for debugging
             const calendarContainer = document.getElementById('calendar-container');
-            const todayBtn = document.getElementById('goto-today-btn'); // Get "Today" button
+            const todayBtn = document.getElementById('goto-today-btn');
 
-            if (!calendarContainer) {
-                console.error("Calendar container '#calendar-container' not found!");
-                return;
-            }
+            if (!calendarContainer) { console.error("Calendar container not found!"); return; }
 
             // 1. Prepare dayStatus object
             dayStatus = {};
@@ -460,59 +475,46 @@
                         else if (row.type === 'excuse') { dayStatus[row.displayDate] = 'excused'; }
                     }
                 });
+                 console.log("Prepared dayStatus object:", Object.keys(dayStatus).length > 0 ? dayStatus : "Empty"); // <-- Log for debugging
             }
 
-            // 2. Setup Vanilla Calendar options (with navigation enabled)
+            // 2. Setup Vanilla Calendar options (Navigation enabled)
             const options = {
                 settings: {
-                    lang: 'ar',
-                    iso8601: false,
+                    lang: 'ar', iso8601: false,
                     range: { disablePast: false, disableGaps: false },
-                    // *** Enable month/year selection for navigation ***
-                    selection: { day: false, month: true, year: true },
+                    selection: { day: false, month: true, year: true }, // Enable nav
                     visibility: { theme: 'light', weekend: false, today: true },
                 },
                 actions: {
+                     // --- !! استخدام حدث init للتلوين الأولي !! ---
+                    init: (calendar) => {
+                        console.log("Calendar init event fired."); // <-- Log for debugging
+                        applyCustomColoring(); // Apply colors right after init
+                        // Attach the "Today" button listener here *after* init guarantees instance exists
+                        attachTodayButtonListener();
+                    },
+                    // --- !! استخدام حدث update للتلوين عند التنقل !! ---
                     update: (calendar) => {
-                        // This is triggered after init, month change, year change, .today() call
-                        applyCustomColoring(); // Always reapply colors on update
+                        console.log("Calendar update event fired."); // <-- Log for debugging
+                        applyCustomColoring(); // Reapply colors on month/year change
                     },
                     clickDay(event, dates) { /* Optional */ },
-                    // clickMonth, clickYear callbacks are also available if needed
                 }
             };
 
             calendarContainer.innerHTML = ''; // Clear placeholder
 
             try {
-                // Destroy previous instance cleanly if it exists
+                console.log("Initializing VanillaCalendar instance..."); // <-- Log for debugging
                 if (calendarInstance && typeof calendarInstance.destroy === 'function') {
                      calendarInstance.destroy();
                 }
                 calendarInstance = new VanillaCalendar(calendarContainer, options);
-                calendarInstance.init(); // Initialize the calendar
-
-                // NOTE: applyCustomColoring is now called via the 'update' action triggered by init()
-
-                // 3. Attach "Go to Today" button listener
-                if (todayBtn && calendarInstance) {
-                    // Remove previous listener if any to prevent duplicates
-                    todayBtn.replaceWith(todayBtn.cloneNode(true)); // Simple way to remove all listeners
-                    const newTodayBtn = document.getElementById('goto-today-btn'); // Get the new clone
-
-                    newTodayBtn.addEventListener('click', () => {
-                        if (calendarInstance && typeof calendarInstance.today === 'function') {
-                           // console.log('Navigating calendar to today.');
-                            calendarInstance.today();
-                            // The 'update' action will handle recoloring
-                        } else {
-                            console.error('Cannot go to today, calendar instance or method missing.');
-                        }
-                    });
-                   // console.log('Go to Today button event listener attached.');
-                } else if (!todayBtn) {
-                   // console.warn('Go to Today button (#goto-today-btn) not found.');
-                }
+                // --- !! استدعاء init() هو الذي يشغل التقويم وأحداثه !! ---
+                calendarInstance.init();
+                 console.log("VanillaCalendar instance initialized."); // <-- Log for debugging
+                // Note: Initial coloring is now handled by the 'init' action above.
 
             } catch (error) {
                 console.error("Error initializing Vanilla Calendar:", error);
@@ -520,11 +522,43 @@
             }
         }
 
+         /**
+          * Attaches the event listener to the "Go to Today" button.
+          * Moved to a separate function to be called after calendar init.
+          */
+         function attachTodayButtonListener() {
+             const todayBtn = document.getElementById('goto-today-btn');
+             if (todayBtn && calendarInstance) {
+                 // Use a flag to prevent multiple listeners if init fires multiple times somehow
+                 if (!todayBtn.hasAttribute('data-listener-attached')) {
+                     todayBtn.addEventListener('click', () => {
+                         console.log("Today button clicked."); // <-- Log for debugging
+                         if (calendarInstance && typeof calendarInstance.today === 'function') {
+                             calendarInstance.today();
+                              console.log("calendarInstance.today() called."); // <-- Log for debugging
+                             // --- !! إضافة استدعاء تلوين احتياطي هنا !! ---
+                             // Although .today() should trigger 'update', call coloring manually too
+                             // Use a small delay to ensure navigation completes before coloring
+                             setTimeout(applyCustomColoring, 100);
+                         } else {
+                             console.error('Cannot go to today, calendar instance or method missing.');
+                         }
+                     });
+                     todayBtn.setAttribute('data-listener-attached', 'true'); // Mark as attached
+                      console.log('Go to Today button event listener attached.'); // <-- Log for debugging
+                 }
+             } else if (!todayBtn) {
+                  console.warn('attachTodayButtonListener: Go to Today button not found.'); // <-- Log for debugging
+             } else if (!calendarInstance) {
+                 console.warn('attachTodayButtonListener: Calendar instance not ready.'); // <-- Log for debugging
+             }
+         }
+
         // --- END: Calendar Coloring and Initialization Functions ---
 
 
-        // --- Dashboard Display Functions (Update UI) ---
-        function displayDailyTask() {
+        // --- Dashboard Display Functions ---
+        function displayDailyTask() { /* ... كما هي ... */
             if (!dailyTaskContent || !currentPlanData || !currentPlanData.tableRows) {
                 if(dailyTaskContent) dailyTaskContent.innerHTML = '<p><i>جاري تحميل بيانات الخطة...</i></p>';
                 if (todayDateSpan) todayDateSpan.textContent = formatDate(new Date());
@@ -543,7 +577,7 @@
                 else { dailyTaskContent.innerHTML = `<p><i>خطأ: لم يتم العثور على تفاصيل الواجب للفهرس ${todayRow.originalSequence}.</i></p>`; }
             } else { dailyTaskContent.innerHTML = '<p><i>واجب اليوم لم يكتمل بعد أو حالته غير معروفة.</i></p>'; }
         }
-        function displayProgress(stats) {
+        function displayProgress(stats) { /* ... كما هي ... */
             if (!currentPlanData) return;
             const planType = currentPlanData.planType || '?';
             const memorizedPages = stats.memorizedPages;
@@ -551,18 +585,32 @@
             if(currentPlanNameSpan) currentPlanNameSpan.textContent = `خطة ${planType} صفحات`;
             if(progressBarValue) { progressBarValue.style.width = `${progressPercent}%`; progressBarValue.textContent = `${progressPercent}%`; }
             if(completedPagesProgressSpan) completedPagesProgressSpan.textContent = memorizedPages;
-        }
-        function displayStats(stats) {
+         }
+        function displayStats(stats) { /* ... كما هي ... */
             if(statMemorized) statMemorized.textContent = stats.memorizedPages;
             if(statPerfected) statPerfected.textContent = stats.perfectedTasks;
             if(statLinked) statLinked.textContent = stats.linkedTasks;
             if(statExcuses) statExcuses.textContent = stats.excuseCount;
         }
-        function displayStreakAndLevel(streakData) {
-            if(currentStreakSpan) currentStreakSpan.textContent = streakData.currentStreak;
-            if(longestStreakSpan) longestStreakSpan.textContent = streakData.longestStreak;
-            if(levelTitleSpan) levelTitleSpan.textContent = streakData.currentTitle;
-            if(levelIconSpan) levelIconSpan.textContent = streakData.currentIcon;
+        // !! دالة جديدة لعرض معلومات الإنجاز في المكان الجديد !!
+        function displayStreakInfoInCalendarCard(streakData) {
+            const targetDiv = document.getElementById('calendar-streak-info');
+            if (!targetDiv) return;
+
+            let content = `
+                <h4>الإنجاز المتتالي</h4>
+                <div class="streak-boxes">
+                    <div class="streak-box">أيام الإنجاز الحالية<strong>${streakData.currentStreak}</strong></div>
+                    <div class="streak-box">أطول سلسلة أيام<strong>${streakData.longestStreak}</strong></div>
+                </div>
+                <div class="level-display">
+                    لقبك الحالي:
+                    <span>${streakData.currentTitle}</span>
+                    <span id="level-icon">${streakData.currentIcon}</span>
+                </div>
+            `;
+            targetDiv.innerHTML = content;
+            targetDiv.style.display = 'block'; // Show the div
         }
 
 
@@ -576,34 +624,41 @@
                 hideLoading();
                 if (doc.exists) {
                     currentPlanData = doc.data();
+                    // --- Validation ---
                     if (!currentPlanData.startDate || !currentPlanData.planType || !currentPlanData.tableRows || !Array.isArray(currentPlanData.tableRows) || !currentPlanData.repetitionMax) {
                         console.error("Loaded data missing required fields.", currentPlanData);
-                        dashboardContent.style.display = 'block';
-                        dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">خطأ: بيانات خطتك المحفوظة غير مكتملة أو تالفة. يرجى <a href="index.html">الذهاب لصفحة البداية</a> وإعادة إنشاء الخطة.</p>`;
-                        const sectionsToHideOnError = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level'];
-                        sectionsToHideOnError.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
+                        /* ... Error display logic ... */
+                         dashboardContent.style.display = 'block';
+                         dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">خطأ: بيانات خطتك المحفوظة غير مكتملة أو تالفة. يرجى <a href="index.html">الذهاب لصفحة البداية</a> وإعادة إنشاء الخطة.</p>`;
+                         const sectionsToHideOnError = ['plan-progress', 'quick-stats', 'calendar-view']; // Hide calendar too
+                         sectionsToHideOnError.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
                         return;
                     }
+                    // --- Calculations ---
                     const stats = calculateDashboardStats(currentPlanData.tableRows);
                     const streakData = calculateStreaksAndLevel(currentPlanData.tableRows);
+                    // --- Update UI ---
                     displayDailyTask();
                     displayProgress(stats);
                     displayStats(stats);
-                    displayStreakAndLevel(streakData);
-                    initializeAndColorCalendar(currentPlanData.tableRows); // Init calendar
+                    // !! Call the NEW display function for streak info !!
+                    displayStreakInfoInCalendarCard(streakData);
+                    // Init calendar (coloring happens via events now)
+                    initializeAndColorCalendar(currentPlanData.tableRows);
+                    // --- Show Dashboard ---
                     displayDashboard();
                 } else { /* No plan found logic */
-                    displayDashboard();
-                    dailyTaskContent.innerHTML = '<p style="color:orange; font-weight:bold;">لم تقم باختيار أو إنشاء خطة بعد!</p><p>اذهب إلى <a href="index.html">صفحة البداية</a> لاختيار خطتك.</p>';
-                    const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level'];
-                    sectionsToHide.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
-                }
+                     displayDashboard();
+                     dailyTaskContent.innerHTML = '<p style="color:orange; font-weight:bold;">لم تقم باختيار أو إنشاء خطة بعد!</p><p>اذهب إلى <a href="index.html">صفحة البداية</a> لاختيار خطتك.</p>';
+                     const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view']; // Hide calendar view as well
+                     sectionsToHide.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
+                 }
             }).catch((error) => { /* Error handling */
-                console.error("Error getting plan document:", error);
-                hideLoading(); displayDashboard();
-                dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">حدث خطأ أثناء تحميل بيانات الخطة. (${error.code || 'UNKNOWN'})</p><p>يرجى المحاولة مرة أخرى. <a href="index.html">العودة للرئيسية</a></p>`;
-                const sectionsToHideOnError = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level'];
-                sectionsToHideOnError.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
+                 console.error("Error getting plan document:", error);
+                 hideLoading(); displayDashboard();
+                 dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">حدث خطأ أثناء تحميل بيانات الخطة. (${error.code || 'UNKNOWN'})</p><p>يرجى المحاولة مرة أخرى. <a href="index.html">العودة للرئيسية</a></p>`;
+                 const sectionsToHideOnError = ['plan-progress', 'quick-stats', 'calendar-view'];
+                 sectionsToHideOnError.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
             });
         }
 
@@ -615,9 +670,9 @@
                showLoading("غير مسجل الدخول. يرجى تسجيل الدخول أولاً.");
                if(dashboardContent) dashboardContent.style.display = 'block';
                if(dailyTaskContent) dailyTaskContent.innerHTML = '<p style="color:red;">يرجى <a href="index.html">تسجيل الدخول</a> لعرض لوحة المتابعة.</p>';
-               const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level'];
+               const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view'];
                sectionsToHide.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
-               if (calendarInstance && typeof calendarInstance.destroy === 'function') { calendarInstance.destroy(); calendarInstance = null;} // Clean up calendar if logged out
+               if (calendarInstance && typeof calendarInstance.destroy === 'function') { calendarInstance.destroy(); calendarInstance = null;}
                hideLoading();
            }
         });
