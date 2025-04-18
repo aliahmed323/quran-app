@@ -29,29 +29,23 @@
         .dashboard-header { display: flex; justify-content: center; align-items: center; padding: 10px 20px; margin-bottom: 25px; border-bottom: 2px solid #aed6f1; background-color: #fff; border-radius: 0 0 8px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .dashboard-header .logo h1 { margin: 0; font-size: 1.8em; color: #1a5276; }
 
-        /* --- !! START: REVISED Dashboard Layout (Simpler) !! --- */
+        /* --- Dashboard Layout --- */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 columns */
-            grid-template-rows: auto auto auto; /* Auto rows */
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: auto auto auto;
             gap: 25px;
-            align-items: start; /* Align items to the start of their grid area */
+            align-items: start;
         }
-        /* Row 1 */
-        #daily-task { grid-column: 1 / 4; grid-row: 1 / 2; } /* Daily task spans full width */
-        /* Row 2 */
+        #daily-task { grid-column: 1 / 4; grid-row: 1 / 2; }
         #plan-progress { grid-column: 1 / 2; grid-row: 2 / 3; }
-        #quick-stats { grid-column: 1 / 2; grid-row: 3 / 4; } /* Stats below progress */
-        /* Calendar spans remaining columns */
+        #quick-stats { grid-column: 1 / 2; grid-row: 3 / 4; }
         #calendar-view {
             grid-column: 2 / 4;
-            grid-row: 2 / 4; /* Span cols 2 & 3, rows 2 & 3 */
-            display: flex; /* Use flexbox for vertical stacking */
+            grid-row: 2 / 4;
+            display: flex;
             flex-direction: column;
-            /* align-items: center; /* Center items horizontally */
         }
-        /* --- !! END: REVISED Dashboard Layout !! --- */
-
 
         /* --- Section Specific Styles --- */
         #daily-task h3 { color: #1e8449; font-size: 1.3em; border-bottom: 2px solid #aed6f1; padding-bottom: 8px;}
@@ -69,92 +63,47 @@
         #quick-stats ul li strong { margin-left: 5px; color: #1a5276; min-width: 110px; display: inline-block;}
         #quick-stats ul li span { color: #1e8449; font-weight: bold;}
 
-
-        /* --- !! START: REVISED Calendar Section Styles !! --- */
+        /* --- Calendar Section Styles --- */
         #calendar-view .card-header {
-            display: flex; /* Keep using flex */
-            justify-content: center; /* !! توسيط العنوان !! */
-            align-items: center;
-            margin-bottom: 15px;
-            width: 100%; /* Ensure header takes full width */
-            flex-shrink: 0;
+            display: flex; justify-content: center; align-items: center;
+            margin-bottom: 15px; width: 100%; flex-shrink: 0;
         }
         #calendar-view .card-header h3 { margin-bottom: 0; }
-
         #calendar-container {
-            direction: ltr;
-            width: 100%; /* Allow container to take width */
-            max-width: 450px; /* Optional: Limit max width */
-            margin: 0 auto 10px auto; /* !! توسيط الحاوية نفسها وإضافة هامش سفلي !! */
-            min-height: 300px; /* Minimum height */
-            flex-shrink: 0; /* Prevent shrinking */
+            direction: ltr; width: 100%; max-width: 450px;
+            margin: 0 auto 10px auto; min-height: 300px; flex-shrink: 0;
         }
-
-        /* حاوية زر اليوم */
         .today-button-container {
-            text-align: center; /* توسيط الزر */
-            padding: 5px 0; /* تقليل المسافة العمودية */
-            margin-bottom: 15px; /* مسافة أسفل الزر قبل معلومات الإنجاز */
-            flex-shrink: 0;
+            text-align: center; padding: 5px 0; margin-bottom: 15px; flex-shrink: 0;
         }
         .today-button {
-            font-family: 'Tajawal', sans-serif; font-size: 0.9em;
-            padding: 6px 15px;
+            font-family: 'Tajawal', sans-serif; font-size: 0.9em; padding: 6px 15px;
             background-color: #eaf2f8; border: 1px solid #aed6f1; border-radius: 4px;
             cursor: pointer; color: #1a5276; transition: background-color 0.2s; white-space: nowrap;
         }
         .today-button:hover { background-color: #d4e6f1; border-color: #aed6f1; }
 
-        /* حاوية معلومات الإنجاز */
+        /* --- Streak Info (Inside Calendar Card) Styles --- */
         .streak-info-condensed {
-            border-top: 1px solid #eee;
-            margin: 0 auto; /* توسيط أفقي */
-            padding: 15px;
-            text-align: center;
-            width: 100%; /* عرض كامل داخل الكارد */
-            max-width: 450px; /* تطابق عرض التقويم (اختياري) */
-            flex-shrink: 0;
+            border-top: 1px solid #eee; margin: 0 auto; padding: 15px; text-align: center;
+            width: 100%; max-width: 450px; flex-shrink: 0;
         }
         .streak-info-condensed h4 { font-size: 1.05em; color: #1a5276; margin-bottom: 10px; }
         .streak-info-condensed .streak-boxes { display: flex; justify-content: space-around; gap: 10px; margin-bottom: 15px; }
-        /* Added min-width to prevent boxes becoming too small */
         .streak-info-condensed .streak-box { background-color: #eaf2f8; padding: 8px 12px; border-radius: 6px; border: 1px solid #d4e6f1; font-size: 0.9em; flex: 1; position: relative; min-width: 120px; }
         .streak-info-condensed .streak-box strong { display: block; font-size: 1.4em; color: #1e8449; margin-top: 2px; }
         .streak-info-condensed .level-display { font-size: 1em; color: #2c3e50; font-weight: bold; position: relative; display: inline-block; padding-left: 25px; /* Space for icon */ }
+        .streak-info-condensed .level-number { display: block; font-size: 0.9em; color: #6c757d; margin-bottom: 3px; }
+        .streak-info-condensed .level-title-text { display: block; font-size: 1.1em; }
         .streak-info-condensed .level-display .level-icon { font-size: 1.3em; margin-right: 5px; vertical-align: middle; }
-
-        /* تنسيق أيقونة المعلومات (i) */
+        .streak-info-condensed .level-display .info-icon { position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
+        .streak-box .info-icon { position: absolute; left: 8px; top: 8px; transform: none; }
         .info-icon {
-            display: inline-block;
-            font-family: 'Times New Roman', Times, serif;
-            font-weight: bold;
-            font-style: italic;
-            color: #6c757d;
-            background-color: #e9ecef;
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            line-height: 16px;
-            text-align: center;
-            font-size: 0.8em;
-            cursor: help;
-            margin-right: 5px; /* Space between text and icon */
+            display: inline-block; font-family: 'Times New Roman', Times, serif; font-weight: bold; font-style: italic;
+            color: #6c757d; background-color: #e9ecef; border-radius: 50%; width: 16px; height: 16px;
+            line-height: 16px; text-align: center; font-size: 0.8em; cursor: help; margin-right: 5px;
             vertical-align: middle;
         }
-        /* Positioning for icons next to level/boxes */
-        .streak-box .info-icon {
-            position: absolute;
-            left: 8px; /* Position icon on the left */
-            top: 8px;
-        }
-         .level-display .info-icon {
-             position: absolute;
-             left: 0; /* Position icon on the left */
-             top: 50%;
-             transform: translateY(-50%);
-         }
-        /* --- !! END: REVISED Calendar Section Styles !! --- */
-
 
         /* --- Base Calendar Styles (Vanilla Calendar) --- */
         .vanilla-calendar { border: 1px solid #ddd; border-radius: 4px; }
@@ -168,8 +117,7 @@
         .vanilla-calendar .vcal-day { display: flex; justify-content: center; align-items: center; min-height: 36px; }
 
 
-        /* --- !! START: Calendar Day Coloring CSS (Keep as is) !! --- */
-        /* This part should be correct */
+        /* --- Calendar Day Coloring CSS --- */
         .vanilla-calendar .vanilla-calendar-day__btn {
             border: 1px solid transparent; background-color: transparent; cursor: pointer;
             width: 34px; height: 34px; padding: 0; display: flex; justify-content: center;
@@ -193,16 +141,14 @@
         .vanilla-calendar .vanilla-calendar-day__btn:not(.day-completed):not(.day-excused):not([data-calendar-is-today]):hover {
              background-color: #e9ecef !important; border-color: #dee2e6 !important;
          }
-        /* Ensure data-calendar-is-today is the correct attribute from the library */
         .vanilla-calendar .vanilla-calendar-day__btn[data-calendar-is-today]:not(.day-completed):not(.day-excused) {
             background-color: #aed6f1 !important; border: 1px solid #1a5276 !important;
             color: #1a5276 !important; font-weight: bold;
         }
         .vanilla-calendar .vanilla-calendar-day__btn.day-completed[data-calendar-is-today],
         .vanilla-calendar .vanilla-calendar-day__btn.day-excused[data-calendar-is-today] {
-             border-width: 1px; /* Keep colored border */
+             border-width: 1px;
         }
-        /* --- !! END: Calendar Day Coloring CSS !! --- */
 
 
         /* Placeholder Styles */
@@ -221,32 +167,28 @@
         #loading-indicator { text-align: center; padding: 50px; font-size: 1.3em; color: #1a5276; display: block; }
 
 
-        /* --- !! START: REVISED Responsive Adjustments !! --- */
-        @media (max-width: 992px) { /* تخطيط لـ 2 أعمدة */
+        /* --- Responsive Adjustments --- */
+        @media (max-width: 992px) { /* 2 columns layout */
             .dashboard-grid {
-                grid-template-columns: repeat(2, 1fr); /* عمودان */
-                grid-template-rows: auto auto auto; /* إعادة تعيين الصفوف التلقائية */
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: auto auto auto;
             }
-            #daily-task { grid-column: span 2; grid-row: 1 / 2; } /* المهمة اليومية تمتد عرضًا */
-            #plan-progress { grid-column: 1 / 2; grid-row: 2 / 3; } /* عمود 1، صف 2 */
-            #quick-stats { grid-column: 1 / 2; grid-row: 3 / 4; } /* عمود 1، صف 3 */
-            #calendar-view { grid-column: 2 / 3; grid-row: 2 / 4; } /* Calendar takes right column */
+            #daily-task { grid-column: span 2; grid-row: 1 / 2; }
+            #plan-progress { grid-column: 1 / 2; grid-row: 2 / 3; }
+            #quick-stats { grid-column: 1 / 2; grid-row: 3 / 4; }
+            #calendar-view { grid-column: 2 / 3; grid-row: 2 / 4; }
         }
-
-         @media (max-width: 768px) { /* تخطيط لعمود واحد */
+         @media (max-width: 768px) { /* 1 column layout */
              .dashboard-grid {
-                 grid-template-columns: 1fr; /* عمود واحد فقط */
-                 grid-template-rows: auto; /* Auto rows */
+                 grid-template-columns: 1fr;
+                 grid-template-rows: auto;
              }
-             /* جميع العناصر تمتد على عرض العمود وتأخذ صفها تلقائيًا */
              #daily-task, #plan-progress, #quick-stats, #calendar-view {
                  grid-column: span 1;
                  grid-row: auto;
              }
-            /* Stack streak boxes vertically inside calendar card */
              .streak-info-condensed .streak-boxes { flex-direction: column; gap: 8px; }
          }
-        /* --- !! END: REVISED Responsive Adjustments !! --- */
 
     </style>
 </head>
@@ -318,13 +260,8 @@
 
     <script>
         // --- Firebase Config ---
-        const firebaseConfig = { /* ... كما هي ... */
-            apiKey: "AIzaSyDuUebu7Qzz3JnTfa-58EIPZjOcrkmdGHU",
-            authDomain: "quranplan2.firebaseapp.com",
-            projectId: "quranplan2",
-            storageBucket: "quranplan2.appspot.com",
-            messagingSenderId: "1098692856811",
-            appId: "1:1098692856811:web:923bca3a54fd78b1b267ae"
+        const firebaseConfig = { /* ... */
+             apiKey: "AIzaSyDuUebu7Qzz3JnTfa-58EIPZjOcrkmdGHU", authDomain: "quranplan2.firebaseapp.com", projectId: "quranplan2", storageBucket: "quranplan2.appspot.com", messagingSenderId: "1098692856811", appId: "1:1098692856811:web:923bca3a54fd78b1b267ae"
          };
 
         // --- Initialize Firebase ---
@@ -345,18 +282,18 @@
         const statExcuses = document.getElementById('stat-excuses');
         const todayDateSpan = document.getElementById('today-date-display');
         const calendarContainer = document.getElementById('calendar-container');
-        const calendarStreakInfoDiv = document.getElementById('calendar-streak-info'); // Ref for new location
+        const calendarStreakInfoDiv = document.getElementById('calendar-streak-info');
         const currentYearSpan = document.getElementById('current-year');
 
         // --- Constants ---
         const totalQuranPages = 604;
-        const initialTotalRows = 320;
+        const initialTotalRows = 320; // Verify this value
 
         // --- Global State ---
         let currentUser = null;
         let currentPlanData = null;
-        let calendarInstance = null;
-        let dayStatus = {};
+        let calendarInstance = null; // Holds the Vanilla Calendar instance
+        let dayStatus = {}; // Holds {'YYYY-MM-DD': 'completed' | 'excused'}
 
         // --- Data Arrays & Helper Functions ---
         const surahs = [ /* ... كما هي ... */ 'الفاتحة والبقرة', 'آل عمران', 'النساء', 'المائدة', 'الأنعام', 'الأعراف', 'الأنفال', 'التوبة', 'يونس', 'هود', 'يوسف', 'الرعد', 'إبراهيم', 'الحجر', 'النحل', 'الإسراء', 'الكهف', 'مريم', 'طه', 'الأنبياء', 'الحج', 'المؤمنون', 'النور', 'الفرقان', 'الشعراء', 'النمل', 'القصص', 'العنكبوت', 'الروم', 'لقمان', 'السجدة', 'الأحزاب', 'سبأ', 'فاطر', 'يس', 'الصافات', 'ص', 'الزمر', 'غافر', 'فصلت', 'الشورى', 'الزخرف', 'الدخان', 'الجاثية', 'الأحقاف', 'محمد', 'الفتح', 'الحجرات', 'ق', 'الذاريات', 'الطور', 'النجم', 'القمر', 'الرحمن', 'الواقعة', 'الحديد', 'المجادلة', 'الحشر', 'الممتحنة', 'الصف', 'الجمعة', 'المنافقون', 'التغابن', 'الطلاق', 'التحريم', 'الملك', 'القلم', 'الحاقة', 'المعارج', 'نوح', 'الجن', 'المزمل', 'المدثر', 'القيامة', 'الإنسان', 'المرسلات', 'النبأ', 'النازعات', 'عبس', 'التكوير', 'الإنفطار', 'المطففين', 'الإنشقاق', 'البروج', 'الطارق', 'الأعلى', 'الغاشية', 'الفجر', 'البلد', 'الشمس', 'الليل', 'الضحى', 'الشرح', 'التين', 'العلق', 'القدر', 'البينة', 'الزلزلة', 'العاديات', 'القارعة', 'التكاثر', 'العصر', 'الهمزة', 'الفيل', 'قريش', 'الماعون', 'الكوثر', 'الكافرون', 'النصر', 'المسد', 'الإخلاص', 'الفلق', 'الناس', 'ختم القرآن'];
@@ -376,19 +313,7 @@
 
         // --- Stats Calculation ---
         function calculateDashboardStats(tableRows) { /* ... كما هي ... */
-             let lastCompletedPage = 0; let linkedTasks = 0; let perfectedTasks = 0; let excuseCount = 0;
-             if (!tableRows) return { memorizedPages: 0, linkedTasks: 0, perfectedTasks: 0, excuseCount: 0 };
-             tableRows.forEach(row => {
-                 if (row.type === 'excuse') { excuseCount++; }
-                 else if (row.type === 'plan' && row.state?.completed) {
-                     const planInfo = getPlanData(row.originalSequence);
-                     if (planInfo && planInfo.toPage) { const pageNum = parseInt(planInfo.toPage); if (!isNaN(pageNum)) { lastCompletedPage = Math.max(lastCompletedPage, pageNum); } }
-                     if (planInfo && planInfo.linkTo !== '' && row.state.linked) { linkedTasks++; }
-                     if (planInfo && planInfo.reviewTo !== '' && row.state.reviewed) { perfectedTasks++; }
-                 }
-             });
-             const memorizedPages = Math.min(lastCompletedPage, totalQuranPages);
-             return { memorizedPages: memorizedPages, linkedTasks: linkedTasks, perfectedTasks: perfectedTasks, excuseCount: excuseCount };
+             let lastCompletedPage = 0; let linkedTasks = 0; let perfectedTasks = 0; let excuseCount = 0; if (!tableRows) return { memorizedPages: 0, linkedTasks: 0, perfectedTasks: 0, excuseCount: 0 }; tableRows.forEach(row => { if (row.type === 'excuse') { excuseCount++; } else if (row.type === 'plan' && row.state?.completed) { const planInfo = getPlanData(row.originalSequence); if (planInfo && planInfo.toPage) { const pageNum = parseInt(planInfo.toPage); if (!isNaN(pageNum)) { lastCompletedPage = Math.max(lastCompletedPage, pageNum); } } if (planInfo && planInfo.linkTo !== '' && row.state.linked) { linkedTasks++; } if (planInfo && planInfo.reviewTo !== '' && row.state.reviewed) { perfectedTasks++; } } }); const memorizedPages = Math.min(lastCompletedPage, totalQuranPages); return { memorizedPages: memorizedPages, linkedTasks: linkedTasks, perfectedTasks: perfectedTasks, excuseCount: excuseCount };
           }
 
         // --- Streak Calculation ---
@@ -396,52 +321,24 @@
         const levelIcons = { 10: '👑', 20: '💯', 30: '🏆', 32: '🎊' };
 
         function calculateStreaksAndLevel(tableRows) { /* ... كما هي ... */
-              if (!tableRows || tableRows.length === 0) { return { currentStreak: 0, longestStreak: 0, currentLevel: 0, currentTitle: levelTitles[0], currentIcon: '' }; }
-              const sortedRows = [...tableRows].sort((a, b) => new Date(a.displayDate) - new Date(b.displayDate));
-              let currentStreak = 0; let longestStreak = 0; let currentRun = 0;
-              const todayStr = formatDate(new Date());
-              for (const row of sortedRows) {
-                  if (row.displayDate > todayStr) break;
-                  if (row.type === 'plan' && row.state?.completed) { currentRun++; }
-                  else if (row.type === 'excuse') { if (currentRun > longestStreak) longestStreak = currentRun; /* Pause */ }
-                  else { if (currentRun > longestStreak) longestStreak = currentRun; currentRun = 0; }
-              }
-              if (currentRun > longestStreak) longestStreak = currentRun;
-              let tempCurrentStreak = 0; let streakBroken = false;
-              for (let i = sortedRows.length - 1; i >= 0; i--) {
-                  const row = sortedRows[i];
-                  if (row.displayDate > todayStr) continue;
-                  if (row.type === 'plan' && row.state?.completed) { if (!streakBroken) tempCurrentStreak++; }
-                  else if (row.type === 'excuse') { continue; }
-                  else { streakBroken = true; if (row.displayDate === todayStr) tempCurrentStreak = 0; break; }
-              }
-              currentStreak = tempCurrentStreak;
-              const levelIndex = Math.min(Math.floor(currentStreak / 10), levelTitles.length - 1);
-              const currentTitle = levelTitles[levelIndex] || levelTitles[0];
-              const currentIcon = levelIcons[levelIndex] || '';
-              return { currentStreak: currentStreak, longestStreak: longestStreak, currentLevel: levelIndex, currentTitle: currentTitle, currentIcon: currentIcon };
+              if (!tableRows || tableRows.length === 0) { return { currentStreak: 0, longestStreak: 0, currentLevel: 0, currentTitle: levelTitles[0], currentIcon: '' }; } const sortedRows = [...tableRows].sort((a, b) => new Date(a.displayDate) - new Date(b.displayDate)); let currentStreak = 0; let longestStreak = 0; let currentRun = 0; const todayStr = formatDate(new Date()); for (const row of sortedRows) { if (row.displayDate > todayStr) break; if (row.type === 'plan' && row.state?.completed) { currentRun++; } else if (row.type === 'excuse') { if (currentRun > longestStreak) longestStreak = currentRun; } else { if (currentRun > longestStreak) longestStreak = currentRun; currentRun = 0; } } if (currentRun > longestStreak) longestStreak = currentRun; let tempCurrentStreak = 0; let streakBroken = false; for (let i = sortedRows.length - 1; i >= 0; i--) { const row = sortedRows[i]; if (row.displayDate > todayStr) continue; if (row.type === 'plan' && row.state?.completed) { if (!streakBroken) tempCurrentStreak++; } else if (row.type === 'excuse') { continue; } else { streakBroken = true; if (row.displayDate === todayStr) tempCurrentStreak = 0; break; } } currentStreak = tempCurrentStreak; const levelIndex = Math.min(Math.floor(currentStreak / 10), levelTitles.length - 1); const currentTitle = levelTitles[levelIndex] || levelTitles[0]; const currentIcon = levelIcons[levelIndex] || ''; return { currentStreak: currentStreak, longestStreak: longestStreak, currentLevel: levelIndex, currentTitle: currentTitle, currentIcon: currentIcon };
           }
 
 
-        // --- START: Calendar Coloring and Initialization Functions (REVISED AGAIN) ---
+        // --- START: Calendar Coloring and Initialization Functions (REVISED AGAIN 3) ---
 
         /**
          * Applies custom CSS classes to calendar days. Includes MORE console logs.
          */
         function applyCustomColoring() {
             console.log("[applyCustomColoring] Function called."); // Log: Function start
-            // --- زيادة التأخير مرة أخرى احتياطيًا ---
             setTimeout(() => {
-                if (!calendarContainer) {
-                    console.error("[applyCustomColoring] Error: Calendar container not found.");
-                    return;
-                }
+                if (!calendarContainer) { console.error("[applyCustomColoring] Error: Calendar container not found."); return; }
                 const dayButtonElements = calendarContainer.querySelectorAll('.vanilla-calendar-day__btn');
                 console.log(`[applyCustomColoring] Found ${dayButtonElements.length} elements with '.vanilla-calendar-day__btn'.`); // Log: Elements found
 
                 if (dayButtonElements.length === 0 && calendarContainer.innerHTML !== '' && !calendarContainer.querySelector('.text')) {
-                     console.warn("[applyCustomColoring] No day elements found. Calendar might still be rendering or selector is wrong?");
-                     // لا تقم بإعادة المحاولة تلقائيًا هنا لتجنب الحلقات اللانهائية
+                     console.warn("[applyCustomColoring] No day elements found. Calendar might still be rendering?");
                      return;
                  }
 
@@ -454,30 +351,26 @@
                     if (status === 'completed') { buttonElement.classList.add('day-completed'); appliedCount++; }
                     else if (status === 'excused') { buttonElement.classList.add('day-excused'); appliedCount++; }
                 });
-                if(appliedCount > 0 || dayButtonElements.length > 0) { // سجل حتى لو لم يتم تطبيق ألوان ولكن تم العثور على عناصر
+                if(appliedCount > 0 || dayButtonElements.length > 0) {
                      console.log(`[applyCustomColoring] Finished. Applied colors to ${appliedCount} days.`); // Log: Success or status
                  }
-            }, 300); // زيادة التأخير إلى 300ms
+            }, 400); // Increased delay
         }
 
         /**
-         * Initializes Vanilla Calendar, enables navigation, adds "Today" button functionality.
+         * Initializes Vanilla Calendar, enables navigation, prepares "Today" button functionality.
          * Simplified event handling.
          */
         function initializeAndColorCalendar(tableRows) {
             console.log("[initializeAndColorCalendar] Initializing...");
             const calendarContainer = document.getElementById('calendar-container');
-
-            if (!calendarContainer) { console.error("[initializeAndColorCalendar] Calendar container not found!"); return; }
+            if (!calendarContainer) { console.error("[initializeAndColorCalendar] Calendar container not found!"); return false; } // Return false on error
 
             // 1. Prepare dayStatus object
             dayStatus = {};
             if (tableRows && Array.isArray(tableRows)) {
-                tableRows.forEach(row => { /* ... (نفس منطق تعبئة dayStatus) ... */
-                    if (row.displayDate && /^\d{4}-\d{2}-\d{2}$/.test(row.displayDate)) {
-                        if (row.type === 'plan' && row.state?.completed) { dayStatus[row.displayDate] = 'completed'; }
-                        else if (row.type === 'excuse') { dayStatus[row.displayDate] = 'excused'; }
-                    }
+                tableRows.forEach(row => { /* ... */
+                     if (row.displayDate && /^\d{4}-\d{2}-\d{2}$/.test(row.displayDate)) { if (row.type === 'plan' && row.state?.completed) { dayStatus[row.displayDate] = 'completed'; } else if (row.type === 'excuse') { dayStatus[row.displayDate] = 'excused'; } }
                  });
                  console.log("[initializeAndColorCalendar] Prepared dayStatus object:", Object.keys(dayStatus).length > 0 ? "Contains data" : "Empty");
             }
@@ -486,7 +379,6 @@
             const options = {
                 settings: { lang: 'ar', iso8601: false, range: { disablePast: false, disableGaps: false }, selection: { day: false, month: true, year: true }, visibility: { theme: 'light', weekend: false, today: true }, },
                 actions: {
-                    // ** NO init action here **
                     update: (calendar) => {
                         console.log("[VanillaCalendar Action] 'update' event fired.");
                         applyCustomColoring(); // Apply colors on update
@@ -508,79 +400,75 @@
                 calendarInstance.init();
                  console.log("[initializeAndColorCalendar] Calendar initialized.");
 
-                // --- !! Explicitly call coloring AFTER init !! ---
+                // --- Explicitly call initial coloring AFTER init ---
                  console.log("[initializeAndColorCalendar] Calling initial applyCustomColoring().");
                  applyCustomColoring();
 
-                 // --- !! Attach listener AFTER init !! ---
-                 attachTodayButtonListener();
+                 return true; // Signal success
 
             } catch (error) {
                 console.error("[initializeAndColorCalendar] Error:", error);
                 calendarContainer.innerHTML = `<p class="text" style="color:red;">Error initializing calendar. (${error.message})</p>`;
                 calendarInstance = null;
+                return false; // Signal failure
             }
         }
 
          /**
           * Attaches the event listener to the "Go to Today" button.
+          * Should be called AFTER initializeAndColorCalendar returns true.
           */
          function attachTodayButtonListener() {
-             const todayBtn = document.getElementById('goto-today-btn');
-             if (!todayBtn) { console.warn('[attachTodayButtonListener] Today button not found.'); return; }
-
-             // Simple check if listener might already be attached
-             if (todayBtn.dataset.listenerAttached === 'true') {
-                 console.log('[attachTodayButtonListener] Listener already attached.');
+             if (!calendarInstance) { // Check if instance is valid
+                 console.error('[attachTodayButtonListener] Cannot attach listener, calendarInstance is null.');
                  return;
              }
 
-             todayBtn.addEventListener('click', () => {
+             const todayBtn = document.getElementById('goto-today-btn');
+             if (!todayBtn) { console.warn('[attachTodayButtonListener] Today button not found.'); return; }
+
+             // Clean previous listeners just in case
+             const newTodayBtn = todayBtn.cloneNode(true);
+             todayBtn.parentNode.replaceChild(newTodayBtn, todayBtn);
+
+             newTodayBtn.addEventListener('click', () => {
                  console.log('[Today Button] Clicked!');
-                 // --- !! التحقق من calendarInstance قبل الاستخدام !! ---
                  if (calendarInstance && typeof calendarInstance.today === 'function') {
                      console.log('[Today Button] Calling calendarInstance.today()...');
                      calendarInstance.today();
-                     // --- Call coloring manually after a short delay ---
+                     // Call coloring manually after a short delay
                      console.log('[Today Button] Calling applyCustomColoring() after 150ms delay.');
-                     setTimeout(applyCustomColoring, 150); // Delay needed for DOM update after navigation
+                     setTimeout(applyCustomColoring, 150);
                  } else {
-                     console.error('[Today Button] Error: calendarInstance is invalid or missing .today() method.', calendarInstance);
+                     // Log detailed error if instance becomes invalid somehow
+                     console.error('[Today Button] Error: calendarInstance is invalid or missing .today() method inside listener.', calendarInstance);
                  }
              });
-             todayBtn.dataset.listenerAttached = 'true'; // Mark as attached
-             console.log('[attachTodayButtonListener] Event listener attached.');
+             console.log('[attachTodayButtonListener] Event listener attached successfully.');
          }
 
         // --- END: Calendar Coloring and Initialization Functions ---
 
         // --- Dashboard Display Functions ---
         function displayDailyTask() { /* ... كما هي ... */
-             if (!dailyTaskContent || !currentPlanData || !currentPlanData.tableRows) { if(dailyTaskContent) dailyTaskContent.innerHTML = '<p><i>جاري تحميل بيانات الخطة...</i></p>'; if (todayDateSpan) todayDateSpan.textContent = formatDate(new Date()); return; }
-             const tableRows = currentPlanData.tableRows; const todayStr = formatDate(new Date()); if (todayDateSpan) todayDateSpan.textContent = todayStr; const todayRow = tableRows.find(row => row.displayDate === todayStr);
-             if (!todayRow) { dailyTaskContent.innerHTML = '<p>لا يوجد واجب مقرر في الخطة لهذا اليوم.</p>'; }
-             else if (todayRow.type === 'excuse') { dailyTaskContent.innerHTML = `<p style="color: orange; font-weight:bold;">لديك عذر مسجل لهذا اليوم (${todayRow.excuseType || ''}).</p>`; }
-             else if (todayRow.type === 'plan' && todayRow.state?.completed) { dailyTaskContent.innerHTML = '<p style="color: green; font-weight: bold;">✅ الحمد لله، لقد أتممت واجب هذا اليوم!</p>'; }
-             else if (todayRow.type === 'plan' && (!todayRow.state || !todayRow.state.completed)) { const taskDetails = getPlanData(todayRow.originalSequence); if (taskDetails) { let taskHTML = `<h4>المطلوب إنجازه اليوم (${todayStr}):</h4>`; taskHTML += `<p><strong>الحفظ الجديد:</strong> ${taskDetails.fromPage ? `ص ${taskDetails.fromPage} - ${taskDetails.toPage}` : 'لا يوجد'} (${taskDetails.surah || 'مراجعة'})</p>`; taskHTML += `<p><strong>الربط:</strong> ${taskDetails.linkFrom ? `من ${taskDetails.linkFrom} إلى ${taskDetails.linkTo}` : 'لا يوجد'}</p>`; taskHTML += `<p><strong>المراجعة:</strong> ${taskDetails.reviewFrom ? `من ${taskDetails.reviewFrom} إلى ${taskDetails.reviewTo}` : 'لا يوجد'} ${taskDetails.round ? `(ج${taskDetails.round})` : ''}</p>`; dailyTaskContent.innerHTML = taskHTML; } else { dailyTaskContent.innerHTML = `<p><i>خطأ: لم يتم العثور على تفاصيل الواجب للفهرس ${todayRow.originalSequence}.</i></p>`; } }
-             else { dailyTaskContent.innerHTML = '<p><i>واجب اليوم لم يكتمل بعد أو حالته غير معروفة.</i></p>'; }
-        }
+              if (!dailyTaskContent || !currentPlanData || !currentPlanData.tableRows) { if(dailyTaskContent) dailyTaskContent.innerHTML = '<p><i>جاري تحميل بيانات الخطة...</i></p>'; if (todayDateSpan) todayDateSpan.textContent = formatDate(new Date()); return; } const tableRows = currentPlanData.tableRows; const todayStr = formatDate(new Date()); if (todayDateSpan) todayDateSpan.textContent = todayStr; const todayRow = tableRows.find(row => row.displayDate === todayStr); if (!todayRow) { dailyTaskContent.innerHTML = '<p>لا يوجد واجب مقرر في الخطة لهذا اليوم.</p>'; } else if (todayRow.type === 'excuse') { dailyTaskContent.innerHTML = `<p style="color: orange; font-weight:bold;">لديك عذر مسجل لهذا اليوم (${todayRow.excuseType || ''}).</p>`; } else if (todayRow.type === 'plan' && todayRow.state?.completed) { dailyTaskContent.innerHTML = '<p style="color: green; font-weight: bold;">✅ الحمد لله، لقد أتممت واجب هذا اليوم!</p>'; } else if (todayRow.type === 'plan' && (!todayRow.state || !todayRow.state.completed)) { const taskDetails = getPlanData(todayRow.originalSequence); if (taskDetails) { let taskHTML = `<h4>المطلوب إنجازه اليوم (${todayStr}):</h4>`; taskHTML += `<p><strong>الحفظ الجديد:</strong> ${taskDetails.fromPage ? `ص ${taskDetails.fromPage} - ${taskDetails.toPage}` : 'لا يوجد'} (${taskDetails.surah || 'مراجعة'})</p>`; taskHTML += `<p><strong>الربط:</strong> ${taskDetails.linkFrom ? `من ${taskDetails.linkFrom} إلى ${taskDetails.linkTo}` : 'لا يوجد'}</p>`; taskHTML += `<p><strong>المراجعة:</strong> ${taskDetails.reviewFrom ? `من ${taskDetails.reviewFrom} إلى ${taskDetails.reviewTo}` : 'لا يوجد'} ${taskDetails.round ? `(ج${taskDetails.round})` : ''}</p>`; dailyTaskContent.innerHTML = taskHTML; } else { dailyTaskContent.innerHTML = `<p><i>خطأ: لم يتم العثور على تفاصيل الواجب للفهرس ${todayRow.originalSequence}.</i></p>`; } } else { dailyTaskContent.innerHTML = '<p><i>واجب اليوم لم يكتمل بعد أو حالته غير معروفة.</i></p>'; }
+         }
         function displayProgress(stats) { /* ... كما هي ... */
-            if (!currentPlanData) return; const planType = currentPlanData.planType || '?'; const memorizedPages = stats.memorizedPages; const progressPercent = totalQuranPages > 0 ? Math.min(100, (memorizedPages / totalQuranPages) * 100).toFixed(0) : 0; if(currentPlanNameSpan) currentPlanNameSpan.textContent = `خطة ${planType} صفحات`; if(progressBarValue) { progressBarValue.style.width = `${progressPercent}%`; progressBarValue.textContent = `${progressPercent}%`; } if(completedPagesProgressSpan) completedPagesProgressSpan.textContent = memorizedPages;
-        }
+             if (!currentPlanData) return; const planType = currentPlanData.planType || '?'; const memorizedPages = stats.memorizedPages; const progressPercent = totalQuranPages > 0 ? Math.min(100, (memorizedPages / totalQuranPages) * 100).toFixed(0) : 0; if(currentPlanNameSpan) currentPlanNameSpan.textContent = `خطة ${planType} صفحات`; if(progressBarValue) { progressBarValue.style.width = `${progressPercent}%`; progressBarValue.textContent = `${progressPercent}%`; } if(completedPagesProgressSpan) completedPagesProgressSpan.textContent = memorizedPages;
+         }
         function displayStats(stats) { /* ... كما هي ... */
-            if(statMemorized) statMemorized.textContent = stats.memorizedPages; if(statPerfected) statPerfected.textContent = stats.perfectedTasks; if(statLinked) statLinked.textContent = stats.linkedTasks; if(statExcuses) statExcuses.textContent = stats.excuseCount;
-        }
-        // !! تعديل: دالة عرض معلومات الإنجاز لإضافة Tooltips (باستخدام title) !!
+             if(statMemorized) statMemorized.textContent = stats.memorizedPages; if(statPerfected) statPerfected.textContent = stats.perfectedTasks; if(statLinked) statLinked.textContent = stats.linkedTasks; if(statExcuses) statExcuses.textContent = stats.excuseCount;
+         }
+        // !! تعديل: دالة عرض معلومات الإنجاز بالترتيب الجديد و Tooltips !!
         function displayStreakInfoInCalendarCard(streakData) {
             const targetDiv = document.getElementById('calendar-streak-info');
-            if (!targetDiv) { console.warn("Target div #calendar-streak-info not found for streak display."); return; }
+            if (!targetDiv) { console.warn("Target div #calendar-streak-info not found."); return; }
 
             const currentStreakTitle = "عدد الأيام المتتالية التي أكملت فيها واجبك حتى اليوم.";
             const longestStreakTitle = "أطول سلسلة أيام متتالية أكملت فيها واجبك خلال الخطة.";
-            const levelTitleExplanation = "لقبك يعتمد على عدد أيام إنجازك المتتالية الحالية.";
+            const levelTitleExplanation = `مستواك الحالي (${streakData.currentLevel}) ولقبك يعتمدان على عدد أيام إنجازك المتتالية الحالية.`;
 
-            // استخدام textContent لتعيين النص بأمان أكبر من innerHTML إذا أمكن
-            targetDiv.innerHTML = `
+            let content = `
                 <h4>الإنجاز المتتالي</h4>
                 <div class="streak-boxes">
                     <div class="streak-box" title="${currentStreakTitle}">
@@ -595,71 +483,76 @@
                     </div>
                 </div>
                 <div class="level-display" title="${levelTitleExplanation}">
-                    لقبك الحالي:
-                    <span>${streakData.currentTitle}</span>
+                    <span class="level-number">المستوى ${streakData.currentLevel}</span>
+                    <br> <span class="level-title-text">${streakData.currentTitle}</span>
                     <span class="level-icon">${streakData.currentIcon}</span>
                      <span class="info-icon" title="${levelTitleExplanation}">ⓘ</span>
                 </div>
             `;
-            targetDiv.style.display = 'block'; // Ensure it's visible
-            console.log("[displayStreakInfoInCalendarCard] Streak info displayed."); // Log success
+            targetDiv.innerHTML = content;
+            targetDiv.style.display = 'block';
+           // console.log("[displayStreakInfoInCalendarCard] Streak info displayed.");
         }
 
 
         // --- Main Data Loading Function ---
-        function loadDashboardData(user) {
-            if (!user) return;
-            const uid = user.uid;
-            const planRef = db.collection("quranPlans").doc(uid);
-            showLoading("جاري تحميل بيانات خطتك...");
-            planRef.get().then((doc) => {
-                hideLoading();
-                if (doc.exists) {
-                    currentPlanData = doc.data();
-                    if (!currentPlanData.startDate || !currentPlanData.planType || !currentPlanData.tableRows || !Array.isArray(currentPlanData.tableRows) || !currentPlanData.repetitionMax) { /* ... Error handling ... */ console.error("Loaded data missing required fields.", currentPlanData); dashboardContent.style.display = 'block'; dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">خطأ: بيانات خطتك المحفوظة غير مكتملة أو تالفة. يرجى <a href="index.html">الذهاب لصفحة البداية</a> وإعادة إنشاء الخطة.</p>`; const sectionsToHideOnError = ['plan-progress', 'quick-stats', 'calendar-view']; sectionsToHideOnError.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; }); return; }
-                    const stats = calculateDashboardStats(currentPlanData.tableRows);
-                    const streakData = calculateStreaksAndLevel(currentPlanData.tableRows);
-                    displayDailyTask();
-                    displayProgress(stats);
-                    displayStats(stats);
-                    displayStreakInfoInCalendarCard(streakData); // Use updated function
-                    initializeAndColorCalendar(currentPlanData.tableRows); // Init calendar
-                    displayDashboard();
-                } else { /* No plan found logic */
+         function loadDashboardData(user) {
+             if (!user) return;
+             const uid = user.uid;
+             const planRef = db.collection("quranPlans").doc(uid);
+             showLoading("جاري تحميل بيانات خطتك...");
+             planRef.get().then((doc) => {
+                 hideLoading();
+                 if (doc.exists) {
+                     currentPlanData = doc.data();
+                     if (!currentPlanData.startDate || !currentPlanData.planType || !currentPlanData.tableRows || !Array.isArray(currentPlanData.tableRows) || !currentPlanData.repetitionMax) { /* ... Error handling ... */ console.error("Loaded data missing required fields.", currentPlanData); dashboardContent.style.display = 'block'; dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">خطأ: بيانات خطتك المحفوظة غير مكتملة أو تالفة. يرجى <a href="index.html">الذهاب لصفحة البداية</a> وإعادة إنشاء الخطة.</p>`; const sectionsToHideOnError = ['plan-progress', 'quick-stats', 'calendar-view']; sectionsToHideOnError.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; }); return; }
+                     const stats = calculateDashboardStats(currentPlanData.tableRows);
+                     const streakData = calculateStreaksAndLevel(currentPlanData.tableRows);
+                     displayDailyTask();
+                     displayProgress(stats);
+                     displayStats(stats);
+                     displayStreakInfoInCalendarCard(streakData);
+                     // --- Attach listener AFTER calendar init succeeds ---
+                     const calendarInitialized = initializeAndColorCalendar(currentPlanData.tableRows);
+                     if (calendarInitialized) {
+                         attachTodayButtonListener(); // Attach listener only if init was successful
+                     }
                      displayDashboard();
-                     dailyTaskContent.innerHTML = '<p style="color:orange; font-weight:bold;">لم تقم باختيار أو إنشاء خطة بعد!</p><p>اذهب إلى <a href="index.html">صفحة البداية</a> لاختيار خطتك.</p>';
-                     const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view'];
-                     sectionsToHide.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
-                 }
-            }).catch((error) => { /* Error handling */
-                 console.error("Error getting plan document:", error);
-                 hideLoading(); displayDashboard();
-                 dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">حدث خطأ أثناء تحميل بيانات الخطة. (${error.code || 'UNKNOWN'})</p><p>يرجى المحاولة مرة أخرى. <a href="index.html">العودة للرئيسية</a></p>`;
-                 const sectionsToHideOnError = ['plan-progress', 'quick-stats', 'calendar-view'];
-                 sectionsToHideOnError.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
-            });
-        }
+                 } else { /* No plan found logic */
+                      displayDashboard();
+                      dailyTaskContent.innerHTML = '<p style="color:orange; font-weight:bold;">لم تقم باختيار أو إنشاء خطة بعد!</p><p>اذهب إلى <a href="index.html">صفحة البداية</a> لاختيار خطتك.</p>';
+                      const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view'];
+                      sectionsToHide.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
+                  }
+             }).catch((error) => { /* Error handling */
+                  console.error("Error getting plan document:", error);
+                  hideLoading(); displayDashboard();
+                  dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">حدث خطأ أثناء تحميل بيانات الخطة. (${error.code || 'UNKNOWN'})</p><p>يرجى المحاولة مرة أخرى. <a href="index.html">العودة للرئيسية</a></p>`;
+                  const sectionsToHideOnError = ['plan-progress', 'quick-stats', 'calendar-view'];
+                  sectionsToHideOnError.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
+             });
+         }
 
         // --- Authentication Listener ---
         auth.onAuthStateChanged(user => { /* ... كما هي ... */
-           currentUser = user;
-           if (user) { loadDashboardData(user); }
-           else { /* Not logged in logic */
-               showLoading("غير مسجل الدخول. يرجى تسجيل الدخول أولاً.");
-               if(dashboardContent) dashboardContent.style.display = 'block';
-               if(dailyTaskContent) dailyTaskContent.innerHTML = '<p style="color:red;">يرجى <a href="index.html">تسجيل الدخول</a> لعرض لوحة المتابعة.</p>';
-               const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view'];
-               sectionsToHide.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
-               if (calendarInstance && typeof calendarInstance.destroy === 'function') { calendarInstance.destroy(); calendarInstance = null;}
-               hideLoading();
-           }
-        });
+            currentUser = user;
+            if (user) { loadDashboardData(user); }
+            else { /* Not logged in logic */
+                showLoading("غير مسجل الدخول. يرجى تسجيل الدخول أولاً.");
+                if(dashboardContent) dashboardContent.style.display = 'block';
+                if(dailyTaskContent) dailyTaskContent.innerHTML = '<p style="color:red;">يرجى <a href="index.html">تسجيل الدخول</a> لعرض لوحة المتابعة.</p>';
+                const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view'];
+                sectionsToHide.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
+                if (calendarInstance && typeof calendarInstance.destroy === 'function') { calendarInstance.destroy(); calendarInstance = null;}
+                hideLoading();
+            }
+         });
 
         // --- Initial Load & Footer Year ---
         document.addEventListener('DOMContentLoaded', () => { /* ... كما هي ... */
-            showLoading("جاري التحقق من تسجيل الدخول...");
-            if(currentYearSpan) { currentYearSpan.textContent = new Date().getFullYear(); }
-        });
+             showLoading("جاري التحقق من تسجيل الدخول...");
+             if(currentYearSpan) { currentYearSpan.textContent = new Date().getFullYear(); }
+         });
 
         // --- Print Function ---
         function printData() { console.log("Initiating browser print..."); window.print(); }
