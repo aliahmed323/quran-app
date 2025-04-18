@@ -398,63 +398,53 @@
 /**
  * تطبق كلاسات CSS المخصصة على أيام التقويم بناءً على كائن dayStatus.
  */
+/**
+ * تطبق كلاسات CSS المخصصة على أيام التقويم بناءً على كائن dayStatus.
+ * النسخة المصححة بناءً على فحص العنصر.
+ */
 function applyCustomColoring() {
-    console.log("Attempting to apply custom coloring..."); // <-- سجل المحاولة
+    console.log("Attempting to apply custom coloring (Corrected)..."); // <-- رسالة جديدة
     setTimeout(() => {
         if (!calendarContainer) {
              console.error("Coloring failed: Calendar container not found.");
              return;
         }
 
-        // المحدد لعناصر الأيام القابلة للنقر في Vanilla Calendar v2
-        const dayElements = calendarContainer.querySelectorAll('.vcal-day__btn');
-        console.log(`Found ${dayElements.length} day button elements with selector '.vcal-day__btn'.`); // <-- سجل عدد العناصر
+        // --- !! التصحيح الأول: استخدام اسم الكلاس الصحيح !! ---
+        const dayButtonElements = calendarContainer.querySelectorAll('.vanilla-calendar-day__btn');
+        console.log(`Found ${dayButtonElements.length} day button elements with selector '.vanilla-calendar-day__btn'.`); // <-- سجل العدد
 
-        if (dayElements.length === 0) {
-            console.warn("Coloring issue: No day elements found. Check the selector '.vcal-day__btn' or wait longer?");
-            // يمكنك محاولة محدد أوسع مؤقتًا للتشخيص، مثل:
-            // const allElements = calendarContainer.querySelectorAll('*');
-            // console.log('All elements inside container:', allElements);
+        if (dayButtonElements.length === 0) {
+            console.warn("Coloring issue: No day elements found even with corrected selector. Is the calendar fully rendered?");
         }
 
         let appliedCount = 0;
-        dayElements.forEach((buttonElement, index) => {
-            // البحث عن العنصر الداخلي الذي يحمل التاريخ
-            const dateSpan = buttonElement.querySelector('[data-calendar-date]');
+        dayButtonElements.forEach((buttonElement, index) => {
 
-            // --- تشخيص إضافي ---
-            if (!dateSpan) {
-                // إذا لم نجد التاريخ، سجل العنصر الأب لنرى هيكله
-                // console.log(`Index ${index}: Button found, but inner element with [data-calendar-date] NOT found. Button HTML:`, buttonElement.outerHTML);
-                return; // انتقل للعنصر التالي
-            }
-
-            const dateAttribute = dateSpan.dataset.calendarDate; // الحصول على التاريخ 'YYYY-MM-DD'
+            // --- !! التصحيح الثاني: الحصول على التاريخ مباشرة من الزر ومن الخاصية الصحيحة !! ---
+            const dateAttribute = buttonElement.dataset.calendarDay; // <-- استخدام 'calendarDay'
 
             if (!dateAttribute || !/^\d{4}-\d{2}-\d{2}$/.test(dateAttribute)) {
-                 console.warn(`Index ${index}: Found date attribute, but format is invalid: '${dateAttribute}'. Expected YYYY-MM-DD.`);
-                 return; // انتقل للعنصر التالي
+                 // console.warn(`Index ${index}: Invalid or missing date format in data-calendar-day: '${dateAttribute}'.`); // يمكنك إزالة التعليق للتشخيص
+                 return; // انتقل للعنصر التالي إذا كان التاريخ غير صالح
             }
-            // --- نهاية التشخيص الإضافي ---
 
             // إزالة الكلاسات القديمة لضمان عدم التراكم
             buttonElement.classList.remove('day-completed', 'day-excused');
 
             // التحقق من الحالة في كائن dayStatus وتطبيق الكلاس الجديد على الزر نفسه
-            const status = dayStatus[dateAttribute]; // احصل على الحالة
+            const status = dayStatus[dateAttribute];
             if (status === 'completed') {
                 buttonElement.classList.add('day-completed');
-                // console.log(`Applied 'day-completed' to ${dateAttribute}`); // <-- سجل عند التطبيق
                 appliedCount++;
             } else if (status === 'excused') {
                 buttonElement.classList.add('day-excused');
-                // console.log(`Applied 'day-excused' to ${dateAttribute}`); // <-- سجل عند التطبيق
                 appliedCount++;
             }
         });
-       console.log(`Custom coloring logic finished. Applied colors to ${appliedCount} days.`); // <-- سجل النتيجة النهائية
+       console.log(`Custom coloring logic finished. Applied colors to ${appliedCount} days.`);
 
-    }, 300); // <-- زدنا التأخير قليلاً للتجربة (300ms)
+    }, 300); // يمكنك تجربة تقليل التأخير مرة أخرى إلى 150ms إذا أردت
 }
 
 /**
