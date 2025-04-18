@@ -16,7 +16,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
 
     <style>
-        /* --- CSS Styles (تبقى كما هي - تأكد من وجود لون الخلفية الأخضر لشريط التقدم) --- */
+        /* --- CSS Styles (General Styles) --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Tajawal', sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.7; }
         .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
@@ -32,18 +32,14 @@
         /* --- Dashboard Layout --- */
         .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: auto; gap: 25px; }
         #daily-task { grid-column: span 2; }
-        /* --- Start: New Layout for Streak/Level --- */
         #plan-progress { grid-column: 1 / 2; grid-row: 2 / 3; }
         #quick-stats { grid-column: 1 / 2; grid-row: 3 / 4; }
-        #streak-level { grid-column: 2 / 4; grid-row: 2 / 3; } /* Span 2 cols */
-        #calendar-view { grid-column: 2 / 4; grid-row: 3 / 4; } /* Span 2 cols */
-        /* #competition-section { grid-column: ?; grid-row: ?; } /* Adjust if needed */
-        /* #badges-section { grid-column: span 3; grid-row: 4 / 5; } /* Adjust if needed */
-        /* --- End: New Layout --- */
+        #streak-level { grid-column: 2 / 4; grid-row: 2 / 3; }
+        #calendar-view { grid-column: 2 / 4; grid-row: 3 / 4; }
 
         /* --- Section Specific Styles --- */
         #daily-task h3 { color: #1e8449; font-size: 1.3em; border-bottom: 2px solid #aed6f1; padding-bottom: 8px;}
-        #daily-task-content { min-height: 80px; padding-top: 10px;} /* Adjusted height */
+        #daily-task-content { min-height: 80px; padding-top: 10px;}
         #daily-task-content p { margin-bottom: 0.6em; font-size: 1.05em; line-height: 1.8; }
         #daily-task-content strong { color: #1a5276; margin-left: 8px;}
         #daily-task .plan-link { margin-top: 15px; display: inline-block; font-size: 0.9em; background-color: #5dade2; color: white; padding: 5px 10px; border-radius: 4px; }
@@ -63,47 +59,93 @@
         #streak-level .streak-info strong { display: block; font-size: 1.5em; color: #1e8449; }
         #streak-level .level-title-container { text-align: center; margin-top: 15px; }
         #streak-level #level-title { font-size: 1.2em; color: #2c3e50; font-weight: bold; }
-        #streak-level #level-icon { font-size: 1.5em; margin-left: 10px; } /* Placeholder for icon */
+        #streak-level #level-icon { font-size: 1.5em; margin-left: 10px; }
 
         /* --- Calendar Styles --- */
-        #calendar-view { min-height: 280px; } /* Ensure card is tall enough */
-        #calendar-container { margin-top: 15px; direction: ltr; /* Calendar library might expect LTR */ }
+        #calendar-view { min-height: 280px; }
+        #calendar-container { margin-top: 15px; direction: ltr; } /* LTR for calendar library */
 
-        /* --- !! Vanilla Calendar Customization !! --- */
-        /* Header Style */
-        .vanilla-calendar .vcal-header { background-color: #aed6f1 !important; padding: 10px 0; }
+        /* Base Vanilla Calendar Styles (Optional: you might rely on library defaults) */
+        .vanilla-calendar { border: 1px solid #ddd; border-radius: 4px; }
+        .vanilla-calendar .vcal-header { background-color: #aed6f1; padding: 10px 0; border-bottom: 1px solid #ddd;}
         .vanilla-calendar .vcal-header__label { color: #1a5276; font-weight: bold; }
-        .vanilla-calendar .vcal-arrow { background-color: #ffffff; border-radius: 50%; width: 30px; height: 30px; line-height: 30px; }
+        .vanilla-calendar .vcal-arrow { background-color: #ffffff; border-radius: 50%; width: 30px; height: 30px; line-height: 30px; border: 1px solid #ccc; }
         .vanilla-calendar .vcal-arrow::before { border-color: #1a5276; }
+        .vanilla-calendar .vcal-week { background-color: #eaf2f8; padding: 5px 0; display: flex; justify-content: space-around; }
+        .vanilla-calendar .vcal-week span { color: #1a5276; font-weight: bold; font-size: 0.85em; text-align: center; flex: 1; }
+        .vanilla-calendar .vcal-body { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; padding: 5px; }
+        .vanilla-calendar .vcal-day { display: flex; justify-content: center; align-items: center; }
 
-        /* Week Days Style */
-        .vanilla-calendar .vcal-week { background-color: #eaf2f8; padding: 5px 0; }
-        .vanilla-calendar .vcal-week span { color: #1a5276; font-weight: bold; }
+        /* --- !! START: REVISED Calendar Day Coloring CSS !! --- */
 
-        /* Day Cell Styles */
-        .vanilla-calendar .vcal-day__btn { border: none; background: none; cursor: pointer; width: 100%; height: 40px; /* Adjust height */ display: flex; justify-content: center; align-items: center; padding: 0; position: relative; /* Needed for potential future absolute positioning */ }
-        .vanilla-calendar .vcal-day__btn:hover .vcal-date { background-color: #e0e0e0; border-radius: 50%; } /* Default hover */
+        /* القاعدة الأساسية لزر اليوم */
+        .vanilla-calendar .vanilla-calendar-day__btn {
+            border: 1px solid transparent; /* حدود شفافة افتراضية */
+            background-color: transparent; /* خلفية شفافة افتراضية */
+            cursor: pointer;
+            width: 34px; /* مثال للحجم - عدله حسب الحاجة */
+            height: 34px; /* مثال للحجم - عدله حسب الحاجة */
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.9em; /* حجم الخط داخل الزر */
+            position: relative;
+            border-radius: 50%; /* جعل الشكل دائريًا */
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s; /* انتقالات ناعمة */
+            color: #333; /* لون النص الافتراضي */
+        }
 
-        /* Inner Day Number Style */
-        .vanilla-calendar .vcal-date { width: 32px; /* Circle size */ height: 32px; line-height: 32px; text-align: center; border-radius: 50%; transition: background-color 0.2s, color 0.2s; display: block; margin: 0 auto; } /* Default day style */
-        .vanilla-calendar .vcal-date__day { color: #333; } /* Default text color */
-        .vanilla-calendar .vcal-date--today .vcal-date__day { color: #1a5276 !important; font-weight: bold; } /* Today's text color */
-        .vanilla-calendar .vcal-date--today { background-color: #aed6f1 !important; border: 1px solid #1a5276; } /* Today's background and border */
+        /* تطبيق الخلفية واللون مباشرة على الزر المكتمل */
+        .vanilla-calendar .vanilla-calendar-day__btn.day-completed {
+          background-color: #abebc6 !important; /* أخضر فاتح مع أولوية قصوى */
+          color: #186a3b !important; /* لون نص أغمق */
+          font-weight: bold;
+          border-color: #82e0aa !important; /* لون حدود متناسق (اختياري) */
+        }
 
-        /* --- !! Custom Coloring Styles - Applied to .vcal-day__btn !! --- */
-        .vanilla-calendar .vcal-day__btn.day-completed .vcal-date { background-color: #abebc6; /* Light green */ }
-        .vanilla-calendar .vcal-day__btn.day-completed .vcal-date__day { color: #186a3b; font-weight: bold; }
-        .vanilla-calendar .vcal-day__btn.day-excused .vcal-date { background-color: #fadbd8; /* Light red */ }
-        .vanilla-calendar .vcal-day__btn.day-excused .vcal-date__day { color: #922b21; font-weight: bold; }
+        /* تطبيق الخلفية واللون مباشرة على الزر المعذور */
+        .vanilla-calendar .vanilla-calendar-day__btn.day-excused {
+          background-color: #fadbd8 !important; /* أحمر فاتح مع أولوية قصوى */
+          color: #922b21 !important; /* لون نص أغمق */
+          font-weight: bold;
+          border-color: #f5b7b1 !important; /* لون حدود متناسق (اختياري) */
+        }
 
-        /* Hover effects for custom colored days */
-        .vanilla-calendar .vcal-day__btn.day-completed:hover .vcal-date { background-color: #82e0aa; } /* Darker green on hover */
-        .vanilla-calendar .vcal-day__btn.day-excused:hover .vcal-date { background-color: #f5b7b1; } /* Darker red on hover */
+        /* تعديل حالة الـ Hover للأيام الملونة */
+        .vanilla-calendar .vanilla-calendar-day__btn.day-completed:hover {
+          background-color: #82e0aa !important; /* أخضر أغمق عند المرور */
+          border-color: #5fcf8f !important;
+        }
+        .vanilla-calendar .vanilla-calendar-day__btn.day-excused:hover {
+          background-color: #f5b7b1 !important; /* أحمر أغمق عند المرور */
+          border-color: #e59894 !important;
+        }
 
-        /* Font size adjustments */
-        .vanilla-calendar .vcal-body, .vanilla-calendar .vcal-header__label, .vanilla-calendar .vcal-week span { font-size: 0.9em; }
+        /* تعديل حالة Hover للأيام العادية (غير الملونة) */
+         .vanilla-calendar .vanilla-calendar-day__btn:not(.day-completed):not(.day-excused):not([data-calendar-is-today]):hover {
+             background-color: #e9ecef !important; /* لون رمادي فاتح عند المرور */
+             border-color: #dee2e6 !important;
+         }
 
-        /* --- End Calendar Styles --- */
+
+        /* تعديل تنسيق اليوم الحالي ليتوافق مع الألوان المخصصة */
+        /* استخدم data-calendar-is-today أو الكلاس الذي تضيفه المكتبة لليوم الحالي */
+        .vanilla-calendar .vanilla-calendar-day__btn[data-calendar-is-today]:not(.day-completed):not(.day-excused) {
+            /* تطبيق تنسيق "اليوم" فقط إذا لم يكن اليوم مكتملاً أو معذورًا */
+            background-color: #aed6f1 !important; /* لون أزرق فاتح */
+            border: 1px solid #1a5276 !important; /* حدود أغمق */
+            color: #1a5276 !important; /* لون نص أغمق */
+            font-weight: bold;
+        }
+        /* تأكد من أن الأيام الملونة تزيل أي حدود قد تأتي من تنسيق "اليوم" إذا لزم الأمر */
+        .vanilla-calendar .vanilla-calendar-day__btn.day-completed[data-calendar-is-today],
+        .vanilla-calendar .vanilla-calendar-day__btn.day-excused[data-calendar-is-today] {
+             border-width: 1px; /* أبقينا على الحدود الملونة المخصصة */
+        }
+
+        /* --- !! END: REVISED Calendar Day Coloring CSS !! --- */
+
 
         /* Placeholder Styles */
         .placeholder-box { min-height: 150px; background-color: #f0f4f8; border: 1px dashed #ccc; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #777; border-radius: 5px; padding: 15px; text-align: center; }
@@ -124,18 +166,17 @@
         @media (max-width: 992px) {
             .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
             #daily-task { grid-column: span 2; }
-            #plan-progress, #quick-stats { grid-column: span 1; grid-row: auto; } /* Reset grid position */
-            #streak-level, #calendar-view { grid-column: span 1; grid-row: auto; } /* Reset grid position */
-            /* #badges-section { grid-column: span 2; } */ /* Adjust if needed */
+            #plan-progress, #quick-stats { grid-column: span 1; grid-row: auto; }
+            #streak-level, #calendar-view { grid-column: span 1; grid-row: auto; }
         }
-        @media (max-width: 768px) { /* Further adjust for smaller screens */
+        @media (max-width: 768px) {
             #streak-level .streak-info { flex-direction: column; gap: 10px; }
             #streak-level .streak-info div { width: 80%; margin: 0 auto; }
         }
         @media (max-width: 600px) {
             .dashboard-header .logo h1 { font-size: 1.5em;}
             .dashboard-grid { grid-template-columns: 1fr; }
-            #daily-task, #plan-progress, #quick-stats, #calendar-view, #streak-level, #competition-section, #badges-section { grid-column: span 1; } /* All span 1 */
+            #daily-task, #plan-progress, #quick-stats, #calendar-view, #streak-level, #competition-section, #badges-section { grid-column: span 1; }
             .card { padding: 15px; }
             h2 { font-size: 1.4em; }
             h3 { font-size: 1.1em; }
@@ -220,15 +261,15 @@
         </main>
 
         <footer class="main-footer">
-            <p>&copy; 2025 خطة حفظ القرآن الكريم. جميع الحقوق محفوظة.</p>
-        </footer>
+             <p>&copy; <span id="current-year">2025</span> خطة حفظ القرآن الكريم. جميع الحقوق محفوظة.</p>
+         </footer>
 
     </div>
 
     <script>
         // --- Firebase Config ---
         const firebaseConfig = {
-            apiKey: "AIzaSyDuUebu7Qzz3JnTfa-58EIPZjOcrkmdGHU", // WARNING: Exposing API keys client-side is risky. Consider security rules.
+            apiKey: "AIzaSyDuUebu7Qzz3JnTfa-58EIPZjOcrkmdGHU", // Consider security rules
             authDomain: "quranplan2.firebaseapp.com",
             projectId: "quranplan2",
             storageBucket: "quranplan2.appspot.com",
@@ -253,29 +294,29 @@
         const statLinked = document.getElementById('stat-linked');
         const statExcuses = document.getElementById('stat-excuses');
         const todayDateSpan = document.getElementById('today-date-display');
-        const calendarContainer = document.getElementById('calendar-container'); // Reference needed globally for calendar
+        const calendarContainer = document.getElementById('calendar-container');
         const currentStreakSpan = document.getElementById('current-streak');
         const longestStreakSpan = document.getElementById('longest-streak');
         const levelTitleSpan = document.getElementById('level-title');
         const levelIconSpan = document.getElementById('level-icon');
+        const currentYearSpan = document.getElementById('current-year'); // For footer year
 
         // --- Constants ---
         const totalQuranPages = 604;
-        const initialTotalRows = 320; // Assuming this is correct based on your plan data generation
+        const initialTotalRows = 320;
 
         // --- Global State ---
         let currentUser = null;
-        let currentPlanData = null; // Stores the FULL plan data
-        let calendarInstance = null; // To hold the calendar object
-        let dayStatus = {}; // <-- !! Global object to store day statuses for the calendar !!
+        let currentPlanData = null;
+        let calendarInstance = null;
+        let dayStatus = {}; // Global for calendar coloring
 
-        // --- Data Arrays & Helper Functions (Keep as is) ---
-        // These arrays are placeholders, replace with your actual data if needed, but functions rely on them
-        const surahs = ['الفاتحة والبقرة', 'آل عمران', 'النساء', 'المائدة', 'الأنعام', 'الأعراف', 'الأنفال', 'التوبة', 'يونس', 'هود', 'يوسف', 'الرعد', 'إبراهيم', 'الحجر', 'النحل', 'الإسراء', 'الكهف', 'مريم', 'طه', 'الأنبياء', 'الحج', 'المؤمنون', 'النور', 'الفرقان', 'الشعراء', 'النمل', 'القصص', 'العنكبوت', 'الروم', 'لقمان', 'السجدة', 'الأحزاب', 'سبأ', 'فاطر', 'يس', 'الصافات', 'ص', 'الزمر', 'غافر', 'فصلت', 'الشورى', 'الزخرف', 'الدخان', 'الجاثية', 'الأحقاف', 'محمد', 'الفتح', 'الحجرات', 'ق', 'الذاريات', 'الطور', 'النجم', 'القمر', 'الرحمن', 'الواقعة', 'الحديد', 'المجادلة', 'الحشر', 'الممتحنة', 'الصف', 'الجمعة', 'المنافقون', 'التغابن', 'الطلاق', 'التحريم', 'الملك', 'القلم', 'الحاقة', 'المعارج', 'نوح', 'الجن', 'المزمل', 'المدثر', 'القيامة', 'الإنسان', 'المرسلات', 'النبأ', 'النازعات', 'عبس', 'التكوير', 'الإنفطار', 'المطففين', 'الإنشقاق', 'البروج', 'الطارق', 'الأعلى', 'الغاشية', 'الفجر', 'البلد', 'الشمس', 'الليل', 'الضحى', 'الشرح', 'التين', 'العلق', 'القدر', 'البينة', 'الزلزلة', 'العاديات', 'القارعة', 'التكاثر', 'العصر', 'الهمزة', 'الفيل', 'قريش', 'الماعون', 'الكوثر', 'الكافرون', 'النصر', 'المسد', 'الإخلاص', 'الفلق', 'الناس', 'ختم القرآن']; // Example, fill completely
-        const linkFromData = ['', '', 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 577 ]; // Example, fill completely
-        const linkToData = ['', '', 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 300, 604 ]; // Example, fill completely
-        const reviewFromData = [...Array(32).fill(''), 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 481]; // Example, fill completely
-        const reviewToData = [...Array(32).fill(''), 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 576]; // Example, fill completely
+        // --- Data Arrays & Helper Functions (Ensure these are complete/correct) ---
+        const surahs = ['الفاتحة والبقرة', 'آل عمران', 'النساء', 'المائدة', 'الأنعام', 'الأعراف', 'الأنفال', 'التوبة', 'يونس', 'هود', 'يوسف', 'الرعد', 'إبراهيم', 'الحجر', 'النحل', 'الإسراء', 'الكهف', 'مريم', 'طه', 'الأنبياء', 'الحج', 'المؤمنون', 'النور', 'الفرقان', 'الشعراء', 'النمل', 'القصص', 'العنكبوت', 'الروم', 'لقمان', 'السجدة', 'الأحزاب', 'سبأ', 'فاطر', 'يس', 'الصافات', 'ص', 'الزمر', 'غافر', 'فصلت', 'الشورى', 'الزخرف', 'الدخان', 'الجاثية', 'الأحقاف', 'محمد', 'الفتح', 'الحجرات', 'ق', 'الذاريات', 'الطور', 'النجم', 'القمر', 'الرحمن', 'الواقعة', 'الحديد', 'المجادلة', 'الحشر', 'الممتحنة', 'الصف', 'الجمعة', 'المنافقون', 'التغابن', 'الطلاق', 'التحريم', 'الملك', 'القلم', 'الحاقة', 'المعارج', 'نوح', 'الجن', 'المزمل', 'المدثر', 'القيامة', 'الإنسان', 'المرسلات', 'النبأ', 'النازعات', 'عبس', 'التكوير', 'الإنفطار', 'المطففين', 'الإنشقاق', 'البروج', 'الطارق', 'الأعلى', 'الغاشية', 'الفجر', 'البلد', 'الشمس', 'الليل', 'الضحى', 'الشرح', 'التين', 'العلق', 'القدر', 'البينة', 'الزلزلة', 'العاديات', 'القارعة', 'التكاثر', 'العصر', 'الهمزة', 'الفيل', 'قريش', 'الماعون', 'الكوثر', 'الكافرون', 'النصر', 'المسد', 'الإخلاص', 'الفلق', 'الناس', 'ختم القرآن'];
+        const linkFromData = ['', '', 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 577 ];
+        const linkToData = ['', '', 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 300, 604 ];
+        const reviewFromData = [...Array(32).fill(''), 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 481];
+        const reviewToData = [...Array(32).fill(''), 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 576];
 
         function formatDate(date) { if (!(date instanceof Date)) date = new Date(date); if (isNaN(date.getTime())) return ""; const year = date.getFullYear(); const month = String(date.getMonth() + 1).padStart(2, '0'); const day = String(date.getDate()).padStart(2, '0'); return `${year}-${month}-${day}`; }
         function getPlanData(originalIndex) { const index = parseInt(originalIndex); if (isNaN(index) || index < 0 || index >= initialTotalRows) { return null; } let fromPage = '', toPage = ''; if (index < 299) { fromPage = index * 2 + 1; toPage = fromPage + 1; } else if (index === 299) { fromPage = 601; toPage = 604; } return { fromPage: fromPage, toPage: toPage, surah: surahs[index] || '', linkFrom: linkFromData[index] ?? '', linkTo: linkToData[index] ?? '', reviewFrom: reviewFromData[index] ?? '', reviewTo: reviewToData[index] ?? '', round: calculateRoundNumber(index) }; }
@@ -303,9 +344,7 @@
             return { memorizedPages: memorizedPages, linkedTasks: linkedTasks, perfectedTasks: perfectedTasks, excuseCount: excuseCount };
         }
 
-        // --- START: New Functions for Streak, Level, and Calendar ---
-
-        // Level Titles (Customize these!)
+        // --- START: Streak, Level Functions ---
         const levelTitles = [
             "ابدأ رحلتك!", "🌱 غرسة الإيمان", "✨ بادرة أمل", "🏃 ساعٍ للعلا", "⭐ نجم صاعد",
             "💪 مثابر مجتهد", "🧭 على الدرب", "💯 صاحب السبعين", "🚀 انطلاقة قوية", "💎 جوهرة مصقولة",
@@ -324,64 +363,58 @@
              const sortedRows = [...tableRows].sort((a, b) => new Date(a.displayDate) - new Date(b.displayDate));
              let currentStreak = 0; let longestStreak = 0; let currentRun = 0;
              const todayStr = formatDate(new Date());
-             let isStreakActiveToday = false;
+             let isStreakActiveToday = false; // Flag if today contributes positively
 
              for (const row of sortedRows) {
-                 if (row.displayDate > todayStr) break;
+                 if (row.displayDate > todayStr) break; // Only process up to today
+
                  if (row.type === 'plan' && row.state?.completed) {
                      currentRun++;
                      if(row.displayDate === todayStr) isStreakActiveToday = true;
                  } else if (row.type === 'excuse') {
                      if (currentRun > longestStreak) longestStreak = currentRun;
-                     if(row.displayDate === todayStr) isStreakActiveToday = false;
-                     // Don't reset currentRun, excuse pauses streak
+                      // Excuses pause the streak but don't break the historical run for longestStreak
+                     // They also don't count towards the current streak's days
+                     if(row.displayDate === todayStr) isStreakActiveToday = false; // Excuse today doesn't count
+                     // Don't reset currentRun
                  } else { // Missed day or non-plan/excuse row
                      if (currentRun > longestStreak) longestStreak = currentRun;
-                     currentRun = 0;
+                     currentRun = 0; // Reset the current run
                      isStreakActiveToday = false;
                  }
              }
+             // Final check for longest streak after loop ends
              if (currentRun > longestStreak) longestStreak = currentRun;
 
-             // Recalculate current streak from end backwards
+             // Recalculate the *actual current* streak ending today (or yesterday)
              let tempCurrentStreak = 0;
              let streakBroken = false;
+             // Iterate backwards from the last relevant day (today or earlier)
              for (let i = sortedRows.length - 1; i >= 0; i--) {
-                const row = sortedRows[i];
-                if (row.displayDate > todayStr) continue; // Only consider days up to today
+                 const row = sortedRows[i];
+                 if (row.displayDate > todayStr) continue; // Skip future dates
 
                  if (row.type === 'plan' && row.state?.completed) {
-                     if (!streakBroken) tempCurrentStreak++;
+                     if (!streakBroken) { // Only count if the streak wasn't broken on a later day
+                         tempCurrentStreak++;
+                     }
                  } else if (row.type === 'excuse') {
-                     // Excuses don't break the *potential* current streak when counting backwards,
-                     // but they don't count towards it either.
+                     // Excuses don't break the chain when counting backwards, but don't add to the count
                      continue;
                  } else {
-                    // A non-completed, non-excuse day breaks the current streak definitively.
-                    streakBroken = true;
-                    // If this break happened before today, the streak ended earlier.
-                    // If it happened today, the streak is 0.
-                    if (row.displayDate === todayStr) {
-                        tempCurrentStreak = 0; // Reset if today is the break
-                    }
-                    break; // Stop counting backwards once a definitive break is found
+                     // Any other type of day (missed, not yet done) breaks the streak definitively.
+                     streakBroken = true;
+                      // If the break happened today, the current streak is 0
+                     if (row.displayDate === todayStr) {
+                         tempCurrentStreak = 0;
+                     }
+                     // Optimization: if streak is broken before today, we can stop counting backwards earlier
+                     // For simplicity, we let it finish, but tempCurrentStreak won't increase further.
+                     break; // Stop counting backwards for the current streak
                  }
              }
-
-            // Edge case: If the loop finished without a break, but today wasn't completed or excuse
-            const lastRelevantRow = sortedRows.slice().reverse().find(r => r.displayDate <= todayStr);
-            if (!streakBroken && lastRelevantRow && lastRelevantRow.displayDate < todayStr) {
-                // If the last recorded day was before today and was completed, the streak ended yesterday.
-                // But the loop calculated it. We need to check if today exists and breaks it.
-                const todayRow = sortedRows.find(r => r.displayDate === todayStr);
-                 if (!todayRow || (todayRow.type !== 'plan' || !todayRow.state?.completed) && todayRow.type !== 'excuse') {
-                    // If today doesn't exist, or is not completed/excused, the current streak is 0
-                     tempCurrentStreak = 0;
-                 }
-            }
-
-
              currentStreak = tempCurrentStreak;
+
 
              const levelIndex = Math.min(Math.floor(currentStreak / 10), levelTitles.length - 1);
              const currentTitle = levelTitles[levelIndex] || levelTitles[0];
@@ -390,134 +423,120 @@
              return { currentStreak: currentStreak, longestStreak: longestStreak, currentLevel: levelIndex, currentTitle: currentTitle, currentIcon: currentIcon };
         }
 
-        // --- START: !! NEW Calendar Coloring Code !! ---
+
+        // --- START: Calendar Coloring Functions (Corrected JS + Expecting Corrected CSS) ---
 
         /**
          * Applies custom CSS classes to calendar days based on the dayStatus object.
+         * Version using corrected selectors based on user inspection.
          */
-/**
- * تطبق كلاسات CSS المخصصة على أيام التقويم بناءً على كائن dayStatus.
- */
-/**
- * تطبق كلاسات CSS المخصصة على أيام التقويم بناءً على كائن dayStatus.
- * النسخة المصححة بناءً على فحص العنصر.
- */
-function applyCustomColoring() {
-    console.log("Attempting to apply custom coloring (Corrected)..."); // <-- رسالة جديدة
-    setTimeout(() => {
-        if (!calendarContainer) {
-             console.error("Coloring failed: Calendar container not found.");
-             return;
-        }
-
-        // --- !! التصحيح الأول: استخدام اسم الكلاس الصحيح !! ---
-        const dayButtonElements = calendarContainer.querySelectorAll('.vanilla-calendar-day__btn');
-        console.log(`Found ${dayButtonElements.length} day button elements with selector '.vanilla-calendar-day__btn'.`); // <-- سجل العدد
-
-        if (dayButtonElements.length === 0) {
-            console.warn("Coloring issue: No day elements found even with corrected selector. Is the calendar fully rendered?");
-        }
-
-        let appliedCount = 0;
-        dayButtonElements.forEach((buttonElement, index) => {
-
-            // --- !! التصحيح الثاني: الحصول على التاريخ مباشرة من الزر ومن الخاصية الصحيحة !! ---
-            const dateAttribute = buttonElement.dataset.calendarDay; // <-- استخدام 'calendarDay'
-
-            if (!dateAttribute || !/^\d{4}-\d{2}-\d{2}$/.test(dateAttribute)) {
-                 // console.warn(`Index ${index}: Invalid or missing date format in data-calendar-day: '${dateAttribute}'.`); // يمكنك إزالة التعليق للتشخيص
-                 return; // انتقل للعنصر التالي إذا كان التاريخ غير صالح
-            }
-
-            // إزالة الكلاسات القديمة لضمان عدم التراكم
-            buttonElement.classList.remove('day-completed', 'day-excused');
-
-            // التحقق من الحالة في كائن dayStatus وتطبيق الكلاس الجديد على الزر نفسه
-            const status = dayStatus[dateAttribute];
-            if (status === 'completed') {
-                buttonElement.classList.add('day-completed');
-                appliedCount++;
-            } else if (status === 'excused') {
-                buttonElement.classList.add('day-excused');
-                appliedCount++;
-            }
-        });
-       console.log(`Custom coloring logic finished. Applied colors to ${appliedCount} days.`);
-
-    }, 300); // يمكنك تجربة تقليل التأخير مرة أخرى إلى 150ms إذا أردت
-}
-
-/**
- * تهيئة Vanilla Calendar وتطبيق التلوين المخصص.
- * @param {Array} tableRows - مصفوفة بيانات الصفوف من Firestore.
- */
-function initializeAndColorCalendar(tableRows) {
-    console.log("Initializing calendar with manual coloring approach...");
-    const calendarContainer = document.getElementById('calendar-container');
-
-    if (!calendarContainer) {
-        console.error("Calendar container '#calendar-container' not found!");
-        return;
-    }
-
-    // 1. تحضير كائن dayStatus من tableRows
-    dayStatus = {}; // إعادة تعيين الكائن قبل ملئه
-    if (tableRows && Array.isArray(tableRows)) {
-        tableRows.forEach(row => {
-            if (row.displayDate && /^\d{4}-\d{2}-\d{2}$/.test(row.displayDate)) {
-                if (row.type === 'plan' && row.state?.completed) {
-                    dayStatus[row.displayDate] = 'completed';
-                } else if (row.type === 'excuse') {
-                    dayStatus[row.displayDate] = 'excused';
+        function applyCustomColoring() {
+           // console.log("Attempting to apply custom coloring (Corrected)...");
+            setTimeout(() => {
+                if (!calendarContainer) {
+                    // console.error("Coloring failed: Calendar container not found.");
+                     return;
                 }
+
+                // --- Using the CORRECTED selector ---
+                const dayButtonElements = calendarContainer.querySelectorAll('.vanilla-calendar-day__btn');
+               // console.log(`Found ${dayButtonElements.length} day button elements with selector '.vanilla-calendar-day__btn'.`);
+
+                if (dayButtonElements.length === 0 && calendarContainer.innerHTML !== '') {
+                    // console.warn("Coloring issue: No day elements found. Is the calendar fully rendered?");
+                }
+
+                let appliedCount = 0;
+                dayButtonElements.forEach((buttonElement, index) => {
+                    // --- Getting date DIRECTLY from the button using CORRECTED attribute ---
+                    const dateAttribute = buttonElement.dataset.calendarDay;
+
+                    if (!dateAttribute || !/^\d{4}-\d{2}-\d{2}$/.test(dateAttribute)) {
+                         return; // Skip if date attribute is invalid
+                    }
+
+                    // Remove old classes first
+                    buttonElement.classList.remove('day-completed', 'day-excused');
+
+                    // Check status and apply class
+                    const status = dayStatus[dateAttribute];
+                    if (status === 'completed') {
+                        buttonElement.classList.add('day-completed');
+                        appliedCount++;
+                    } else if (status === 'excused') {
+                        buttonElement.classList.add('day-excused');
+                        appliedCount++;
+                    }
+                });
+              // console.log(`Custom coloring logic finished. Applied colors to ${appliedCount} days.`);
+
+            }, 150); // Reduced delay back slightly, adjust if needed
+        }
+
+        /**
+         * Initializes Vanilla Calendar and sets up the custom coloring mechanism.
+         */
+        function initializeAndColorCalendar(tableRows) {
+           // console.log("Initializing calendar with manual coloring approach...");
+
+            if (!calendarContainer) {
+                console.error("Calendar container '#calendar-container' not found!");
+                return;
             }
-        });
-        // !! سجل الكائن الناتج للتحقق منه !!
-        console.log("Prepared dayStatus object:", JSON.stringify(dayStatus, null, 2));
-        if (Object.keys(dayStatus).length === 0) {
-            console.warn("dayStatus object is empty. No days will be colored.");
+
+            // 1. Prepare the global dayStatus object
+            dayStatus = {};
+            if (tableRows && Array.isArray(tableRows)) {
+                tableRows.forEach(row => {
+                    if (row.displayDate && /^\d{4}-\d{2}-\d{2}$/.test(row.displayDate)) {
+                        if (row.type === 'plan' && row.state?.completed) {
+                            dayStatus[row.displayDate] = 'completed';
+                        } else if (row.type === 'excuse') {
+                            dayStatus[row.displayDate] = 'excused';
+                        }
+                    }
+                });
+               // console.log("Prepared dayStatus object:", JSON.stringify(dayStatus, null, 2));
+            } else {
+               // console.log("No tableRows data provided for calendar status.");
+            }
+
+            // 2. Set up basic Vanilla Calendar options
+            const options = {
+                settings: { lang: 'ar', iso8601: false, range: { disablePast: false, disableGaps: false, }, selection: { day: false, month: false, year: false, }, visibility: { theme: 'light', weekend: false, today: true, }, },
+                actions: {
+                    update: (calendar) => {
+                       // console.log('Calendar updated, reapplying coloring.');
+                        applyCustomColoring(); // Re-apply coloring on month change
+                    },
+                     clickDay(event, dates) { /* Optional action */ },
+                }
+            };
+
+            calendarContainer.innerHTML = ''; // Clear placeholder
+
+            try {
+               // console.log("Initializing VanillaCalendar instance...");
+                // Destroy previous instance if exists to prevent issues
+                if (calendarInstance && typeof calendarInstance.destroy === 'function') {
+                     calendarInstance.destroy();
+                   // console.log("Previous calendar instance destroyed.");
+                }
+                calendarInstance = new VanillaCalendar(calendarContainer, options);
+                calendarInstance.init();
+               // console.log("Vanilla Calendar initialized successfully.");
+
+                // 3. Apply coloring for the first time
+                applyCustomColoring();
+
+            } catch (error) {
+                console.error("Error initializing Vanilla Calendar:", error);
+                calendarContainer.innerHTML = `<p class="text" style="color:red;">Error initializing calendar. (${error.message})</p>`;
+            }
         }
-    } else {
-        console.log("No tableRows data provided for calendar status.");
-    }
 
-    const today = new Date();
+        // --- END: Calendar Coloring Functions ---
 
-    // 2. إعداد خيارات Vanilla Calendar الأساسية (بدون تلوين مدمج)
-    const options = {
-        settings: { lang: 'ar', iso8601: false, range: { disablePast: false, disableGaps: false, }, selection: { day: false, month: false, year: false, }, visibility: { theme: 'light', weekend: false, today: true, }, },
-        actions: {
-            update: (calendar) => {
-                console.log('Calendar updated (e.g., month changed), reapplying coloring.');
-                applyCustomColoring(); // إعادة تطبيق التلوين
-            },
-             clickDay(event, dates) { /* يمكنك إضافة وظيفة هنا */ },
-        }
-    };
-
-    calendarContainer.innerHTML = ''; // مسح المحتوى المؤقت
-
-    try {
-        console.log("Initializing VanillaCalendar instance...");
-        // Destroy previous instance if exists
-        if (calendarInstance && typeof calendarInstance.destroy === 'function') {
-             calendarInstance.destroy();
-             console.log("Previous calendar instance destroyed.");
-        }
-        calendarInstance = new VanillaCalendar(calendarContainer, options);
-        calendarInstance.init();
-        console.log("Vanilla Calendar initialized successfully.");
-
-        // 3. تطبيق التلوين لأول مرة بعد التهيئة مباشرة
-        applyCustomColoring();
-
-    } catch (error) {
-        console.error("Error initializing Vanilla Calendar:", error);
-        calendarContainer.innerHTML = `<p class="text" style="color:red;">Error initializing calendar. (${error.message})</p>`;
-    }
-}
-
-        // --- END: !! NEW Calendar Coloring Code !! ---
 
         // --- MODIFIED Functions to Update Dashboard Sections ---
         function displayDailyTask() {
@@ -535,7 +554,7 @@ function initializeAndColorCalendar(tableRows) {
             if (!todayRow) { dailyTaskContent.innerHTML = '<p>لا يوجد واجب مقرر في الخطة لهذا اليوم.</p>'; }
             else if (todayRow.type === 'excuse') { dailyTaskContent.innerHTML = `<p style="color: orange; font-weight:bold;">لديك عذر مسجل لهذا اليوم (${todayRow.excuseType || ''}).</p>`; }
             else if (todayRow.type === 'plan' && todayRow.state?.completed) { dailyTaskContent.innerHTML = '<p style="color: green; font-weight: bold;">✅ الحمد لله، لقد أتممت واجب هذا اليوم!</p>'; }
-            else if (todayRow.type === 'plan' && todayRow.state && !todayRow.state.completed) {
+            else if (todayRow.type === 'plan' && (!todayRow.state || !todayRow.state.completed)) { // Handle missing state or not completed
                 const taskDetails = getPlanData(todayRow.originalSequence);
                 if (taskDetails) {
                     let taskHTML = `<h4>المطلوب إنجازه اليوم (${todayStr}):</h4>`;
@@ -568,31 +587,28 @@ function initializeAndColorCalendar(tableRows) {
             if(levelIconSpan) levelIconSpan.textContent = streakData.currentIcon;
         }
 
-        // --- Main Data Loading Function (MODIFIED to call new calendar function) ---
+
+        // --- Main Data Loading Function ---
         function loadDashboardData(user) {
             if (!user) return;
             const uid = user.uid;
             const planRef = db.collection("quranPlans").doc(uid);
-            console.log("Dashboard: Checking Firestore for plan:", uid);
+           // console.log("Dashboard: Checking Firestore for plan:", uid);
             showLoading("جاري تحميل بيانات خطتك...");
 
             planRef.get().then((doc) => {
                 hideLoading();
                 if (doc.exists) {
-                    console.log("Dashboard: Plan data found.");
-                    currentPlanData = doc.data(); // Store FULL data globally
+                  //  console.log("Dashboard: Plan data found.");
+                    currentPlanData = doc.data();
 
-                    // Validate FULL data needed for dashboard
+                    // Validate crucial data
                     if (!currentPlanData.startDate || !currentPlanData.planType || !currentPlanData.tableRows || !Array.isArray(currentPlanData.tableRows) || !currentPlanData.repetitionMax) {
-                        console.error("Loaded data missing required fields (startDate, planType, tableRows array, or repetitionMax).", currentPlanData);
-                        dashboardContent.style.display = 'block'; // Show content area to display error
+                        console.error("Loaded data missing required fields.", currentPlanData);
+                        dashboardContent.style.display = 'block';
                         dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">خطأ: بيانات خطتك المحفوظة غير مكتملة أو تالفة. يرجى <a href="index.html">الذهاب لصفحة البداية</a> وإعادة إنشاء الخطة.</p>`;
-                        // Hide sections that rely on valid data
-                        const sectionsToHideOnError = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level', 'competition-section', 'badges-section'];
-                        sectionsToHideOnError.forEach(id => {
-                            const section = document.getElementById(id);
-                            if (section) section.style.display = 'none';
-                        });
+                        const sectionsToHideOnError = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level'];
+                        sectionsToHideOnError.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
                         return;
                     }
 
@@ -605,70 +621,55 @@ function initializeAndColorCalendar(tableRows) {
                     displayStats(stats);
                     displayStreakAndLevel(streakData);
 
-                    // --- !! MODIFIED CALL: Initialize Calendar using the NEW function !! ---
-                    initializeAndColorCalendar(currentPlanData.tableRows); // <-- Use the new function here
+                    // Initialize Calendar (which will then call applyCustomColoring)
+                    initializeAndColorCalendar(currentPlanData.tableRows);
 
-                    // Show the fully populated dashboard
-                    displayDashboard();
+                    displayDashboard(); // Show content after all updates
 
                 } else {
-                    // No plan found logic
-                    console.log("Dashboard: No plan data found.");
-                    displayDashboard(); // Show main area
+                   // console.log("Dashboard: No plan data found.");
+                    displayDashboard();
                     dailyTaskContent.innerHTML = '<p style="color:orange; font-weight:bold;">لم تقم باختيار أو إنشاء خطة بعد!</p><p>اذهب إلى <a href="index.html">صفحة البداية</a> لاختيار خطتك.</p>';
-                     // Hide sections requiring data
-                    const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level', 'competition-section', 'badges-section'];
-                    sectionsToHide.forEach(id => {
-                        const section = document.getElementById(id);
-                        if (section) section.style.display = 'none';
-                    });
+                    const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level'];
+                    sectionsToHide.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
                 }
             }).catch((error) => {
-                // Error handling
                 console.error("Error getting plan document:", error);
                 hideLoading();
-                displayDashboard(); // Show main area to display error
+                displayDashboard();
                 dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">حدث خطأ أثناء تحميل بيانات الخطة. (${error.code || 'UNKNOWN'})</p><p>يرجى المحاولة مرة أخرى أو التأكد من اتصالك بالإنترنت وقواعد الأمان في Firestore. <a href="index.html">العودة للرئيسية</a></p>`;
-                // Hide sections requiring data on error
-                const sectionsToHideOnError = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level', 'competition-section', 'badges-section'];
-                sectionsToHideOnError.forEach(id => {
-                    const section = document.getElementById(id);
-                    if (section) section.style.display = 'none';
-                });
+                const sectionsToHideOnError = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level'];
+                sectionsToHideOnError.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
             });
         }
 
         // --- Authentication Listener ---
         auth.onAuthStateChanged(user => {
-           // hideLoading(); // Hide loading should happen inside loadDashboardData or its error/success paths
            currentUser = user;
            if (user) {
-               console.log("Dashboard: Auth state OK.");
+              // console.log("Dashboard: Auth state OK.");
                loadDashboardData(user);
            } else {
-               console.log("Dashboard: Not logged in.");
-               // Show login message instead of redirecting immediately
-               showLoading("غير مسجل الدخول. يرجى تسجيل الدخول أولاً."); // Use showLoading to hide dashboard content
-               console.warn("User not logged in, dashboard will not load data.");
-               if(dashboardContent) dashboardContent.style.display = 'block'; // Show main area
+              // console.log("Dashboard: Not logged in.");
+               showLoading("غير مسجل الدخول. يرجى تسجيل الدخول أولاً.");
+               if(dashboardContent) dashboardContent.style.display = 'block';
                if(dailyTaskContent) dailyTaskContent.innerHTML = '<p style="color:red;">يرجى <a href="index.html">تسجيل الدخول</a> لعرض لوحة المتابعة.</p>';
-               // Hide sections requiring data
-               const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level', 'competition-section', 'badges-section'];
-               sectionsToHide.forEach(id => {
-                   const section = document.getElementById(id);
-                   if (section) section.style.display = 'none';
-               });
-               hideLoading(); // Make sure loading indicator is hidden after showing the login message
+               const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level'];
+               sectionsToHide.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
+               hideLoading(); // Hide spinner after showing message
            }
         });
 
-        // --- Initial Load ---
+        // --- Initial Load & Footer Year ---
         document.addEventListener('DOMContentLoaded', () => {
             showLoading("جاري التحقق من تسجيل الدخول...");
-            // Authentication listener (onAuthStateChanged) will handle the rest
+            if(currentYearSpan) {
+                currentYearSpan.textContent = new Date().getFullYear(); // Update footer year
+            }
+            // Auth listener handles data loading
         });
 
-        // --- Print Function (Keep as is) ---
+        // --- Print Function ---
         function printData() { console.log("Initiating browser print..."); window.print(); }
 
     </script>
