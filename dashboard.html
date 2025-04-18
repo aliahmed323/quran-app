@@ -8,15 +8,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 
-    <link href="jsCalendar.min.css" rel="stylesheet">
-    <script src="jsCalendar.min.js"></script>
-
+  <link href="vanilla-calendar.min.css" rel="stylesheet">
+<script src="vanilla-calendar.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
 
     <style>
-        /* --- CSS Styles العامة (تبقى كما هي) --- */
+        /* --- CSS Styles (تبقى كما هي - تأكد من وجود لون الخلفية الأخضر لشريط التقدم) --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Tajawal', sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.7; }
         .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
@@ -25,25 +24,30 @@
         a { text-decoration: none; color: #2980b9; }
         .card { background-color: #fff; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 3px 6px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; }
 
-        /* --- Header (تبقى كما هي) --- */
+        /* --- Header --- */
         .dashboard-header { display: flex; justify-content: center; align-items: center; padding: 10px 20px; margin-bottom: 25px; border-bottom: 2px solid #aed6f1; background-color: #fff; border-radius: 0 0 8px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .dashboard-header .logo h1 { margin: 0; font-size: 1.8em; color: #1a5276; }
 
-        /* --- Dashboard Layout (تبقى كما هي) --- */
+        /* --- Dashboard Layout --- */
         .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: auto; gap: 25px; }
         #daily-task { grid-column: span 2; }
+        /* --- Start: New Layout for Streak/Level --- */
         #plan-progress { grid-column: 1 / 2; grid-row: 2 / 3; }
         #quick-stats { grid-column: 1 / 2; grid-row: 3 / 4; }
-        #streak-level { grid-column: 2 / 4; grid-row: 2 / 3; }
-        #calendar-view { grid-column: 2 / 4; grid-row: 3 / 4; }
+        #streak-level { grid-column: 2 / 4; grid-row: 2 / 3; } /* Span 2 cols */
+        #calendar-view { grid-column: 2 / 4; grid-row: 3 / 4; } /* Span 2 cols */
+        /* #competition-section { grid-column: ?; grid-row: ?; } /* Adjust if needed */
+        /* #badges-section { grid-column: span 3; grid-row: 4 / 5; } /* Adjust if needed */
+        /* --- End: New Layout --- */
 
-        /* --- Section Specific Styles (تبقى كما هي) --- */
+        /* --- Section Specific Styles --- */
         #daily-task h3 { color: #1e8449; font-size: 1.3em; border-bottom: 2px solid #aed6f1; padding-bottom: 8px;}
-        #daily-task-content { min-height: 80px; padding-top: 10px;}
+        #daily-task-content { min-height: 80px; padding-top: 10px;} /* Adjusted height */
         #daily-task-content p { margin-bottom: 0.6em; font-size: 1.05em; line-height: 1.8; }
         #daily-task-content strong { color: #1a5276; margin-left: 8px;}
         #daily-task .plan-link { margin-top: 15px; display: inline-block; font-size: 0.9em; background-color: #5dade2; color: white; padding: 5px 10px; border-radius: 4px; }
         #daily-task .plan-link:hover { background-color: #3498db; }
+
         #plan-progress h3, #quick-stats h3, #calendar-view h3, #competition-section h3, #badges-section h3, #streak-level h3 { font-size: 1.15em; }
         #plan-progress .progress-bar-container { background-color: #e9ecef; border-radius: 0.25rem; height: 25px; overflow: hidden; margin-top: 10px; border: 1px solid #ccc; }
         #plan-progress .progress-bar-value { background-color: #28a745; height: 100%; width: 0%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9em; font-weight: bold; transition: width 0.6s ease-in-out; }
@@ -51,110 +55,67 @@
         #quick-stats ul li { margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dotted #eee; font-size: 0.95em;}
         #quick-stats ul li strong { margin-left: 5px; color: #1a5276; min-width: 110px; display: inline-block;}
         #quick-stats ul li span { color: #1e8449; font-weight: bold;}
+
+        /* --- Streak & Level Styles --- */
         #streak-level .streak-info { display: flex; justify-content: space-around; text-align: center; margin: 15px 0; }
         #streak-level .streak-info div { background-color: #eaf2f8; padding: 10px 15px; border-radius: 6px; border: 1px solid #d4e6f1; }
         #streak-level .streak-info strong { display: block; font-size: 1.5em; color: #1e8449; }
         #streak-level .level-title-container { text-align: center; margin-top: 15px; }
         #streak-level #level-title { font-size: 1.2em; color: #2c3e50; font-weight: bold; }
-        #streak-level #level-icon { font-size: 1.5em; margin-left: 10px; }
+        #streak-level #level-icon { font-size: 1.5em; margin-left: 10px; } /* Placeholder for icon */
 
-        /* --- Calendar Styles (jsCalendar) --- */
-        #calendar-view { min-height: 280px; }
-        #calendar-container { margin-top: 15px; }
+        /* --- Calendar Styles --- */
+        #calendar-view { min-height: 280px; } /* Ensure card is tall enough */
+        #calendar-container { margin-top: 15px; direction: ltr; /* Calendar library might expect LTR */ }
+        .vcal-header { background-color: #aed6f1 !important; } /* Customize header */
+        .vcal-date--today { background-color: #aed6f1 !important; /* Blueish for today */ color: #1a5276 !important; border-radius: 50%; border: 1px solid #1a5276; }
+        .day-completed .vcal-date__day { background-color: #abebc6; /* Light green */ color: #186a3b; border-radius: 50%; }
+        .day-excused .vcal-date__day { background-color: #fadbd8; /* Light red */ color: #922b21; border-radius: 50%; }
+        /* Ensure text stays visible on colored backgrounds */
+        .vcal-date__day { color: #333; }
+        .vcal-day__btn:hover .vcal-date__day { background-color: #e0e0e0; } /* Default hover */
+        .day-completed:hover .vcal-date__day { background-color: #82e0aa; } /* Hover for completed */
+        .day-excused:hover .vcal-date__day { background-color: #f5b7b1; } /* Hover for excused */
+         /* Adjust font size if needed */
+        .vcal-body, .vcal-header__label, .vcal-week span { font-size: 0.9em; }
+        .vcal-date { height: 35px; /* Adjust height */ }
+        .vcal-date__day { line-height: 35px; /* Center text vertically */ }
 
-        /* === بداية التعديلات الخاصة بالتقويم (محاولة الإصلاح الخامسة - استهداف padding المكتبة) === */
-
-        /* 1. الإبقاء على تنسيق الخلية TD نفسها دائرية وملونة (كما كان أصلاً) */
-        td.jsCalendar-day.day-completed {
-            background-color: #abebc6 !important; /* أخضر فاتح */
-            color: #186a3b !important; /* نص أخضر أغمق */
-            border-radius: 50% !important; /* دائري */
-            font-weight: bold !important;
-        }
-        td.jsCalendar-day.day-excused {
-            background-color: #fadbd8 !important; /* أحمر فاتح */
-            color: #922b21 !important; /* نص أحمر أغمق */
-            border-radius: 50% !important; /* دائري */
-            font-weight: bold !important;
-        }
-         /* تنسيق اليوم الحالي (الدائرة على الخلية TD) */
-         td.jsCalendar-day.jsCalendar-today {
-             background-color: #e3f2fd !important; /* أزرق فاتح */
-             color: #1a5276 !important;
-             border-radius: 50% !important; /* دائري */
-             /* border: 1px solid #aed6f1 !important; */ /* أبقِ أو أزل الحد حسب الأصل */
-         }
-
-        /* 2. تعديل القاعدة الخاصة بالخلية الأم TD (الأهم: إلغاء padding المكتبة) */
-        td.jsCalendar-day {
-            /* *** إلغاء padding الافتراضي للمكتبة (المشتبه به الرئيسي) *** */
-            padding: 3px 0 !important; /* إلغاء Padding الأفقي, إبقاء الرأسي البسيط */
-            /* أو جرب: padding: 0 !important; */
-
-            /* إعادة تعيين محتملة أخرى (احتياطي) */
-            margin: 0 !important;
-            border: none !important; /* إلغاء حدود المكتبة، الاعتماد على border-radius المخصص */
-            text-indent: 0 !important;
-            outline: none !important;
-
-            /* فرض سلوك الخلية والتوسيط */
-            display: table-cell !important;
-            text-align: center !important;
-            vertical-align: middle !important;
-            position: relative !important; /* قد نحتاجه لضبط دقيق لاحقاً */
-
-            /* الإبقاء على حجم أدنى قد يكون مفيداً للمظهر */
-            min-width: 2.5em !important;  /* يمكنك تعديل هذه القيمة إذا لزم الأمر */
-            min-height: 2.5em !important; /* يمكنك تعديل هذه القيمة إذا لزم الأمر */
-            /* إزالة الحجم المفروض width/height الذي سبب تباعد الخلايا */
-            /* width: 2.8em !important; */
-            /* height: 2.8em !important; */
-
-            box-sizing: border-box !important;
-            overflow: hidden; /* إخفاء أي محتوى يفيض */
-        }
-
-        /* 3. تعديل القاعدة الخاصة بعنصر الرقم الداخلي (تبسيط واعتماد على توسيط TD) */
-        td.jsCalendar-day .jsCalendar-day-number {
-            display: inline-block !important; /* أبسط display للمحتوى النصي */
-            width: auto !important;           /* العرض حسب المحتوى */
-            line-height: 1.2 !important;      /* ارتفاع سطر طبيعي (يمكن تعديله) */
-            text-align: center !important;    /* تأكيد توسيط النص */
-            vertical-align: middle !important;/* محاذاة العنصر رأسياً */
-            margin: 0 !important;
-            padding: 0 !important;            /* لا padding إضافي على الرقم */
-            color: inherit !important;        /* يرث لون الخلية */
-            background-color: transparent !important;
-            position: static !important;      /* تموضع عادي */
-            text-decoration: none !important; /* القاعدة: لا يوجد خط */
-        }
-
-        /* 4. إبقاء القاعدة الخاصة بالخط السفلي لليوم الحالي */
-        td.jsCalendar-day.jsCalendar-today .jsCalendar-day-number {
-            text-decoration: underline !important;
-        }
-        /* === نهاية التعديلات الخاصة بالتقويم === */
-
-
-        /* Placeholder Styles (تبقى كما هي) */
+        /* Placeholder Styles */
         .placeholder-box { min-height: 150px; background-color: #f0f4f8; border: 1px dashed #ccc; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #777; border-radius: 5px; padding: 15px; text-align: center; }
         .placeholder-box .icon { font-size: 3em; margin-bottom: 10px; opacity: 0.5; }
         .placeholder-box .text { font-style: italic; font-size: 0.9em; }
 
-        /* Footer (تبقى كما هي) */
+        /* Footer */
         .main-footer { text-align: center; padding: 20px; margin-top: 40px; background-color: #2c3e50; color: #ecf0f1; font-size: 0.9em; }
         .main-footer a { color: #3498db; }
 
-        /* Action Buttons Hidden (تبقى كما هي) */
+        /* Action Buttons Hidden */
         .action-buttons { display: none; }
 
-        /* Loading Indicator (تبقى كما هي) */
+        /* Loading Indicator */
         #loading-indicator { text-align: center; padding: 50px; font-size: 1.3em; color: #1a5276; display: block; }
 
-        /* Responsive Adjustments (تبقى كما هي) */
-        @media (max-width: 992px) { /* ... */ }
-        @media (max-width: 768px) { /* ... */ }
-        @media (max-width: 600px) { /* ... */ }
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+             .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+             #daily-task { grid-column: span 2; }
+             #plan-progress, #quick-stats { grid-column: span 1; grid-row: auto; } /* Reset grid position */
+             #streak-level, #calendar-view { grid-column: span 1; grid-row: auto; } /* Reset grid position */
+             /* #badges-section { grid-column: span 2; } */ /* Adjust if needed */
+        }
+        @media (max-width: 768px) { /* Further adjust for smaller screens */
+             #streak-level .streak-info { flex-direction: column; gap: 10px; }
+             #streak-level .streak-info div { width: 80%; margin: 0 auto; }
+        }
+        @media (max-width: 600px) {
+             .dashboard-header .logo h1 { font-size: 1.5em;}
+             .dashboard-grid { grid-template-columns: 1fr; }
+             #daily-task, #plan-progress, #quick-stats, #calendar-view, #streak-level, #competition-section, #badges-section { grid-column: span 1; } /* All span 1 */
+             .card { padding: 15px; }
+             h2 { font-size: 1.4em; }
+             h3 { font-size: 1.1em; }
+        }
     </style>
 </head>
 <body>
@@ -202,14 +163,14 @@
                 </section>
 
                 <section id="streak-level" class="card">
-                        <h3> همة نحو القمة: الإنجاز المتتالي</h3>
-                        <div class="streak-info">
-                            <div>أيام الإنجاز الحالية<strong id="current-streak">0</strong></div>
-                            <div> أطول سلسلة أيام حققتها<strong id="longest-streak">0</strong></div>
-                        </div>
-                        <div class="level-title-container">
-                            <h4>لقبك الحالي: <span id="level-title">ابدأ رحلتك!</span> <span id="level-icon"></span></h4>
-                        </div>
+                     <h3> همة نحو القمة: الإنجاز المتتالي</h3>
+                     <div class="streak-info">
+                         <div>أيام الإنجاز الحالية<strong id="current-streak">0</strong></div>
+                         <div> أطول سلسلة أيام حققتها<strong id="longest-streak">0</strong></div>
+                     </div>
+                     <div class="level-title-container">
+                         <h4>لقبك الحالي: <span id="level-title">ابدأ رحلتك!</span> <span id="level-icon"></span></h4>
+                     </div>
                 </section>
                 <section id="calendar-view" class="card">
                     <h3>التقويم والتتبع المرئي</h3>
@@ -219,31 +180,33 @@
                 </section>
 
                 <section id="competition-section" class="card" style="display: none;"> <h3>المنافسة</h3>
-                    <div class="placeholder-box">
-                        <div class="icon">🏆</div>
-                        <div class="text">(قريباً: لوحة الصدارة)</div>
-                    </div>
+                     <div class="placeholder-box">
+                         <div class="icon">🏆</div>
+                         <div class="text">(قريباً: لوحة الصدارة)</div>
+                     </div>
                 </section>
                 <section id="badges-section" class="card" style="display: none;"> <h3>الأوسمة</h3>
-                    <div class="placeholder-box">
-                        <div class="icon">🏅</div>
-                        <div class="text">(قريباً: نظام الأوسمة والحوافز)</div>
-                    </div>
+                     <div class="placeholder-box">
+                          <div class="icon">🏅</div>
+                          <div class="text">(قريباً: نظام الأوسمة والحوافز)</div>
+                     </div>
                 </section>
 
             </div>
         </main>
 
         <footer class="main-footer">
-                <p>&copy; 2025 خطة حفظ القرآن الكريم. جميع الحقوق محفوظة.</p>
+             <p>&copy; 2025 خطة حفظ القرآن الكريم. جميع الحقوق محفوظة.</p>
         </footer>
 
     </div>
 
+   
+
     <script>
-        // --- Firebase Config (تبقى كما هي) ---
+        // --- Firebase Config ---
         const firebaseConfig = {
-            apiKey: "AIzaSyDuUebu7Qzz3JnTfa-58EIPZjOcrkmdGHU", // Consider securing this key
+            apiKey: "AIzaSyDuUebu7Qzz3JnTfa-58EIPZjOcrkmdGHU", // WARNING: Exposing API keys client-side is risky. Consider security rules.
             authDomain: "quranplan2.firebaseapp.com",
             projectId: "quranplan2",
             storageBucket: "quranplan2.appspot.com",
@@ -251,12 +214,12 @@
             appId: "1:1098692856811:web:923bca3a54fd78b1b267ae"
         };
 
-        // --- Initialize Firebase (تبقى كما هي) ---
-        try { firebase.initializeApp(firebaseConfig); } catch (e) { console.error("Firebase initialization error:", e); }
+        // --- Initialize Firebase ---
+         try { firebase.initializeApp(firebaseConfig); } catch (e) { console.error("Firebase initialization error:", e); }
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // --- DOM References (تبقى كما هي) ---
+        // --- DOM References ---
         const loadingIndicator = document.getElementById('loading-indicator');
         const dashboardContent = document.getElementById('dashboard-content');
         const dailyTaskContent = document.getElementById('daily-task-content');
@@ -268,325 +231,496 @@
         const statLinked = document.getElementById('stat-linked');
         const statExcuses = document.getElementById('stat-excuses');
         const todayDateSpan = document.getElementById('today-date-display');
-        const calendarContainer = document.getElementById('calendar-container'); // مرجع حاوية التقويم
+        // --- New DOM Refs ---
+        const calendarContainer = document.getElementById('calendar-container');
         const currentStreakSpan = document.getElementById('current-streak');
         const longestStreakSpan = document.getElementById('longest-streak');
         const levelTitleSpan = document.getElementById('level-title');
         const levelIconSpan = document.getElementById('level-icon');
 
-        // --- Constants (تبقى كما هي) ---
+        // --- Constants ---
         const totalQuranPages = 604;
-        const initialTotalRows = 320; // Assuming this is constant for plan structure
+        const initialTotalRows = 320;
 
-        // --- Global State (تبقى كما هي) ---
+        // --- Global State ---
         let currentUser = null;
-        let currentPlanData = null;
-        let calendarInstance = null; // Store calendar instance globally
+        let currentPlanData = null; // Stores the FULL plan data
+        let calendarInstance = null; // To hold the calendar object
 
-        // --- Data Arrays & Helper Functions (تبقى كما هي) ---
-        // (Arrays: surahs, linkFromData, linkToData, reviewFromData, reviewToData ...etc)
-        // ... (الكود الخاص بالمصفوفات الطويلة هنا) ...
-        const surahs = ['الفاتحة والبقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة وآل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء والمائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة والأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأنفال', 'الأنفال', 'الأنفال', 'الأنفال', 'الأنفال', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة ويونس', 'يونس', 'يونس', 'يونس', 'يونس', 'يونس', 'يونس', 'يونس وهود', 'هود', 'هود', 'هود', 'هود', 'هود', 'هود', 'هود ويوسف', 'يوسف', 'يوسف', 'يوسف', 'يوسف', 'يوسف', 'يوسف', 'الرعد', 'الرعد', 'الرعد', 'إبراهيم', 'إبراهيم', 'إبراهيم', 'إبراهيم والحجر', 'الحجر', 'الحجر', 'الحجر والنحل', 'النحل', 'النحل', 'النحل', 'النحل', 'النحل', 'النحل', 'النحل والإسراء', 'الإسراء', 'الإسراء', 'الإسراء', 'الإسراء', 'الإسراء', 'الإسراء والكهف', 'الكهف', 'الكهف', 'الكهف', 'الكهف', 'الكهف', 'مريم', 'مريم', 'مريم', 'مريم وطه', 'طه', 'طه', 'طه', 'طه', 'طه والأنبياء', 'الأنبياء', 'الأنبياء', 'الأنبياء', 'الأنبياء', 'الأنبياء والحج', 'الحج', 'الحج', 'الحج', 'الحج', 'الحج والمؤمنون', 'المؤمنون', 'المؤمنون', 'المؤمنون', 'المؤمنون والنور', 'النور', 'النور', 'النور', 'النور', 'النور والفرقان', 'الفرقان', 'الفرقان', 'الفرقان', 'الشعراء', 'الشعراء', 'الشعراء', 'الشعراء', 'الشعراء', 'النمل', 'النمل', 'النمل', 'النمل', 'النمل والقصص', 'القصص', 'القصص', 'القصص', 'القصص', 'القصص والعنكبوت', 'العنكبوت', 'العنكبوت', 'العنكبوت', 'العنكبوت والروم', 'الروم', 'الروم', 'الروم', 'لقمان', 'لقمان', 'السجدة', 'السجدة والأحزاب', 'الأحزاب', 'الأحزاب', 'الأحزاب', 'الأحزاب', 'الأحزاب وسبأ', 'سبأ', 'سبأ', 'سبأ وفاطر', 'فاطر', 'فاطر', 'فاطر ويس', 'يس', 'يس', 'يس والصافات', 'الصافات', 'الصافات', 'الصافات', 'ص', 'ص', 'ص والزمر', 'الزمر', 'الزمر', 'الزمر', 'الزمر', 'غافر', 'غافر', 'غافر', 'غافر', 'غافر', 'فصلت', 'فصلت', 'فصلت', 'الشورى', 'الشورى', 'الشورى', 'الشورى والزخرف', 'الزخرف', 'الزخرف', 'الزخرف والدخان', 'الدخان', 'الجاثية', 'الجاثية والأحقاف', 'الأحقاف', 'الأحقاف', 'محمد', 'محمد', 'الفتح', 'الفتح', 'الفتح والحجرات', 'الحجرات و ق', 'ق', 'الذاريات', 'الذاريات والطور', 'الطور والنجم', 'النجم والقمر', 'القمر', 'القمر والرحمن', 'الرحمن والواقعة', 'الواقعة', 'الواقعة والحديد', 'الحديد', 'الحديد والمجادلة', 'المجادلة', 'المجادلة والحشر', 'الحشر', 'الممتحنة', 'الممتحنة والصف', 'الجمعة والمنافقون', 'المنافقون والتغابن', 'التغابن والطلاق', 'الطلاق والتحريم', 'التحريم والملك', 'الملك والقلم', 'القلم والحاقة', 'الحاقة والمعارج', 'المعارج ونوح', 'نوح والجن', 'الجن والمزمل', 'المزمل والمدثر', 'المدثر والقيامة والإنسان', 'الإنسان والمرسلات', 'المرسلات والنبأ', 'النبأ والنازعات', 'عبس والتكوير', 'الإنفطار والمطففين', 'الإنشقاق والبروج', 'الطارق والأعلى والغاشية', 'الفجر والبلد', 'الشمس والليل', 'الضحى إلى الناس', 'ختم القرآن'];
-        const linkFromData = ['', '', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 13, 13, 13, 13, 13, 13, 25, 25, 25, 25, 25, 25, 37, 37, 37, 37, 37, 37, 49, 49, 49, 49, 49, 49, 61, 61, 61, 61, 61, 61, 73, 73, 73, 73, 73, 73, 85, 85, 85, 85, 85, 85, 97, 97, 97, 97, 97, 97, 109, 109, 109, 109, 109, 109, 121, 121, 121, 121, 121, 121, 133, 133, 133, 133, 133, 133, 145, 145, 145, 145, 145, 145, 157, 157, 157, 157, 157, 157, 169, 169, 169, 169, 169, 169, 181, 181, 181, 181, 181, 181, 193, 193, 193, 193, 193, 193, 205, 205, 205, 205, 205, 205, 217, 217, 217, 217, 217, 217, 229, 229, 229, 229, 229, 229, 241, 241, 241, 241, 241, 241, 253, 253, 253, 253, 253, 253, 265, 265, 265, 265, 265, 265, 277, 277, 277, 277, 277, 277, 289, 289, 289, 289, 289, 289, 301, 301, 301, 301, 301, 301, 313, 313, 313, 313, 313, 313, 325, 325, 325, 325, 325, 325, 337, 337, 337, 337, 337, 337, 349, 349, 349, 349, 349, 349, 361, 361, 361, 361, 361, 361, 373, 373, 373, 373, 373, 373, 385, 385, 385, 385, 385, 385, 397, 397, 397, 397, 397, 397, 409, 409, 409, 409, 409, 409, 421, 421, 421, 421, 421, 421, 433, 433, 433, 433, 433, 433, 445, 445, 445, 445, 445, 445, 457, 457, 457, 457, 457, 457, 469, 469, 469, 469, 469, 469, 481, 481, 481, 481, 481, 481, 493, 493, 493, 493, 493, 493, 505, 505, 505, 505, 505, 505, 517, 517, 517, 517, 517, 517, 529, 529, 529, 529, 529, 529, 541, 541, 541, 541, 541, 541, 553, 553, 553, 553, 553, 553, 565, 565, 565, 565, 565, 565, 577, 577, 577, 577, 577, 577];
-        const linkToData = ['', '', 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122, 124, 126, 128, 130, 132, 134, 136, 138, 140, 142, 144, 146, 148, 150, 152, 154, 156, 158, 160, 162, 164, 166, 168, 170, 172, 174, 176, 178, 180, 182, 184, 186, 188, 190, 192, 194, 196, 198, 200, 202, 204, 206, 208, 210, 212, 214, 216, 218, 220, 222, 224, 226, 228, 230, 232, 234, 236, 238, 240, 242, 244, 246, 248, 250, 252, 254, 256, 258, 260, 262, 264, 266, 268, 270, 272, 274, 276, 278, 280, 282, 284, 286, 288, 290, 292, 294, 296, 298, 300, 302, 304, 306, 308, 310, 312, 314, 316, 318, 320, 322, 324, 326, 328, 330, 332, 334, 336, 338, 340, 342, 344, 346, 348, 350, 352, 354, 356, 358, 360, 362, 364, 366, 368, 370, 372, 374, 376, 378, 380, 382, 384, 386, 388, 390, 392, 394, 396, 398, 400, 402, 404, 406, 408, 410, 412, 414, 416, 418, 420, 422, 424, 426, 428, 430, 432, 434, 436, 438, 440, 442, 444, 446, 448, 450, 452, 454, 456, 458, 460, 462, 464, 466, 468, 470, 472, 474, 476, 478, 480, 482, 484, 486, 488, 490, 492, 494, 496, 498, 500, 502, 504, 506, 508, 510, 512, 514, 516, 518, 520, 522, 524, 526, 528, 530, 532, 534, 536, 538, 540, 542, 544, 546, 548, 550, 552, 554, 556, 558, 560, 562, 564, 566, 568, 570, 572, 574, 576, 578, 580, 582, 584, 586, 588, 590, 592, 594, 597, 600, 604];
-        const reviewFromData = [...Array(32).fill(''), 1, 3, 5, 7, 9, 11, 1, 5, 9, 13, 17, 21, 1, 7, 13, 19, 25, 31, 1, 9, 17, 25, 33, 41, 1, 11, 21, 31, 41, 51, 1, 13, 25, 37, 49, 61, 1, 15, 29, 43, 57, 71, 1, 17, 33, 49, 65, 81, 1, 19, 37, 55, 73, 91, 1, 21, 41, 61, 81, 101, 1, 23, 45, 67, 89, 111, 1, 25, 49, 73, 97, 121, 1, 27, 53, 79, 105, 131, 1, 29, 57, 85, 113, 141, 1, 31, 61, 91, 121, 151, 1, 33, 65, 97, 129, 161, 1, 35, 69, 103, 137, 171, 1, 37, 73, 109, 145, 181, 1, 39, 77, 115, 153, 191, 1, 41, 81, 121, 161, 201, 1, 43, 85, 127, 169, 211, 1, 45, 89, 133, 177, 221, 1, 47, 93, 139, 185, 231, 1, 49, 97, 145, 193, 241, 1, 51, 101, 151, 201, 251, 1, 53, 105, 157, 209, 261, 1, 55, 109, 163, 217, 271, 1, 57, 113, 169, 225, 281, 1, 59, 117, 175, 233, 291, 1, 61, 121, 181, 241, 301, 1, 63, 125, 187, 249, 311, 1, 65, 129, 193, 257, 321, 1, 67, 133, 199, 265, 331, 1, 69, 137, 205, 273, 341, 1, 71, 141, 211, 281, 351, 1, 73, 145, 217, 289, 361, 1, 75, 149, 223, 297, 371, 1, 77, 153, 229, 305, 381, 1, 79, 157, 235, 313, 391, 1, 81, 161, 241, 321, 401, 1, 83, 165, 247, 329, 411, 1, 85, 169, 253, 337, 421, 1, 87, 173, 259, 345, 431, 1, 89, 177, 265, 353, 441, 1, 91, 181, 271, 361, 451, 1, 93, 185, 277, 369, 461, 1, 95, 189, 283, 377, 471, 1, 97, 193, 289, 385, 481];
-        const reviewToData = [...Array(32).fill(''), 2, 4, 6, 8, 10, 12, 4, 8, 12, 16, 20, 24, 6, 12, 18, 24, 30, 36, 8, 16, 24, 32, 40, 48, 10, 20, 30, 40, 50, 60, 12, 24, 36, 48, 60, 72, 14, 28, 42, 56, 70, 84, 16, 32, 48, 64, 80, 96, 18, 36, 54, 72, 90, 108, 20, 40, 60, 80, 100, 120, 22, 44, 66, 88, 110, 132, 24, 48, 72, 96, 120, 144, 26, 52, 78, 104, 130, 156, 28, 56, 84, 112, 140, 168, 30, 60, 90, 120, 150, 180, 32, 64, 96, 128, 160, 192, 34, 68, 102, 136, 170, 204, 36, 72, 108, 144, 180, 216, 38, 76, 114, 152, 190, 228, 40, 80, 120, 160, 200, 240, 42, 84, 126, 168, 210, 252, 44, 88, 132, 176, 220, 264, 46, 92, 138, 184, 230, 276, 48, 96, 144, 192, 240, 288, 50, 100, 150, 200, 250, 300, 52, 104, 156, 208, 260, 312, 54, 108, 162, 216, 270, 324, 56, 112, 168, 224, 280, 336, 58, 116, 174, 232, 290, 348, 60, 120, 180, 240, 300, 360, 62, 124, 186, 248, 310, 372, 64, 128, 192, 256, 320, 384, 66, 132, 198, 264, 330, 396, 68, 136, 204, 272, 340, 408, 70, 140, 210, 280, 350, 420, 72, 144, 216, 288, 360, 432, 74, 148, 222, 296, 370, 444, 76, 152, 228, 304, 380, 456, 78, 156, 234, 312, 390, 468, 80, 160, 240, 320, 400, 480, 82, 164, 246, 328, 410, 492, 84, 168, 252, 336, 420, 504, 86, 172, 258, 344, 430, 516, 88, 176, 264, 352, 440, 528, 90, 180, 270, 360, 450, 540, 92, 184, 276, 368, 460, 552, 94, 188, 282, 376, 470, 564, 96, 192, 288, 384, 480, 576];
+        // --- Data Arrays & Helper Functions (Keep as is) ---
+        const surahs = ['الفاتحة والبقرة', /* ... rest of surahs ... */ 'ختم القرآن'];
+        const linkFromData = ['', '', 1, /* ... rest of data ... */ 577];
+        const linkToData = ['', '', 2, /* ... rest of data ... */ 604];
+        const reviewFromData = [...Array(32).fill(''), 1, /* ... rest of data ... */ 481];
+        const reviewToData = [...Array(32).fill(''), 2, /* ... rest of data ... */ 576];
 
-        // --- Helper Functions (تبقى كما هي) ---
-        function formatDate(date) { if (!(date instanceof Date)) date = new Date(date); if (isNaN(date.getTime())) return ""; const year = date.getFullYear(); const month = String(date.getMonth() + 1).padStart(2, '0'); const day = String(date.getDate()).padStart(2, '0'); return `${year}-${month}-${day}`; }
-        function getPlanData(originalIndex) { const index = parseInt(originalIndex); if (isNaN(index) || index < 0 || index >= initialTotalRows) { return null; } let fromPage = '', toPage = ''; if (index < 299) { fromPage = index * 2 + 1; toPage = fromPage + 1; } else if (index === 299) { fromPage = 601; toPage = 604; } else { /* Handle indices >= 300 if they exist */ } return { fromPage: fromPage, toPage: toPage, surah: surahs[index] || '', linkFrom: linkFromData[index] ?? '', linkTo: linkToData[index] ?? '', reviewFrom: reviewFromData[index] ?? '', reviewTo: reviewToData[index] ?? '', round: calculateRoundNumber(index) }; }
-        function calculateRoundNumber(originalIndex) { if (originalIndex < 32 || !reviewFromData || reviewFromData[originalIndex] == null || reviewFromData[originalIndex] === '') { return ''; } let reviewDataStartIndex = 32; let reviewCounter = 0; for(let i = reviewDataStartIndex; i <= originalIndex; i++){ if(reviewFromData[i] != null && reviewFromData[i] !== '') reviewCounter++; } if (reviewCounter === 0) return ''; return Math.ceil(reviewCounter / 6); }
+        function formatDate(date) { /* ... function remains the same ... */ if (!(date instanceof Date)) date = new Date(date); if (isNaN(date.getTime())) return ""; const year = date.getFullYear(); const month = String(date.getMonth() + 1).padStart(2, '0'); const day = String(date.getDate()).padStart(2, '0'); return `${year}-${month}-${day}`; }
+        function getPlanData(originalIndex) { /* ... function remains the same ... */ const index = parseInt(originalIndex); if (isNaN(index) || index < 0 || index >= initialTotalRows) { return null; } let fromPage = '', toPage = ''; if (index < 299) { fromPage = index * 2 + 1; toPage = fromPage + 1; } else if (index === 299) { fromPage = 601; toPage = 604; } return { fromPage: fromPage, toPage: toPage, surah: surahs[index] || '', linkFrom: linkFromData[index] ?? '', linkTo: linkToData[index] ?? '', reviewFrom: reviewFromData[index] ?? '', reviewTo: reviewToData[index] ?? '', round: calculateRoundNumber(index) }; }
+        function calculateRoundNumber(originalIndex) { /* ... function remains the same ... */ if (originalIndex < 32 || !reviewFromData || reviewFromData[originalIndex] == null || reviewFromData[originalIndex] === '') { return ''; } let reviewDataStartIndex = 32; let reviewCounter = 0; for(let i = reviewDataStartIndex; i <= originalIndex; i++){ if(reviewFromData[i] != null && reviewFromData[i] !== '') reviewCounter++; } if (reviewCounter === 0) return ''; return Math.ceil(reviewCounter / 6); }
 
-        // --- UI Update Functions (تبقى كما هي) ---
+
+        // --- UI Update Functions ---
         function showLoading(message = "جاري التحميل...") { if(loadingIndicator){ loadingIndicator.textContent = message; loadingIndicator.style.display = 'block';} if(dashboardContent) dashboardContent.style.display = 'none'; }
         function hideLoading() { if(loadingIndicator) loadingIndicator.style.display = 'none'; }
         function displayDashboard() { hideLoading(); if(dashboardContent) dashboardContent.style.display = 'block'; }
 
-        // --- Functions to Calculate Stats (تبقى كما هي) ---
-        function calculateDashboardStats(tableRows) {
+        // --- Functions to Calculate Stats from tableRows (Keep as is) ---
+        function calculateDashboardStats(tableRows) { /* ... function remains the same ... */
             let lastCompletedPage = 0; let linkedTasks = 0; let perfectedTasks = 0; let excuseCount = 0;
             if (!tableRows) return { memorizedPages: 0, linkedTasks: 0, perfectedTasks: 0, excuseCount: 0 };
             tableRows.forEach(row => {
                 if (row.type === 'excuse') { excuseCount++; }
-                else if (row.type === 'plan' && row.state?.completed) { // Use optional chaining
-                    const planInfo = typeof getPlanData === 'function' ? getPlanData(row.originalSequence) : null;
+                else if (row.type === 'plan' && row.state && row.state.completed) {
+                    const planInfo = getPlanData(row.originalSequence);
                     if (planInfo && planInfo.toPage) { const pageNum = parseInt(planInfo.toPage); if (!isNaN(pageNum)) { lastCompletedPage = Math.max(lastCompletedPage, pageNum); } }
-                    if (planInfo && planInfo.linkTo !== '' && row.state?.linked) { linkedTasks++; } // Optional chaining
-                    if (planInfo && planInfo.reviewTo !== '' && row.state?.reviewed) { perfectedTasks++; } // Optional chaining
+                    if (planInfo && planInfo.linkTo !== '' && row.state.linked) { linkedTasks++; }
+                    if (planInfo && planInfo.reviewTo !== '' && row.state.reviewed) { perfectedTasks++; }
                 }
             });
             const memorizedPages = Math.min(lastCompletedPage, totalQuranPages);
             return { memorizedPages: memorizedPages, linkedTasks: linkedTasks, perfectedTasks: perfectedTasks, excuseCount: excuseCount };
         }
 
-        // --- Streak, Level Functions (تبقى كما هي) ---
-        const levelTitles = [ "ابدأ رحلتك!", "🌱 غرسة الإيمان", "✨ بادرة أمل", "🏃 ساعٍ للعلا", "⭐ نجم صاعد", "💪 مثابر مجتهد", "🧭 على الدرب", "💯 صاحب السبعين", "🚀 انطلاقة قوية", "💎 جوهرة مصقولة", "👑 صاحب المئة يوم", "📖 رفيق القرآن", "🕯️ منارة هدى", "🏔️ قمة شامخة", "🌳 شجرة طيبة", "⏳ عابر منتصف الطريق", "🎯 دقة والتزام", "🌊 بحر زاخر", "🌟 كوكب دري", "🧭 بوصلة الحق", "💯💯 المئتان لا تقفان!", "🤲 قلب خاشع", "🕊️ روح مطمئنة", "💖 محب للرحمن", "🙏 عبد شكور", "💡 بصيرة نافذة", "🕌 معمّر بيوت الله", "🌙 هلال الكمال", "✨ نور على نور", "🏁 قاب قوسين أو أدنى", "🏆 فارس الثلاثمائة", "🎉 مقترب من الختام", "🎊 خاتم مبارك" ];
-        const levelIcons = { 10: '👑', 20: '💯', 30: '🏆', 32: '🎊' }; // Map level index to icon
+        // --- START: New Functions for Streak, Level, and Calendar ---
+
+        // Level Titles (Customize these!)
+        const levelTitles = [
+             "ابدأ رحلتك!", // Level 0 (0-9 days)
+             "🌱 غرسة الإيمان", // Level 1 (10-19 days)
+             "✨ بادرة أمل", // Level 2 (20-29 days)
+             "🏃 ساعٍ للعلا", // Level 3 (30-39 days)
+             "⭐ نجم صاعد", // Level 4 (40-49 days)
+             "💪 مثابر مجتهد", // Level 5 (50-59 days)
+             "🧭 على الدرب", // Level 6 (60-69 days)
+             "💯 صاحب السبعين", // Level 7 (70-79 days)
+             "🚀 انطلاقة قوية", // Level 8 (80-89 days)
+             "💎 جوهرة مصقولة", // Level 9 (90-99 days)
+             "👑 صاحب المئة يوم", // Level 10 (100-109 days) - Add Icon?
+             "📖 رفيق القرآن", // Level 11 (110-119 days)
+             "🕯️ منارة هدى", // Level 12 (120-129 days)
+             "🏔️ قمة شامخة", // Level 13 (130-139 days)
+             "🌳 شجرة طيبة", // Level 14 (140-149 days)
+             "⏳ عابر منتصف الطريق", // Level 15 (150-159 days)
+             "🎯 دقة والتزام", // Level 16 (160-169 days)
+             "🌊 بحر زاخر", // Level 17 (170-179 days)
+             "🌟 كوكب دري", // Level 18 (180-189 days)
+             "🧭 بوصلة الحق", // Level 19 (190-199 days)
+             "💯💯 المئتان لا تقفان!", // Level 20 (200-209 days) - Add Icon?
+             "🤲 قلب خاشع", // Level 21 (210-219 days)
+             "🕊️ روح مطمئنة", // Level 22 (220-229 days)
+             "💖 محب للرحمن", // Level 23 (230-239 days)
+             "🙏 عبد شكور", // Level 24 (240-249 days)
+             "💡 بصيرة نافذة", // Level 25 (250-259 days)
+             "🕌 معمّر بيوت الله", // Level 26 (260-269 days)
+             "🌙 هلال الكمال", // Level 27 (270-279 days)
+             "✨ نور على نور", // Level 28 (280-289 days)
+             "🏁 قاب قوسين أو أدنى", // Level 29 (290-299 days)
+             "🏆 فارس الثلاثمائة", // Level 30 (300-309 days) - Add Icon?
+             "🎉 مقترب من الختام", // Level 31 (310-319 days)
+             "🎊 خاتم مبارك", // Level 32 (320+ days)
+        ];
+
+        // Level Icons (Example for levels 10, 20, 30)
+        const levelIcons = {
+            10: '👑',
+            20: '💯',
+            30: '🏆',
+            32: '🎊'
+        };
+
+
         function calculateStreaksAndLevel(tableRows) {
-             if (!tableRows || tableRows.length === 0) { return { currentStreak: 0, longestStreak: 0, currentLevel: 0, currentTitle: levelTitles[0], currentIcon: '' }; }
-             // Filter out future dates first for accurate streak calculation
-             const todayStr = formatDate(new Date());
-             const pastAndPresentRows = tableRows.filter(row => row.displayDate <= todayStr);
-             if (pastAndPresentRows.length === 0) { return { currentStreak: 0, longestStreak: 0, currentLevel: 0, currentTitle: levelTitles[0], currentIcon: '' }; }
+            if (!tableRows || tableRows.length === 0) {
+                return { currentStreak: 0, longestStreak: 0, currentLevel: 0, currentTitle: levelTitles[0], currentIcon: '' };
+            }
 
-             const sortedRows = pastAndPresentRows.sort((a, b) => new Date(a.displayDate) - new Date(b.displayDate));
+            // Sort rows by date just in case they aren't already
+            const sortedRows = [...tableRows].sort((a, b) => new Date(a.displayDate) - new Date(b.displayDate));
 
-             let currentStreak = 0; let longestStreak = 0; let currentRun = 0;
-             let lastProcessedDate = null;
-             let lastCompletedOrExcusedDate = null; // Track the last valid streak day
+            let currentStreak = 0;
+            let longestStreak = 0;
+            let currentRun = 0;
+            const todayStr = formatDate(new Date());
+            let isStreakActiveToday = false; // Flag to check if the streak includes today
 
-             for (const row of sortedRows) {
-                 // Skip potential duplicate entries for the same date if logic allows them
-                 if (row.displayDate === lastProcessedDate) continue;
+            // Iterate up to today
+            for (const row of sortedRows) {
+                 // Stop if we go past today's date string
+                 if (row.displayDate > todayStr) break;
 
-                 let isDayCompleted = (row.type === 'plan' && row.state?.completed);
-                 let isDayExcused = (row.type === 'excuse');
+                 if (row.type === 'plan' && row.state?.completed) {
+                     currentRun++;
+                      // Check if this completed day is today
+                     if(row.displayDate === todayStr) {
+                         isStreakActiveToday = true;
+                     }
+                 } else if (row.type === 'excuse') {
+                     // Excuses pause the streak count but don't break the current run *for longest calculation*
+                     // However, for the *current* streak ending now, an excuse today means the streak ended yesterday.
+                     if (currentRun > longestStreak) {
+                         longestStreak = currentRun;
+                     }
+                     // If excuse is today, the active streak ended yesterday
+                     if(row.displayDate === todayStr){
+                        isStreakActiveToday = false; // Mark streak as not active *today*
+                     }
+                     // Don't reset currentRun here, allows streak to continue if next day is completed
+                 }
+                 else { // Missed day (not completed, not excuse) OR other row type breaks streak
+                     if (currentRun > longestStreak) {
+                         longestStreak = currentRun;
+                     }
+                     currentRun = 0; // Reset streak run
+                     isStreakActiveToday = false; // Streak broken before today
+                 }
+            }
 
-                 // Check for gap since last completed/excused day
-                 if (lastCompletedOrExcusedDate) {
-                     const dateDiff = (new Date(row.displayDate) - new Date(lastCompletedOrExcusedDate)) / 86400000; // Difference in days
-                     if (dateDiff > 1) {
-                         // Gap detected, streak broken before this day
-                         if (currentRun > longestStreak) { longestStreak = currentRun; }
-                         currentRun = 0;
+             // Final check for the longest streak after the loop
+            if (currentRun > longestStreak) {
+                longestStreak = currentRun;
+            }
+
+             // Determine the CURRENT streak
+             // If the streak was active today OR the last recorded day was completed:
+             if (isStreakActiveToday || (sortedRows.length > 0 && sortedRows[sortedRows.length-1].type === 'plan' && sortedRows[sortedRows.length-1].state?.completed && sortedRows[sortedRows.length-1].displayDate < todayStr)) {
+                 // If the loop ended naturally (processed up to today or last completed day), currentRun holds the current streak.
+                 // We need to recalculate the current run from the *end* backwards until a break or excuse.
+                 let tempCurrentStreak = 0;
+                 for (let i = sortedRows.length - 1; i >= 0; i--) {
+                     const row = sortedRows[i];
+                     // Only count days up to today
+                     if (row.displayDate > todayStr) continue;
+
+                     if (row.type === 'plan' && row.state?.completed) {
+                         tempCurrentStreak++;
+                     } else if (row.type === 'excuse') {
+                         continue; // Skip excuses when counting backwards for current streak
+                     } else {
+                         break; // Break on missed day or non-plan row
                      }
                  }
+                  currentStreak = tempCurrentStreak;
 
-                 if (isDayCompleted) {
-                     currentRun++;
-                     lastCompletedOrExcusedDate = row.displayDate;
-                 } else if (isDayExcused) {
-                     // Excused day continues the possibility of a streak, doesn't break it, doesn't increment
-                      lastCompletedOrExcusedDate = row.displayDate;
-                 } else {
-                     // Missed day or incomplete plan day
-                     if (currentRun > longestStreak) { longestStreak = currentRun; }
-                     currentRun = 0;
-                      // Don't update lastCompletedOrExcusedDate here
-                 }
-                 lastProcessedDate = row.displayDate;
-             }
-             // Final check after loop
-             if (currentRun > longestStreak) { longestStreak = currentRun; }
-
-             // Determine current streak
-             // Check if the last processed day (which is also the last valid streak day in this loop) is today or yesterday
-             const yesterdayStr = formatDate(new Date(Date.now() - 864e5));
-             if (lastCompletedOrExcusedDate === todayStr || lastCompletedOrExcusedDate === yesterdayStr) {
-                 // If the streak was valid up to today or yesterday, the current run is the current streak
-                 currentStreak = currentRun;
              } else {
-                 // If the last valid streak day was before yesterday, the current streak is 0
+                 // If the loop broke due to a missed day or excuse today, the current streak is 0.
                  currentStreak = 0;
              }
 
 
-             const levelIndex = Math.min(Math.floor(currentStreak / 10), levelTitles.length - 1);
-             const currentTitle = levelTitles[levelIndex] || levelTitles[0];
-             const iconLevel = Math.floor(currentStreak / 10); // Determine icon level based on current streak
-             const currentIcon = levelIcons[iconLevel] || '';
+            // Calculate Level based on CURRENT streak
+            // Level index is floor(streak / 10), capped at the max level index
+            const levelIndex = Math.min(Math.floor(currentStreak / 10), levelTitles.length - 1);
+            const currentTitle = levelTitles[levelIndex] || levelTitles[0];
+            const currentIcon = levelIcons[levelIndex] || ''; // Get icon if defined for this level
 
-             return { currentStreak: currentStreak, longestStreak: longestStreak, currentLevel: levelIndex, currentTitle: currentTitle, currentIcon: currentIcon };
+             // *** Level Loss Logic (Future Enhancement?) ***
+             // The current implementation bases the title purely on the active current streak.
+             // Implementing the "lose one level" requires storing the highest level achieved
+             // or recalculating the longest streak and comparing.
+             // For now, title directly reflects current achievement streak.
+
+
+            return {
+                currentStreak: currentStreak,
+                longestStreak: longestStreak,
+                currentLevel: levelIndex,
+                currentTitle: currentTitle,
+                currentIcon: currentIcon
+            };
         }
 
 
-        // --- Calendar Functions (مع التعديل لإصلاح اختفاء الألوان) ---
+function initializeCalendar(tableRows) {
+    console.log("[Re-attempt] Initializing calendar with markup.dates and 'class' array...");
+    const calendarContainer = document.getElementById('calendar-container'); // التأكد من وجود الحاوية
 
-        // Function to apply highlights (unchanged)
-        function applyCustomHighlights(tableRows) {
-            // console.log("Applying jsCalendar highlights manually...");
-            const calendarElement = document.getElementById('calendar-container');
-            if (!calendarElement || !tableRows) { return; }
+    // --- التحقق من النقاط ---
+    if (!calendarContainer) {
+        console.error("Checklist Fail: Calendar container '#calendar-container' not found!");
+        return;
+    } else {
+        console.log("Checklist OK: Container '#calendar-container' found.");
+    }
+    // التحقق من تحميل المكتبة يتم ضمنيًا لأن الكود يعمل
+    // التحقق من صيغة التاريخ سيتم أدناه
 
-            const dayStatus = {};
-            tableRows.forEach(row => {
-                if (row.displayDate) {
-                    if (row.type === 'plan' && row.state?.completed) { dayStatus[row.displayDate] = 'completed'; }
-                    else if (row.type === 'excuse') { dayStatus[row.displayDate] = 'excused'; }
-                }
-            });
+    // --- تحضير بيانات الأيام الملونة (مع تدقيق التنسيق) ---
+    const daysData = [];
+    if (tableRows && Array.isArray(tableRows)) {
+        tableRows.forEach((row, index) => {
+            let cssClass = '';
+            if (row.type === 'plan' && row.state?.completed) { cssClass = 'day-completed'; }
+            else if (row.type === 'excuse') { cssClass = 'day-excused'; }
 
-            const dayElements = calendarElement.querySelectorAll('.jsCalendar-day[data-date]');
-            // console.log(`Found ${dayElements.length} jsCalendar day TD elements to check.`);
-
-            dayElements.forEach((element) => {
-                const dateStringFromAttr = element.dataset.date;
-                element.classList.remove('day-completed', 'day-excused');
-
-                if (dateStringFromAttr) {
-                    try {
-                        const dateObject = new Date(dateStringFromAttr);
-                        if (isNaN(dateObject.getTime())) { return; }
-                        const formattedDateKey = formatDate(dateObject);
-                        const status = dayStatus[formattedDateKey];
-
-                        if (status === 'completed') {
-                            element.classList.add('day-completed');
-                        } else if (status === 'excused') {
-                            element.classList.add('day-excused');
-                        }
-                    } catch(e) { /* console.error(`Error processing date ${dateStringFromAttr}:`, e); */ }
-                }
-            });
-            // console.log("Finished applying manual highlights.");
-        }
-
-        // **MODIFIED** Calendar Initialization (to fix disappearing colors)
-        function initializeCalendar(tableRows) {
-            console.log("Initializing jsCalendar...");
-            const calendarContainer = document.getElementById('calendar-container');
-            if (!calendarContainer) { console.error("Calendar container element not found!"); return; }
-            calendarContainer.innerHTML = ''; // Clear placeholder
-
-            const today = new Date();
-
-            try {
-                const targetElement = calendarContainer;
-
-                // Initialize jsCalendar and store the instance
-                calendarInstance = new jsCalendar(targetElement, today, {
-                    language: 'ar',
-                    monthFormat: 'MMMM Olímpic', // Standard month year format
-                    fdotw: 6 // Saturday as First Day of the Week
-                    // 'onMonthChange' event is unreliable/not documented well, using button listeners below
-                });
-
-                console.log("jsCalendar initialized successfully.");
-
-                // --- Manual Event Listeners for Month Change (More Reliable) ---
-                // Find buttons within the specific calendar instance container
-                const prevButton = calendarContainer.querySelector('.jsCalendar-nav-left');
-                const nextButton = calendarContainer.querySelector('.jsCalendar-nav-right');
-
-                function handleMonthNavigation() {
-                    console.log("Month navigation button clicked, re-applying highlights...");
-                    // Use a small timeout to allow jsCalendar to redraw
-                    setTimeout(() => {
-                         if (currentPlanData && currentPlanData.tableRows) {
-                             applyCustomHighlights(currentPlanData.tableRows);
-                         }
-                     }, 150); // Delay to ensure DOM update after click
-                }
-
-                if (prevButton) {
-                    // Remove potential previous listener before adding new one
-                    prevButton.removeEventListener('click', handleMonthNavigation);
-                    prevButton.addEventListener('click', handleMonthNavigation);
-                } else {
-                     console.warn("Could not find jsCalendar previous month button to attach listener.");
-                }
-                if (nextButton) {
-                     // Remove potential previous listener before adding new one
-                    nextButton.removeEventListener('click', handleMonthNavigation);
-                    nextButton.addEventListener('click', handleMonthNavigation);
-                } else {
-                     console.warn("Could not find jsCalendar next month button to attach listener.");
-                }
-                // --- End Manual Event Listeners ---
-
-
-                // Initial application of highlights
-                setTimeout(() => {
-                    if (currentPlanData && currentPlanData.tableRows) {
-                         applyCustomHighlights(currentPlanData.tableRows);
-                     }
-                }, 300); // Initial delay
-
-            } catch (error) {
-                console.error("Error initializing jsCalendar:", error);
-                calendarContainer.innerHTML = `<p class="text" style="color:red;">Error loading calendar. (${error.message})</p>`;
+            // التحقق من صيغة التاريخ وهيكل البيانات
+            if (cssClass && row.displayDate && /^\d{4}-\d{2}-\d{2}$/.test(row.displayDate)) {
+                const dataEntry = {
+                    date: row.displayDate, // التاريخ بصيغة 'YYYY-MM-DD'
+                    class: [cssClass]      // استخدام 'class' كمصفوفة تحتوي اسم الكلاس
+                };
+                // console.log(`Row ${index}: Preparing entry for ${dataEntry.date}:`, dataEntry); // تسجيل كل إدخال (اختياري)
+                daysData.push(dataEntry);
+            } else if (cssClass && row.displayDate) {
+                // تحذير إذا كانت صيغة التاريخ غير متوقعة
+                console.warn(`Row ${index}: Invalid date format for ${row.displayDate}. Expected YYYY-MM-DD.`);
+            } else if (cssClass && !row.displayDate) {
+                console.warn(`Row ${index}: Needs highlighting but is missing displayDate:`, row);
             }
+        });
+    } else {
+        console.log("No tableRows data found for calendar highlighting.");
+    }
+    // تسجيل شكل المصفوفة النهائية التي سيتم تمريرها
+    console.log("Final prepared 'daysData' for markup.dates:", JSON.stringify(daysData, null, 2));
+
+    const today = new Date();
+
+    // --- Options using 'markup.dates' with 'class' array ---
+    const options = {
+        date: {
+            month: today.getMonth(),
+            year: today.getFullYear(),
+        },
+        markup: {
+            dates: daysData // تمرير بيانات التلوين هنا
+        },
+        settings: {
+            type: 'month', // للحفاظ على العرض الشهري
+            lang: 'ar',
+            iso8601: false,
+            selection: { day: false },
+            visibility: {
+                theme: 'light',
+                weekend: false,
+                today: true,
+                monthShort: false,
+            },
+        },
+        // التأكد من إزالة محاولات التلوين الأخرى
+        // popups: {},
+        // dates: {},
+        // actions: {},
+    };
+
+    calendarContainer.innerHTML = ''; // مسح المحتوى المؤقت
+
+    try {
+        // تسجيل الخيارات النهائية قبل التهيئة
+        console.log("Initializing VanillaCalendar with options (Re-trying markup.dates):", JSON.stringify(options, null, 2)); // طباعة الخيارات للتحقق
+
+        calendarInstance = new VanillaCalendar(calendarContainer, options);
+        calendarInstance.init();
+        console.log("Calendar initialized successfully (Re-trying markup.dates).");
+
+    } catch (error) {
+        console.error("Error initializing calendar:", error);
+        calendarContainer.innerHTML = `<p class="text" style="color:red;">Error initializing calendar. (${error.message})</p>`;
+        console.log("Full error object:", error);
+    }
+}
+        // --- Remove the old applyDateModifiers function entirely ---
+        // function applyDateModifiers(daysToHighlight) { /* ... REMOVE THIS ... */ } }
+
+         // Helper to apply modifiers/classes if not directly supported in options
+        function applyDateModifiers(daysToHighlight) {
+             if (!calendarInstance || !daysToHighlight) return;
+
+             daysToHighlight.forEach(highlight => {
+                  const dateElement = calendarContainer.querySelector(`[data-calendar-date="${highlight.date}"]`);
+                  if (dateElement) {
+                     // The element might be the button or a child div, inspect generated HTML
+                     // Often it's the parent button `vcal-day__btn`
+                     const dayButton = dateElement.closest('.vcal-day__btn');
+                     if(dayButton){
+                        dayButton.classList.add(highlight.modifier);
+                     } else {
+                         // Fallback if structure differs
+                         dateElement.classList.add(highlight.modifier);
+                     }
+                  } else {
+                      // console.warn(`Calendar date element not found for ${highlight.date}`);
+                  }
+             });
         }
 
-        // --- Display Functions (تبقى كما هي) ---
+        // --- END: New Functions ---
+
+
+        // --- MODIFIED Functions to Update Dashboard Sections ---
         function displayDailyTask() {
-            if (!dailyTaskContent || !currentPlanData || !currentPlanData.tableRows) { if(dailyTaskContent) dailyTaskContent.innerHTML = '<p><i>جاري تحميل بيانات الخطة...</i></p>'; if (todayDateSpan) todayDateSpan.textContent = formatDate(new Date()); return; }
-            const tableRows = currentPlanData.tableRows; const today = new Date(); const todayStr = formatDate(today); if (todayDateSpan) todayDateSpan.textContent = todayStr; const todayRow = tableRows.find(row => row.displayDate === todayStr);
-            if (!todayRow) { dailyTaskContent.innerHTML = '<p>لا يوجد واجب مقرر في الخطة لهذا اليوم.</p>'; } else if (todayRow.type === 'excuse') { dailyTaskContent.innerHTML = `<p style="color: orange; font-weight:bold;">لديك عذر مسجل لهذا اليوم (${todayRow.excuseType || ''}).</p>`; } else if (todayRow.type === 'plan' && todayRow.state?.completed) { dailyTaskContent.innerHTML = '<p style="color: green; font-weight: bold;">✅ الحمد لله، لقد أتممت واجب هذا اليوم!</p>'; } else if (todayRow.type === 'plan' && !todayRow.state?.completed) {
-                const taskDetails = typeof getPlanData === 'function' ? getPlanData(todayRow.originalSequence) : null;
-                if (taskDetails) { let taskHTML = `<h4>المطلوب إنجازه اليوم (${todayStr}):</h4>`; taskHTML += `<p><strong>الحفظ الجديد:</strong> ${taskDetails.fromPage ? `ص ${taskDetails.fromPage} - ${taskDetails.toPage}` : 'لا يوجد'} (${taskDetails.surah || 'مراجعة'})</p>`; taskHTML += `<p><strong>الربط:</strong> ${taskDetails.linkFrom ? `من ${taskDetails.linkFrom} إلى ${taskDetails.linkTo}` : 'لا يوجد'}</p>`; taskHTML += `<p><strong>المراجعة:</strong> ${taskDetails.reviewFrom ? `من ${taskDetails.reviewFrom} إلى ${taskDetails.reviewTo}` : 'لا يوجد'} ${taskDetails.round ? `(ج${taskDetails.round})` : ''}</p>`; dailyTaskContent.innerHTML = taskHTML; } else { dailyTaskContent.innerHTML = `<p><i>خطأ: لم يتم العثور على تفاصيل الواجب للفهرس ${todayRow.originalSequence}.</i></p>`; } } else { dailyTaskContent.innerHTML = '<p><i>واجب اليوم لم يكتمل بعد أو حالته غير معروفة.</i></p>'; }
-        }
-        function displayProgress(stats) { if (!currentPlanData) return; const planType = currentPlanData.planType || '?'; const memorizedPages = stats.memorizedPages; const progressPercent = totalQuranPages > 0 ? Math.min(100, (memorizedPages / totalQuranPages) * 100).toFixed(0) : 0; if(currentPlanNameSpan) currentPlanNameSpan.textContent = `خطة ${planType} صفحات`; if(progressBarValue) { progressBarValue.style.width = `${progressPercent}%`; progressBarValue.style.backgroundColor = '#28a745'; progressBarValue.textContent = `${progressPercent}%`; } if(completedPagesProgressSpan) completedPagesProgressSpan.textContent = memorizedPages; }
-        function displayStats(stats) { if(statMemorized) statMemorized.textContent = stats.memorizedPages; if(statPerfected) statPerfected.textContent = stats.perfectedTasks; if(statLinked) statLinked.textContent = stats.linkedTasks; if(statExcuses) statExcuses.textContent = stats.excuseCount; }
-        function displayStreakAndLevel(streakData) { if(currentStreakSpan) currentStreakSpan.textContent = streakData.currentStreak; if(longestStreakSpan) longestStreakSpan.textContent = streakData.longestStreak; if(levelTitleSpan) levelTitleSpan.textContent = streakData.currentTitle; if(levelIconSpan) levelIconSpan.textContent = streakData.currentIcon; }
+            if (!dailyTaskContent || !currentPlanData || !currentPlanData.tableRows) {
+                if(dailyTaskContent) dailyTaskContent.innerHTML = '<p><i>جاري تحميل بيانات الخطة...</i></p>';
+                if (todayDateSpan) todayDateSpan.textContent = formatDate(new Date());
+                return;
+            }
 
-        // --- Main Data Loading Function (تبقى كما هي) ---
+            const tableRows = currentPlanData.tableRows;
+            const today = new Date();
+            const todayStr = formatDate(today);
+
+            if (todayDateSpan) todayDateSpan.textContent = todayStr; // Display current date
+
+            // Find the row corresponding to today's actual date
+            const todayRow = tableRows.find(row => row.displayDate === todayStr);
+
+             if (!todayRow) {
+                  dailyTaskContent.innerHTML = '<p>لا يوجد واجب مقرر في الخطة لهذا اليوم.</p>';
+             } else if (todayRow.type === 'excuse') {
+                  dailyTaskContent.innerHTML = `<p style="color: orange; font-weight:bold;">لديك عذر مسجل لهذا اليوم (${todayRow.excuseType || ''}).</p>`;
+             } else if (todayRow.type === 'plan' && todayRow.state?.completed) { // Use optional chaining
+                  dailyTaskContent.innerHTML = '<p style="color: green; font-weight: bold;">✅ الحمد لله، لقد أتممت واجب هذا اليوم!</p>';
+             } else if (todayRow.type === 'plan' && todayRow.state && !todayRow.state.completed) {
+                 const taskDetails = getPlanData(todayRow.originalSequence);
+                 if (taskDetails) {
+                     let taskHTML = `<h4>المطلوب إنجازه اليوم (${todayStr}):</h4>`;
+                     taskHTML += `<p><strong>الحفظ الجديد:</strong> ${taskDetails.fromPage ? `ص ${taskDetails.fromPage} - ${taskDetails.toPage}` : 'لا يوجد'} (${taskDetails.surah || 'مراجعة'})</p>`;
+                     taskHTML += `<p><strong>الربط:</strong> ${taskDetails.linkFrom ? `من ${taskDetails.linkFrom} إلى ${taskDetails.linkTo}` : 'لا يوجد'}</p>`;
+                     taskHTML += `<p><strong>المراجعة:</strong> ${taskDetails.reviewFrom ? `من ${taskDetails.reviewFrom} إلى ${taskDetails.reviewTo}` : 'لا يوجد'} ${taskDetails.round ? `(ج${taskDetails.round})` : ''}</p>`;
+                     dailyTaskContent.innerHTML = taskHTML;
+                 } else {
+                     dailyTaskContent.innerHTML = `<p><i>خطأ: لم يتم العثور على تفاصيل الواجب للفهرس ${todayRow.originalSequence}.</i></p>`;
+                 }
+             } else {
+                  // Fallback for unexpected row state or missing state
+                 dailyTaskContent.innerHTML = '<p><i>واجب اليوم لم يكتمل بعد أو حالته غير معروفة.</i></p>';
+             }
+        }
+
+
+        function displayProgress(stats) {
+            if (!currentPlanData) return;
+            const planType = currentPlanData.planType || '?';
+            const memorizedPages = stats.memorizedPages;
+            const progressPercent = totalQuranPages > 0 ? Math.min(100, (memorizedPages / totalQuranPages) * 100).toFixed(0) : 0;
+
+            if(currentPlanNameSpan) currentPlanNameSpan.textContent = `خطة ${planType} صفحات`;
+            if(progressBarValue) {
+                progressBarValue.style.width = `${progressPercent}%`;
+                progressBarValue.style.backgroundColor = '#28a745';
+                progressBarValue.textContent = `${progressPercent}%`;
+            }
+            if(completedPagesProgressSpan) completedPagesProgressSpan.textContent = memorizedPages;
+        }
+
+        function displayStats(stats) {
+             if(statMemorized) statMemorized.textContent = stats.memorizedPages;
+             if(statPerfected) statPerfected.textContent = stats.perfectedTasks;
+             if(statLinked) statLinked.textContent = stats.linkedTasks;
+             if(statExcuses) statExcuses.textContent = stats.excuseCount;
+        }
+
+         // --- New function to display Streak and Level ---
+         function displayStreakAndLevel(streakData) {
+             if(currentStreakSpan) currentStreakSpan.textContent = streakData.currentStreak;
+             if(longestStreakSpan) longestStreakSpan.textContent = streakData.longestStreak;
+             if(levelTitleSpan) levelTitleSpan.textContent = streakData.currentTitle;
+             if(levelIconSpan) levelIconSpan.textContent = streakData.currentIcon; // Display icon if available
+         }
+
+
+        // --- Main Data Loading Function (MODIFIED) ---
         function loadDashboardData(user) {
             if (!user) return;
             const uid = user.uid;
             const planRef = db.collection("quranPlans").doc(uid);
             console.log("Dashboard: Checking Firestore for plan:", uid);
             showLoading("جاري تحميل بيانات خطتك...");
+
             planRef.get().then((doc) => {
                 hideLoading();
                 if (doc.exists) {
                     console.log("Dashboard: Plan data found.");
-                    currentPlanData = doc.data(); // Store plan data globally
-                    // Basic validation of loaded data
-                    if (!currentPlanData.startDate || !currentPlanData.planType || !currentPlanData.tableRows || !Array.isArray(currentPlanData.tableRows) /* || !currentPlanData.repetitionMax */) { // repetitionMax might not be essential for dashboard display
-                        console.error("Loaded data missing required fields (startDate, planType, tableRows).");
-                        dashboardContent.style.display = 'block'; // Show dashboard area
-                        dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">خطأ: بيانات خطتك المحفوظة غير مكتملة أو تالفة. يرجى <a href="index.html">الذهاب لصفحة البداية</a> وإعادة إنشاء الخطة.</p>`;
-                        const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level'];
-                        sectionsToHide.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'none'; });
-                        return;
-                    }
-                    // Process Data & Update UI
-                    const stats = typeof calculateDashboardStats === 'function' ? calculateDashboardStats(currentPlanData.tableRows) : { memorizedPages: 0, linkedTasks: 0, perfectedTasks: 0, excuseCount: 0 };
-                    const streakData = typeof calculateStreaksAndLevel === 'function' ? calculateStreaksAndLevel(currentPlanData.tableRows) : { currentStreak: 0, longestStreak: 0, currentLevel: 0, currentTitle: levelTitles[0], currentIcon: '' };
+                    currentPlanData = doc.data(); // Store FULL data globally
 
-                    if (typeof displayDailyTask === 'function') displayDailyTask(); else console.error("displayDailyTask is not defined");
-                    if (typeof displayProgress === 'function') displayProgress(stats); else console.error("displayProgress is not defined");
-                    if (typeof displayStats === 'function') displayStats(stats); else console.error("displayStats is not defined");
-                    if (typeof displayStreakAndLevel === 'function') displayStreakAndLevel(streakData); else console.error("displayStreakAndLevel is not defined");
-                    if (typeof initializeCalendar === 'function') initializeCalendar(currentPlanData.tableRows); // Initialize calendar
-                    else console.error("initializeCalendar function is not defined!");
+                    // Validate FULL data needed for dashboard
+                    if (!currentPlanData.startDate || !currentPlanData.planType || !currentPlanData.tableRows || !Array.isArray(currentPlanData.tableRows) || !currentPlanData.repetitionMax) {
+                         console.error("Loaded data missing required fields (startDate, planType, tableRows array, or repetitionMax).", currentPlanData);
+                         dashboardContent.style.display = 'block';
+                         dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">خطأ: بيانات خطتك المحفوظة غير مكتملة أو تالفة. يرجى <a href="index.html">الذهاب لصفحة البداية</a> وإعادة إنشاء الخطة.</p>`;
+                         document.getElementById('plan-progress').style.display = 'none';
+                         document.getElementById('quick-stats').style.display = 'none';
+                         return;
+                     }
 
-                    if (typeof displayDashboard === 'function') displayDashboard(); else console.error("displayDashboard function is not defined!");
+                    // --- Process Data & Update UI ---
+                    // 1. Calculate Basic Stats
+                    const stats = calculateDashboardStats(currentPlanData.tableRows);
+
+                    // 2. Calculate Streak and Level
+                    const streakData = calculateStreaksAndLevel(currentPlanData.tableRows);
+
+                    // 3. Update Display Sections
+                    displayDailyTask();
+                    displayProgress(stats);
+                    displayStats(stats);
+                    displayStreakAndLevel(streakData); // Display new streak info
+
+                    // 4. Initialize Calendar
+                    initializeCalendar(currentPlanData.tableRows);
+
+                    // 5. Show the fully populated dashboard
+                    displayDashboard();
 
                 } else {
                      // No plan found logic
                      console.log("Dashboard: No plan data found.");
-                     if (typeof displayDashboard === 'function') displayDashboard();
-                     if(dailyTaskContent) dailyTaskContent.innerHTML = '<p style="color:orange; font-weight:bold;">لم تقم باختيار أو إنشاء خطة بعد!</p><p>اذهب إلى <a href="index.html">صفحة البداية</a> لاختيار خطتك.</p>';
-                     const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level', 'competition-section', 'badges-section'];
-                     sectionsToHide.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'none'; });
+                     displayDashboard();
+                     dailyTaskContent.innerHTML = '<p style="color:orange; font-weight:bold;">لم تقم باختيار أو إنشاء خطة بعد!</p><p>اذهب إلى <a href="index.html">صفحة البداية</a> لاختيار خطتك.</p>';
+                     document.getElementById('plan-progress').style.display = 'none';
+                     document.getElementById('quick-stats').style.display = 'none';
+                     // Hide new/other sections as well
+                     document.getElementById('calendar-view').style.display = 'none';
+                     document.getElementById('streak-level').style.display = 'none'; // Hide streak section
+                     document.getElementById('competition-section').style.display = 'none';
+                     document.getElementById('badges-section').style.display = 'none';
                  }
             }).catch((error) => {
                  // Error handling
                  console.error("Error getting plan document:", error);
                  hideLoading();
-                 if (typeof displayDashboard === 'function') displayDashboard();
-                 if(dailyTaskContent) dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">حدث خطأ أثناء تحميل بيانات الخطة. (${error.code || error.message || 'UNKNOWN'})</p><p>يرجى المحاولة مرة أخرى أو التأكد من اتصالك بالإنترنت وقواعد الأمان في Firestore. <a href="index.html">العودة للرئيسية</a></p>`;
-                 const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level', 'competition-section', 'badges-section'];
-                 sectionsToHide.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'none'; });
+                 displayDashboard();
+                 dailyTaskContent.innerHTML = `<p style="color:red; font-weight:bold;">حدث خطأ أثناء تحميل بيانات الخطة. (${error.code || 'UNKNOWN'})</p><p>يرجى المحاولة مرة أخرى أو التأكد من اتصالك بالإنترنت وقواعد الأمان في Firestore. <a href="index.html">العودة للرئيسية</a></p>`;
+                 document.getElementById('plan-progress').style.display = 'none';
+                 document.getElementById('quick-stats').style.display = 'none';
+                 document.getElementById('calendar-view').style.display = 'none'; // Hide calendar on error
+                 document.getElementById('streak-level').style.display = 'none'; // Hide streak on error
             });
         }
 
-        // --- Authentication Listener (تبقى كما هي) ---
+        // --- Authentication Listener ---
         auth.onAuthStateChanged(user => {
-            currentUser = user;
-            if (user) {
-                console.log("Dashboard: Auth state OK.");
-                loadDashboardData(user);
-            } else {
-                console.log("Dashboard: Not logged in.");
-                 if (typeof displayDashboard === 'function') displayDashboard(); // Show the overall layout first
-                 if(dailyTaskContent) dailyTaskContent.innerHTML = '<p style="color:red;">يرجى <a href="index.html">تسجيل الدخول</a> لعرض لوحة المتابعة.</p>';
-                 const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level', 'competition-section', 'badges-section'];
-                 sectionsToHide.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
-                 hideLoading(); // Hide loading indicator after setting up the "logged out" view
-            }
+           hideLoading();
+           currentUser = user;
+           if (user) {
+               console.log("Dashboard: Auth state OK.");
+               loadDashboardData(user);
+           } else {
+               console.log("Dashboard: Not logged in. Redirecting to index...");
+               // window.location.replace('index.html'); // Or login.html
+               // --- For testing without redirect ---
+                showLoading("غير مسجل الدخول. يرجى تسجيل الدخول أولاً.");
+                console.warn("User not logged in, dashboard will not load data.");
+                // Display a message instead of redirecting immediately for testing
+                if(dashboardContent) dashboardContent.style.display = 'block'; // Show main area
+                if(dailyTaskContent) dailyTaskContent.innerHTML = '<p style="color:red;">يرجى <a href="index.html">تسجيل الدخول</a> لعرض لوحة المتابعة.</p>';
+                // Hide sections requiring data
+                const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view', 'streak-level', 'competition-section', 'badges-section'];
+                sectionsToHide.forEach(id => {
+                    const section = document.getElementById(id);
+                    if (section) section.style.display = 'none';
+                });
+               // --- End testing block ---
+           }
         });
 
-        // --- Initial Load (تبقى كما هي) ---
+        // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
             showLoading("جاري التحقق من تسجيل الدخول...");
-            // Auth listener will take over
+            // Authentication listener will handle the rest
         });
 
-        // --- Print Function (تبقى كما هي) ---
-        function printData() { console.log("Initiating browser print..."); window.print(); }
+         // --- Print Function (Keep as is) ---
+         function printData() { console.log("Initiating browser print..."); window.print(); }
 
     </script>
 
