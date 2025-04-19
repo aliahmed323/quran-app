@@ -30,15 +30,7 @@
         </a>
 
         <nav class="main-navigation" id="main-nav">
-            <ul>
-                <li><a href="index.html">الرئيسية</a></li>
-                <li class="menu-item-has-children"><a href="#about-site">التعريف بالموقع</a></li>
-                <li class="menu-item-has-children"><a href="#">خطط الحفظ</a><ul class="dropdown"><li><a href="#">خطة صفحة يومياً</a></li><li><a href="#">خطة صفحتين يومياً</a></li><li><a href="#">خطة 3 صفحات يومياً</a></li><li><a href="#">خطة 4 صفحات يومياً</a></li></ul></li>
-                <li class="menu-item-has-children"><a href="#">الدورات والبرامج</a><ul class="dropdown"><li><a href="#">دورات التجويد</a></li><li><a href="#">برامج المراجعة</a></li></ul></li>
-                <li class="menu-item-has-children"><a href="#">الخرائط الذهنية</a><ul class="dropdown"><li><a href="#">خرائط السور</a></li><li><a href="#">خرائط المتشابهات</a></li></ul></li>
-                <li class="menu-item-has-children"><a href="#">المسابقات</a><ul class="dropdown"><li><a href="#">مسابقة رمضان</a></li><li><a href="#">المسابقة الشهرية</a></li></ul></li>
-                <li class="menu-item-has-children"><a href="#">التسجيل</a><ul class="dropdown"><li><a href="plangen2.html">تسجيل طالب (بدء الخطة)</a></li><li><a href="#">تسجيل معلم</a></li></ul></li>
-            </ul>
+             <ul><li><a href="index.html">الرئيسية</a></li><li class="menu-item-has-children"><a href="#about-site">التعريف بالموقع</a></li><li class="menu-item-has-children"><a href="#">خطط الحفظ</a><ul class="dropdown"><li><a href="#">خطة صفحة يومياً</a></li><li><a href="#">خطة صفحتين يومياً</a></li><li><a href="#">خطة 3 صفحات يومياً</a></li><li><a href="#">خطة 4 صفحات يومياً</a></li></ul></li><li class="menu-item-has-children"><a href="#">الدورات والبرامج</a><ul class="dropdown"><li><a href="#">دورات التجويد</a></li><li><a href="#">برامج المراجعة</a></li></ul></li><li class="menu-item-has-children"><a href="#">الخرائط الذهنية</a><ul class="dropdown"><li><a href="#">خرائط السور</a></li><li><a href="#">خرائط المتشابهات</a></li></ul></li><li class="menu-item-has-children"><a href="#">المسابقات</a><ul class="dropdown"><li><a href="#">مسابقة رمضان</a></li><li><a href="#">المسابقة الشهرية</a></li></ul></li><li class="menu-item-has-children"><a href="#">التسجيل</a><ul class="dropdown"><li><a href="plangen2.html">تسجيل طالب (بدء الخطة)</a></li><li><a href="#">تسجيل معلم</a></li></ul></li></ul>
         </nav>
 
         <div class="header-right-controls">
@@ -143,7 +135,7 @@
 
         // --- Other Functions (Confirm Button State, Save Initial Data) ---
         function updateConfirmButtonState() { if (!confirmPlanBtn) return; confirmPlanBtn.disabled = !(selectedPlanType && planStartDateInput?.value); }
-        async function saveInitialPlanData() { /* ... Same logic ... */ if (!currentUser || !selectedPlanType || !planStartDateInput || !planStartDateInput.value || !planRepetitionMaxSelect) { alert("يرجى اختيار خطة وتحديد تاريخ البدء وعدد التكرارات."); return; } const selectedStartDate = new Date(planStartDateInput.value + 'T00:00:00Z'); if (isNaN(selectedStartDate.getTime())) { alert('تاريخ البدء المحدد غير صالح.'); return; } if(confirmPlanBtn) { confirmPlanBtn.disabled = true; confirmPlanBtn.textContent = "جاري الحفظ..."; } const uid = currentUser.uid; const planRef = db.collection("quranPlans").doc(uid); const initialTableRows = []; let currentDate = new Date(selectedStartDate); for (let i = 0; i < initialTotalRows; i++) { const rowData = { type: 'plan', originalSequence: i, displaySeq: i + 1, displayDate: formatDate(currentDate), state: { yestRep: 0, listen: 0, interp: false, record: 0, rep: 0, linked: false, reviewed: false, completed: false } }; initialTableRows.push(rowData); if (i < initialTotalRows - 1) { currentDate.setUTCDate(currentDate.getUTCDate() + 1); } } const planDataToSave = { studentName: currentUser.displayName || "طالب علم", email: currentUser.email, startDate: planStartDateInput.value, planType: selectedPlanType, repetitionMax: parseInt(planRepetitionMaxSelect.value), excuseDates: [], tableRows: initialTableRows, createdAt: firebase.firestore.FieldValue.serverTimestamp(), lastUpdated: firebase.firestore.FieldValue.serverTimestamp() }; console.log("Saving initial plan data (including tableRows):", planDataToSave); try { await planRef.set(planDataToSave); console.log("Initial plan data saved!"); hasExistingPlan = true; window.location.href = 'dashboard.html'; } catch (error) { console.error("Error saving initial plan data: ", error); alert("حدث خطأ أثناء حفظ بيانات الخطة. حاول مرة أخرى."); if(confirmPlanBtn) { confirmPlanBtn.disabled = false; confirmPlanBtn.textContent = "تأكيد الخطة والبدء"; } } }
+        async function saveInitialPlanData() { /* ... Same logic ... */ if (!currentUser || !selectedPlanType || !planStartDateInput || !planStartDateInput.value || !planRepetitionMaxSelect) { alert("يرجى اختيار خطة وتحديد تاريخ البدء وعدد التكرارات."); return; } const selectedStartDate = new Date(planStartDateInput.value + 'T00:00:00Z'); if (isNaN(selectedStartDate.getTime())) { alert('تاريخ البدء المحدد غير صالح.'); return; } if(confirmPlanBtn) { confirmPlanBtn.disabled = true; confirmPlanBtn.textContent = "جاري الحفظ..."; } const uid = currentUser.uid; const planRef = db.collection("quranPlans").doc(uid); const initialTableRows = []; let currentDate = new Date(selectedStartDate); for (let i = 0; i < initialTotalRows; i++) { const rowData = { type: 'plan', originalSequence: i, displaySeq: i + 1, displayDate: formatDate(currentDate), state: { yestRep: 0, listen: 0, interp: false, record: 0, rep: 0, linked: false, reviewed: false, completed: false } }; initialTableRows.push(rowData); if (i < initialTotalRows - 1) { currentDate.setUTCDate(currentDate.getUTCDate() + 1); } } const planDataToSave = { studentName: currentUser.displayName || "طالب علم", email: currentUser.email, startDate: planStartDateInput.value, planType: selectedPlanType, repetitionMax: parseInt(planRepetitionMaxSelect.value), excuseDates: [], tableRows: initialTableRows, createdAt: firebase.firestore.FieldValue.serverTimestamp(), lastUpdated: firebase.firestore.FieldValue.serverTimestamp() }; try { await planRef.set(planDataToSave); hasExistingPlan = true; window.location.href = 'dashboard.html'; } catch (error) { console.error("Error saving initial plan data: ", error); alert("حدث خطأ أثناء حفظ بيانات الخطة. حاول مرة أخرى."); if(confirmPlanBtn) { confirmPlanBtn.disabled = false; confirmPlanBtn.textContent = "تأكيد الخطة والبدء"; } } }
 
         // --- Authentication State Listener ---
         auth.onAuthStateChanged(async (user) => {
@@ -164,54 +156,51 @@
             mobileMenuToggle.addEventListener('click', () => { /* ... Same logic ... */ const isOpen = mainNav.classList.toggle('mobile-menu-open'); mobileMenuToggle.setAttribute('aria-expanded', isOpen); mobileMenuToggle.innerHTML = isOpen ? '✕' : '☰'; if (isOpen && profileDropdown && profileDropdown.classList.contains('open')) { profileDropdown.classList.remove('open'); profileTrigger?.setAttribute('aria-expanded', 'false'); } });
             document.addEventListener('click', (event) => { /* Close on outside click */ if (mainNav.classList.contains('mobile-menu-open') && !mainNav.contains(event.target) && !mobileMenuToggle.contains(event.target)) { mainNav.classList.remove('mobile-menu-open'); mobileMenuToggle.setAttribute('aria-expanded', 'false'); mobileMenuToggle.innerHTML = '☰'; } });
 
-             // === Mobile Submenu Toggle (Corrected Behavior - FINAL) ===
+             // === Mobile Submenu Toggle (Corrected Behavior - FINAL v2) ===
              const menuItemsWithChildren = mainNav.querySelectorAll('li.menu-item-has-children');
              menuItemsWithChildren.forEach(item => {
-                 let subToggle = item.querySelector('.submenu-toggle');
-                 let link = item.querySelector('a'); // Get the link element
+                 const subToggle = item.querySelector('.submenu-toggle');
+                 const link = item.querySelector('a');
+                 const dropdown = item.querySelector('.dropdown');
 
-                 // Create toggle if it doesn't exist
-                 if (!subToggle && item.querySelector('.dropdown')) { // Only add if there is a dropdown
-                     subToggle = document.createElement('span'); subToggle.classList.add('submenu-toggle'); subToggle.innerHTML = '<span class="arrow">▼</span>'; subToggle.setAttribute('aria-hidden', 'true');
-                     item.appendChild(subToggle); // Append to li
+                 if (subToggle && dropdown) { // Only proceed if both toggle and dropdown exist
+                     const arrow = subToggle.querySelector('.arrow');
 
-                     // Function to handle the toggle action
+                     // Function to handle toggle logic
                      const handleToggle = (event) => {
-                          event.stopPropagation(); // Prevent event bubbling
-                          const parentLi = item;
-                          const currentlyOpen = parentLi.classList.contains('submenu-open');
+                         event.stopPropagation();
+                         const parentLi = item;
+                         const wasOpen = parentLi.classList.contains('submenu-open'); // Check state *before* toggling
 
-                          // Close ALL other open submenus first (regardless of toggling current)
-                          mainNav.querySelectorAll('li.menu-item-has-children.submenu-open').forEach(otherItem => {
-                              if (otherItem !== parentLi) { // Don't close the one we are about to toggle
-                                  otherItem.classList.remove('submenu-open');
-                                  const otherArrow = otherItem.querySelector('.submenu-toggle .arrow');
-                                  if (otherArrow) otherArrow.innerHTML = '▼';
-                              }
-                          });
+                         // Close all *other* open submenus first
+                         mainNav.querySelectorAll('li.menu-item-has-children.submenu-open').forEach(otherItem => {
+                             if (otherItem !== parentLi) {
+                                 otherItem.classList.remove('submenu-open');
+                                 const otherArrow = otherItem.querySelector('.submenu-toggle .arrow');
+                                 if (otherArrow) otherArrow.innerHTML = '▼';
+                             }
+                         });
 
-                          // NOW, toggle the current one
-                          parentLi.classList.toggle('submenu-open');
-                          const arrow = subToggle.querySelector('.arrow');
-                          if (arrow) arrow.innerHTML = parentLi.classList.contains('submenu-open') ? '▲' : '▼';
+                         // Toggle the current item
+                         parentLi.classList.toggle('submenu-open');
+                         if (arrow) arrow.innerHTML = parentLi.classList.contains('submenu-open') ? '▲' : '▼';
                      };
 
-                     // Add click listener to the toggle SPAN
+                     // Add listener to the toggle button
                      subToggle.addEventListener('click', handleToggle);
 
-                     // Add click listener to the main LINK to also trigger toggle on mobile
+                     // Add listener to the link (for mobile only)
                      if (link) {
-                        link.addEventListener('click', (e) => {
-                            if (window.innerWidth <= 1024) { // Check mobile breakpoint
-                                e.preventDefault(); // Prevent link navigation
-                                handleToggle(e); // Trigger the same toggle logic
-                            }
-                        });
+                         link.addEventListener('click', (e) => {
+                             if (window.innerWidth <= 1024) {
+                                 e.preventDefault(); // Always prevent navigation on mobile if it has submenu
+                                 handleToggle(e); // Trigger toggle
+                             }
+                         });
                      }
                  }
              });
         }
-
 
         // --- Profile Dropdown Toggle ---
         if (profileTrigger && profileDropdown) { /* ... Same logic ... */ const logoutBtn = profileDropdown.querySelector('#logout-button'); profileTrigger.addEventListener('click', (event) => { event.stopPropagation(); const isOpen = profileDropdown.classList.toggle('open'); profileTrigger.setAttribute('aria-expanded', isOpen); if (isOpen && mainNav && mainNav.classList.contains('mobile-menu-open')) { mainNav.classList.remove('mobile-menu-open'); mobileMenuToggle?.setAttribute('aria-expanded', 'false'); if(mobileMenuToggle) mobileMenuToggle.innerHTML = '☰'; } }); if(logoutBtn) { logoutBtn.addEventListener('click', () => { auth.signOut().catch((error) => { console.error('Sign out error:', error); }); }); } document.addEventListener('click', (event) => { if (!profileTrigger?.contains(event.target) && !profileDropdown?.contains(event.target) && profileDropdown?.classList.contains('open')) { profileDropdown.classList.remove('open'); profileTrigger?.setAttribute('aria-expanded', 'false'); } }); }

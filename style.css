@@ -21,60 +21,93 @@ body {
 main {
     flex-grow: 1;
     width: 100%;
-    max-width: 100%;
+    max-width: 100%; /* ** منع تجاوز العرض ** */
 }
 
 .container { max-width: 1240px; margin: 0 auto; padding: 0 15px; width: 100%; }
 a { text-decoration: none; color: #0274be; transition: color 0.3s ease; }
 a:hover { color: #004de5; }
-img { max-width: 100%; height: auto; display: block; vertical-align: middle; /* Helps alignment */ }
+img { max-width: 100%; height: auto; display: block; vertical-align: middle; }
 h1, h2, h3, h4, h5, h6 { font-family: 'Amiri', serif; color: #2f3f50; font-weight: 700; line-height: 1.4; margin-bottom: 0.75em; }
 h1 { font-size: 2.5em; }
 /* === إصلاح توسيط العناوين === */
-h2 { font-size: 1.8em; text-align: center; margin: 0 auto 1.2em auto; width: fit-content; max-width: 95%; position: relative; padding-bottom: 10px; }
-h2::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 3px; background: linear-gradient(to left, #0274be, #1e8449); border-radius: 2px; }
+h2 {
+    font-size: 1.8em; text-align: center;
+    margin: 0 auto 1.2em auto; width: fit-content; max-width: 95%;
+    position: relative; padding-bottom: 10px;
+}
+h2::after {
+    content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 80px; height: 3px; background: linear-gradient(to left, #0274be, #1e8449); border-radius: 2px;
+}
+
 h3 { font-size: 1.3em; }
 p { margin-bottom: 1.5em; color: #4B4F58; }
 
 /* --- Header Styles --- */
 .header-container {
     display: flex;
-    justify-content: space-between; /* توزيع العناصر: شعار يمين، تحكم يسار */
+    justify-content: space-between;
     align-items: center;
-    padding: 5px 15px; /* تقليل الهامش قليلاً */
-    background-color: #f8f9fa; /* ** لون الهيدر المطلوب (رمادي فاتح) ** */
-    border-bottom: 1px solid #dee2e6; /* تعديل لون الخط السفلي */
+    padding: 5px 15px; /* تقليل الهامش أكثر */
+    background-color: #f8f9fa; /* ** لون الهيدر الرمادي الفاتح ** */
+    border-bottom: 1px solid #dee2e6;
     box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     position: sticky; top: 0; z-index: 1000;
-    min-height: 65px;
+    min-height: 60px; /* تقليل الارتفاع الأدنى */
 }
 /* رابط الشعار والاسم */
-a.site-branding { display: flex; align-items: center; gap: 10px; /* زيادة المسافة بين الشعار والاسم */ flex-shrink: 0; color: inherit; text-decoration: none; }
-.logo-container img { max-height: 55px; /* تعديل ارتفاع الشعار */ width: auto; }
+a.site-branding { display: flex; align-items: center; gap: 10px; flex-shrink: 0; color: inherit; text-decoration: none; }
+.logo-container img { max-height: 48px; /* تعديل الحجم ليتناسب مع الاسم */ width: auto; }
 /* اسم الموقع المكدس (بخط Reem Kufi) */
 .site-name {
     font-family: 'Reem Kufi', 'Amiri', serif; /* ** استخدام خط Reem Kufi ** */
-    font-weight: 500; /* تعديل الوزن حسب شكل الخط */
+    font-weight: 600; /* تجربة وزن مختلف */
     text-align: right;
-    line-height: 1; /* تقليل المسافة بين الأسطر */
+    line-height: 1; /* تقريب الأسطر */
 }
 .site-name span {
     display: block;
     color: #1a5276; /* ** لون موحد ** */
-    font-size: 1.45em; /* ** تكبير الخط ** */
+    font-size: 1.4em; /* ** تكبير الخط ** */
+    white-space: nowrap;
 }
 .site-name span:last-child {
-    font-size: 1.15em; /* ** تكبير الخط ** */
-    margin-top: 8px; /* ** زيادة المسافة العمودية لتوازي الشعار ** */
+    font-size: 1.2em; /* ** تكبير الخط ** */
+    margin-top: 6px; /* ** زيادة المسافة العمودية ** */
 }
 
 
 /* --- Desktop Navigation Menu Styles --- */
-/* إخفاء القائمة مبدئياً على كل الشاشات، ثم إظهارها للحاسوب */
-nav.main-navigation { display: none; }
+/* إظهار القائمة فقط للشاشات الكبيرة */
+nav.main-navigation { display: none; /* مخفية افتراضياً */ margin: 0 15px; flex-grow: 1; justify-content: center; }
+nav.main-navigation ul { list-style: none; padding: 0; margin: 0; display: flex; align-items: center; gap: 25px; /* تقليل المسافة قليلاً */ }
+nav.main-navigation ul li { position: relative; }
+nav.main-navigation ul li a { text-decoration: none; color: #3a3a3a; padding: 18px 8px; /* تعديل الحشو */ display: block; font-weight: 700; font-size: 0.9em; position: relative; transition: color 0.3s ease; white-space: nowrap; }
+nav.main-navigation ul li.menu-item-has-children > a::after { content: '▼'; font-size: 0.6em; margin-right: 5px; display: inline-block; transition: transform 0.2s ease; vertical-align: middle; }
+nav.main-navigation ul li:hover > a::after { transform: rotate(180deg); }
+nav.main-navigation ul li a::before { content: ''; position: absolute; bottom: 8px; /* تعديل */ right: 8px; width: 0; height: 2px; background-color: #0274be; transition: width 0.3s ease; }
+nav.main-navigation ul li:hover > a::before { width: calc(100% - 16px); }
+nav.main-navigation ul li a:hover, nav.main-navigation ul li a.active { color: #0274be; }
 
-/* --- Header Right Controls (Auth + Mobile Toggle) --- */
-.header-right-controls { display: flex; align-items: center; gap: 10px; margin-left: 0; /* التأكيد على عدم وجود هامش يساري يدفعها */ }
+/* Desktop Dropdown Position (Below Item) */
+nav.main-navigation ul li .dropdown {
+    display: none; position: absolute;
+    top: 100%; right: 0; left: auto; transform: translateX(0); /* محاولة الظهور بالأسفل */
+    background-color: #ffffff; min-width: 220px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 1px solid #eee; border-top: 2px solid #0274be; border-radius: 0 0 4px 4px; padding: 5px 0; z-index: 1001; opacity: 0; visibility: hidden; transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+nav.main-navigation ul li:hover .dropdown { display: block; opacity: 1; visibility: visible; transform: translateY(0); }
+nav.main-navigation ul li .dropdown li { width: 100%; }
+nav.main-navigation ul li .dropdown li a { padding: 10px 18px; white-space: nowrap; color: #3a3a3a; font-size: 0.9em; font-weight: normal; border: none; }
+nav.main-navigation ul li .dropdown li a::before { display: none; }
+nav.main-navigation ul li .dropdown li a:hover { background-color: #f5f5f5; color: #0274be; }
+
+/* Hide Mobile Specific Elements on Desktop */
+.submenu-toggle { display: none !important; }
+.mobile-menu-toggle { display: none; }
+
+/* --- Header Right Controls --- */
+.header-right-controls { display: flex; align-items: center; gap: 10px; flex-shrink: 0; margin-left: 0; /* ** التأكيد على عدم وجود هامش يساري ** */ }
 
 /* --- Auth Area Styles --- */
 .auth-area { display: flex; align-items: center; gap: 8px; }
@@ -98,23 +131,19 @@ nav.main-navigation { display: none; }
 .profile-dropdown-menu ul li button, .profile-dropdown-menu ul li a { display: block; width: 100%; padding: 8px 15px; background: none; border: none; text-align: right; color: #333; font-size: 0.9em; cursor: pointer; white-space: nowrap; font-family: 'Tajawal', sans-serif; }
 .profile-dropdown-menu ul li button:hover, .profile-dropdown-menu ul li a:hover { background-color: #f0f0f0; color: #000; }
 
-/* --- Mobile Menu Toggle Button --- */
-.mobile-menu-toggle { display: none; /* يتم إظهاره في الميديا كويري */ background: none; border: none; font-size: 1.8em; color: #1a5276; cursor: pointer; padding: 5px; line-height: 1; z-index: 1002; }
-
 /* --- Hero Section --- */
-/* تعليق: خلفية النمط من الرابط الذي أعطيته */
+/* تعليق: يمكنك تغيير رابط الخلفية هنا إذا أردت */
 .hero-section {
     display: flex; align-items: center; justify-content: center;
     min-height: calc(80vh - 65px); padding: 40px 15px;
     overflow: hidden; width: 100%;
-    /* === استخدام رابط Google Drive للخلفية === */
-    background-image: url('https://drive.google.com/file/d/1GmfOEMqoezz-uohvONgQ5qEnIUf9C7p2/view?usp=drive_link');
-    background-repeat: repeat; /* افتراض أنه نمط */
-    background-size: auto; /* أو حدد حجماً إذا لزم الأمر */
+    background-image: url('https://drive.google.com/file/d/1GmfOEMqoezz-uohvONgQ5qEnIUf9C7p2/view?usp=drive_link'); /* رابط النمط */
+    background-repeat: repeat;
+    background-size: auto;
     background-position: center;
 }
 .hero-content { display: flex; align-items: center; justify-content: space-between; gap: 40px; max-width: 1100px; width: 100%; margin: 0 auto; }
-.hero-text { flex: 1; text-align: right; padding-left: 20px; background-color: rgba(255, 255, 255, 0.6); /* خلفية شبه شفافة للنص لتمييزه عن النمط */ padding: 20px; border-radius: 8px; }
+.hero-text { flex: 1; text-align: right; padding: 25px; /* زيادة الحشو */ background-color: rgba(255, 255, 255, 0.7); /* خلفية شفافة أوضح */ border-radius: 8px; }
 .hero-text h1 { font-family: 'Amiri', serif; font-size: 2.8em; color: #1a5276; margin-bottom: 15px; line-height: 1.3; }
 .hero-text h2 { font-family: 'Amiri', serif; font-size: 1.6em; color: #2f3f50; margin-bottom: 20px; text-align: right; border-bottom: none; text-decoration: none; /* ** التأكيد على إزالة أي خطوط ** */ }
 .hero-text p { font-size: 1.1em; color: #4B4F58; margin-bottom: 30px; text-align: right; }
@@ -158,51 +187,47 @@ nav.main-navigation { display: none; }
 #plan-setup-section h2 { color: #1a5276; margin-bottom: 20px; } #plan-setup-section > p { color: #2980b9; font-weight: bold; margin-bottom: 30px; } .plan-selection-area { margin-bottom: 30px; } .plans-container { display: flex; justify-content: center; align-items: stretch; flex-wrap: wrap; gap: 25px; } .plan-card { background-color: #f8f9fa; border: 2px solid #dee2e6; border-radius: 8px; padding: 25px; flex-basis: calc(25% - 25px); min-width: 210px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; } .plan-card:hover { transform: translateY(-4px); box-shadow: 0 4px 8px rgba(0,0,0,0.08); } .plan-card.selected { border-color: #1e8449; box-shadow: 0 4px 12px rgba(30, 132, 73, 0.2); transform: translateY(-4px); } .plan-card h3 { font-size: 1.15em; color: #1e8449; margin-bottom: 12px; } .plan-card p { font-size: 0.9em; color: #555; margin-bottom: 15px; flex-grow: 1; text-align: right; } .plan-card .plan-link { color: #2980b9; font-weight: bold; margin-top: 15px; display: block; text-align: center; } .plan-setup-inputs { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 25px; margin-bottom: 30px; margin-top: 25px; } .plan-setup-inputs div { display: flex; flex-direction: column; align-items: center; gap: 8px; } .plan-setup-inputs label { font-weight: bold; color: #21618c; font-size: 0.95em; } .plan-setup-inputs input[type="date"], .plan-setup-inputs select { border: 1px solid #aed6f1; padding: 10px 15px; border-radius: 4px; font-size: 15px; font-family: 'Tajawal', sans-serif; min-width: 180px; } #confirmPlanBtn { display: inline-block; background-color: #1e8449; color: white !important; padding: 14px 35px; border: none; border-radius: 51px; font-size: 1.15em; font-weight: bold; cursor: pointer; transition: background-color 0.3s, opacity 0.3s, box-shadow 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); } #confirmPlanBtn:hover { background-color: #239b56; box-shadow: 0 3px 6px rgba(0,0,0,0.15); } #confirmPlanBtn:disabled { background-color: #aaa; cursor: not-allowed; opacity: 0.7; }
 
 /* --- Footer --- */
-footer.main-footer { text-align: center; padding: 25px; margin-top: auto; /* ** لصق الفوتر بالأسفل ** */ background-color: #2c3e50; color: #ecf0f1; font-size: 0.9em; width: 100%; }
+footer.main-footer { text-align: center; padding: 25px; margin-top: auto; background-color: #2c3e50; color: #ecf0f1; font-size: 0.9em; width: 100%; }
 footer.main-footer a { color: #3498db; } footer.main-footer a:hover { color: #5dade2; }
 
 
 /* ========================================
-   Desktop Navigation - إظهارها فقط للشاشات الكبيرة
+   Desktop Navigation Styles (min-width)
    ======================================== */
 @media (min-width: 1025px) {
     nav.main-navigation { display: flex; } /* إظهار القائمة للحاسوب */
     .mobile-menu-toggle { display: none; } /* إخفاء زر الموبايل للحاسوب */
+    .submenu-toggle { display: none !important; } /* التأكيد على إخفاء أسهم الموبايل */
 }
 
-
 /* ========================================
-   Mobile Responsiveness (Breakpoint: 1024px and below)
+   Mobile Responsiveness (max-width)
    ======================================== */
-@media (max-width: 1024px) {
-    /* === Mobile Header Layout === */
-    .header-container { padding: 8px 10px; position: relative; min-height: 60px; flex-wrap: nowrap; /* منع الالتفاف */ }
-    a.site-branding { margin-left: 10px; /* إضافة هامش بسيط لليسار */ order: 1; /* الشعار أولاً (يمين) */ }
-    nav.main-navigation { /* Hidden until toggled */ display: none; order: 3; width: 100%; position: absolute; top: 100%; right: 0; left: 0; background-color: #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-top: 1px solid #eee; max-height: calc(100vh - 60px); overflow-y: auto; z-index: 999; }
-    nav.main-navigation.mobile-menu-open { display: block; }
-    .header-right-controls { order: 2; /* عناصر التحكم ثانياً (يسار) */ margin-left: 0; margin-right: auto; /* دفعها لليسار */ }
-    .mobile-menu-toggle { display: block; order: 2; font-size: 1.6em; } /* زر الهمبرغر بجانب منطقة المستخدم */
-    .auth-area { order: 1; } /* منطقة المستخدم قبل الهمبرغر */
 
-    /* Mobile Navigation Styles */
+/* Medium Screens & Smaller (Tablets -> Mobile) */
+@media (max-width: 1024px) {
+    /* === Mobile Header Layout (Logo/Name Right, Controls Left) === */
+    .header-container { padding: 5px 10px; position: relative; min-height: 60px; flex-wrap: nowrap; }
+    a.site-branding { order: 1; /* Branding on the right */ margin-left: 0; margin-right: 0; /* Reset margins */ }
+    .header-right-controls { order: 2; /* Controls on the left */ margin-left: auto; /* Push controls to the left */ }
+    nav.main-navigation { display: none; order: 3; /* Menu appears below */ width: 100%; position: absolute; top: 100%; right: 0; left: 0; background-color: #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-top: 1px solid #eee; max-height: calc(100vh - 60px); overflow-y: auto; z-index: 999; }
+    nav.main-navigation.mobile-menu-open { display: block; }
+    .mobile-menu-toggle { display: block; order: 2; /* Hamburger second within controls */ font-size: 1.6em; }
+    .auth-area { order: 1; /* Auth area first within controls */ }
+    /* --- End Mobile Header Layout --- */
+
     nav.main-navigation ul { flex-direction: column; align-items: stretch; gap: 0; padding: 0; }
-    nav.main-navigation ul li { width: 100%; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; position: relative; /* Needed for toggle absolute positioning if used */ }
+    nav.main-navigation ul li { width: 100%; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; position: relative; }
     nav.main-navigation ul li:last-child { border-bottom: none; }
     nav.main-navigation ul li a { padding: 12px 15px; font-size: 0.95em; flex-grow: 1; font-weight: bold; }
     nav.main-navigation ul li a::before, nav.main-navigation ul li.menu-item-has-children > a::after { display: none; }
 
     /* Mobile Dropdowns & Toggle Arrow */
-    .submenu-toggle {
-        display: inline-flex !important; /* ** التأكيد على إظهار السهم ** */
-        align-items: center; justify-content: center;
-        padding: 12px 15px; cursor: pointer; user-select: none; flex-shrink: 0;
-        color: #555; /* ** لون أوضح للسهم ** */
-        background: none; border: none; /* Ensure it looks like part of the item */
-    }
-    .submenu-toggle .arrow { font-size: 0.9em; display: inline-block; transition: transform 0.2s ease; color: inherit; }
+    .submenu-toggle { display: inline-flex !important; /* ** إظهار السهم للموبايل ** */ align-items: center; justify-content: center; padding: 12px 15px; cursor: pointer; user-select: none; flex-shrink: 0; color: #666; background: none; border: none; }
+    .submenu-toggle .arrow { font-size: 0.8em; display: inline-block; transition: transform 0.2s ease; color: inherit; }
     li.submenu-open > .submenu-toggle .arrow { transform: rotate(180deg); color: #0274be; }
     nav.main-navigation ul li:not(.menu-item-has-children) .submenu-toggle { visibility: hidden; }
-    nav.main-navigation ul li.menu-item-has-children > a { padding-left: 5px; /* مساحة للمؤشر */}
+    nav.main-navigation ul li.menu-item-has-children > a { padding-left: 5px; }
 
     nav.main-navigation ul li .dropdown { display: none; position: static; box-shadow: none; border: none; border-top: 1px solid #eee; padding: 0; min-width: unset; background-color: #f8f9fa; opacity: 1; visibility: visible; transform: none; transition: none; width: 100%; padding-right: 20px; }
     nav.main-navigation ul li.submenu-open > .dropdown { display: block; }
@@ -211,10 +236,18 @@ footer.main-footer a { color: #3498db; } footer.main-footer a:hover { color: #5d
     nav.main-navigation ul li .dropdown li a { padding: 10px 15px 10px 0; color: #454545; font-size: 0.9em; font-weight: normal; width: 100%; }
     nav.main-navigation ul li .dropdown li a:hover { background-color: #e9ecef; }
 
-
     /* Other Mobile Styles */
+    .site-name { display: none; } /* Hide text name on mobile */
+    .logo-container img { max-height: 40px; }
+    .auth-area { gap: 5px; }
+    #user-profile-trigger { padding: 2px; gap: 5px; }
+    #user-profile-trigger img { width: 30px; height: 30px; }
+    #user-profile-trigger span#user-name { font-size: 0.8em; }
+    #user-profile-trigger #student-level-title { font-size: 0.65em; padding: 1px 4px; }
+    .profile-dropdown-menu { left: 0; right: auto; }
+
     .hero-content { flex-direction: column; text-align: center; }
-    .hero-text { text-align: center; padding-left: 0; order: 2; }
+    .hero-text { text-align: center; padding-left: 0; order: 2; background-color: rgba(255, 255, 255, 0.75); /* تعديل الشفافية */ }
     .hero-image { order: 1; margin-bottom: 20px;}
     .hero-text h1 { font-size: 2em; } .hero-text h2 { font-size: 1.3em; text-align: center; } .hero-text p { text-align: center; }
     .services-grid, .features-grid, .stats-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
@@ -223,23 +256,23 @@ footer.main-footer a { color: #3498db; } footer.main-footer a:hover { color: #5d
     #about-site p { text-align: center; }
 }
 
-/* Smaller Mobile Screens */
 @media (max-width: 768px) {
     .logo-container img { max-height: 35px; }
     .mobile-menu-toggle { font-size: 1.5em; }
+    #user-profile-trigger img { width: 28px; height: 28px; }
+    #user-profile-trigger .profile-arrow { display: none; } /* Hide profile arrow */
     h1 { font-size: 1.8em; } h2 { font-size: 1.4em; }
     .plan-card { flex-basis: calc(50% - 15px); min-width: 170px;}
 }
 
-/* Smallest Mobile Screens */
 @media (max-width: 480px) {
     .header-container { padding: 6px 8px; }
-    a.site-branding { display: none; } /* إخفاء الشعار والاسم */
-    .header-right-controls { /* تأخذ المساحة كلها تقريباً */ width: 100%; justify-content: space-between; }
-    .mobile-menu-toggle { order: 1; /* الهمبرغر يمين */ }
-    .auth-area { order: 2; /* منطقة الدخول يسار */ }
-    #user-profile-trigger .user-info { display: none; } /* إخفاء الاسم واللقب */
-    #user-profile-trigger .profile-arrow { display: none; } /* إخفاء سهم البروفايل */
+    a.site-branding { display: none; } /* Hide logo & name */
+    .header-right-controls { width: 100%; justify-content: space-between; } /* Space between auth and toggle */
+    .auth-area { order: 2; } /* Auth left */
+    .mobile-menu-toggle { order: 1; } /* Hamburger right */
+    #user-profile-trigger .user-info { display: none; } /* Hide name/title */
+    #google-signin-btn { font-size: 0.75em; padding: 6px 10px;}
 
     .hero-text h1 { font-size: 1.6em; } .hero-text h2 { font-size: 1.05em; }
     .hero-image img { max-width: 220px; }
