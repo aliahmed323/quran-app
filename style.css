@@ -1,6 +1,6 @@
 /* ========================================
    ملف التنسيقات الرئيسي لـ "منارة الحفظ"
-   v4 - إصلاحات الموبايل، اسم مكدس، قائمة البروفايل، إصلاح الانزياح
+   v5 - إصلاحات إضافية للموبايل + تنسيق الاسم + قائمة البروفايل + محاولة إصلاح الانزياح
    ======================================== */
 
 /* --- General & Reset --- */
@@ -13,43 +13,35 @@ body {
     background-color: #fafafa;
     color: #3a3a3a;
     font-size: 16px;
-    overflow-x: hidden; /* **مهم جداً: لمنع الانزياح الأفقي** */
-    min-height: 100vh; /* للتأكد من أن الفوتر يبقى بالأسفل */
-    display: flex; /* لتنظيم الصفحة عمودياً */
+    overflow-x: hidden; /* **محاولة منع الانزياح الأفقي** */
+    min-height: 100vh;
+    display: flex;
     flex-direction: column;
 }
 main {
-    flex-grow: 1; /* جعل المحتوى الرئيسي يأخذ المساحة المتاحة */
+    flex-grow: 1;
+    width: 100%; /* **التأكد أن المحتوى الرئيسي لا يتجاوز العرض** */
 }
 
-.container { max-width: 1240px; margin: 0 auto; padding: 0 15px; width: 100%; /* تأكد أن الحاوية لا تتجاوز العرض */ }
+.container { max-width: 1240px; margin: 0 auto; padding: 0 15px; width: 100%; }
 a { text-decoration: none; color: #0274be; transition: color 0.3s ease; }
 a:hover { color: #004de5; }
 img { max-width: 100%; height: auto; display: block; }
 h1, h2, h3, h4, h5, h6 { font-family: 'Amiri', serif; color: #2f3f50; font-weight: 700; line-height: 1.4; margin-bottom: 0.75em; }
 h1 { font-size: 2.5em; }
-/* === تعديل توسيط العناوين === */
+/* === تبسيط توسيط العناوين لمحاولة حل مشكلة الانزياح === */
 h2 {
     font-size: 1.8em;
-    text-align: center;
-    margin-bottom: 1.2em;
+    text-align: center; /* التوسيط الأساسي */
+    margin: 0 auto 1.2em auto; /* هوامش تلقائية للتوسيط الأفقي */
     width: fit-content; /* جعل العرض يناسب المحتوى */
-    margin-left: auto; /* للتوسيط */
-    margin-right: auto; /* للتوسيط */
+    max-width: 95%; /* منع تجاوز عرض الشاشة */
     position: relative;
     padding-bottom: 10px;
 }
-/* تعديل الخط السفلي ليعمل مع التوسيط الجديد */
 h2::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%; /* يبدأ من المنتصف */
-    transform: translateX(-50%); /* يتوسط تماماً */
-    width: 80px;
-    height: 3px;
-    background: linear-gradient(to left, #0274be, #1e8449);
-    border-radius: 2px;
+    content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 80px; height: 3px; background: linear-gradient(to left, #0274be, #1e8449); border-radius: 2px;
 }
 
 h3 { font-size: 1.3em; }
@@ -57,70 +49,56 @@ p { margin-bottom: 1.5em; color: #4B4F58; }
 
 
 /* --- Header Styles --- */
-.header-container { display: flex; justify-content: space-between; align-items: center; padding: 8px 25px; background-color: #ffffff; border-bottom: 1px solid #dbdee0; box-shadow: 0 1px 3px rgba(0,0,0,0.04); position: sticky; top: 0; z-index: 1000; }
-.site-branding { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-.logo-container img { max-height: 55px; width: auto; }
-/* === اسم الموقع المكدس === */
+.header-container { display: flex; justify-content: space-between; align-items: center; padding: 8px 15px; /* تقليل الهامش لجميع الشاشات قليلاً */ background-color: #ffffff; border-bottom: 1px solid #dbdee0; box-shadow: 0 1px 3px rgba(0,0,0,0.04); position: sticky; top: 0; z-index: 1000; min-height: 65px; /* تحديد ارتفاع أدنى للهيدر */ }
+/* جعل رابط الشعار والاسم كتلة واحدة مرنة */
+a.site-branding { display: flex; align-items: center; gap: 10px; flex-shrink: 0; color: inherit; /* ليرث لون النص الافتراضي */ text-decoration: none; /* إزالة أي خط تحت الرابط */ }
+.logo-container img { max-height: 50px; /* تعديل طفيف */ width: auto; }
+/* اسم الموقع المكدس */
 .site-name { font-weight: bold; text-align: right; line-height: 1.1; }
-.site-name span {
-    display: block;
-    color: #1a5276; /* **توحيد اللون** */
-    font-size: 1.15em; /* **تكبير طفيف للكل** */
-}
-.site-name span:last-child {
-    font-size: 0.95em; /* تعديل الحجم النسبي قليلاً */
-    margin-top: 2px; /* **إضافة مسافة علوية للحفظ** */
-}
+.site-name span { display: block; color: #1a5276; /* **توحيد اللون** */ font-size: 1.2em; /* **زيادة الحجم قليلاً** */ }
+.site-name span:last-child { font-size: 1.0em; /* **زيادة الحجم قليلاً** */ margin-top: 3px; /* **زيادة المسافة قليلاً** */ }
 
 /* --- Desktop Navigation Menu Styles --- */
-nav.main-navigation { margin: 0 20px; flex-grow: 1; display: flex; justify-content: center; }
-nav.main-navigation ul { list-style: none; padding: 0; margin: 0; display: flex; align-items: center; gap: 35px; }
+nav.main-navigation { margin: 0 15px; /* تقليل الهامش */ flex-grow: 1; display: flex; justify-content: center; }
+nav.main-navigation ul { list-style: none; padding: 0; margin: 0; display: flex; align-items: center; gap: 30px; /* تعديل المسافة */ }
 nav.main-navigation ul li { position: relative; }
-nav.main-navigation ul li a { text-decoration: none; color: #3a3a3a; padding: 20px 10px; display: block; font-weight: 700; font-size: 0.95em; position: relative; transition: color 0.3s ease; white-space: nowrap; }
-nav.main-navigation ul li.menu-item-has-children > a::after { content: '▼'; font-size: 0.6em; margin-right: 6px; display: inline-block; transition: transform 0.2s ease; vertical-align: middle; }
+nav.main-navigation ul li a { text-decoration: none; color: #3a3a3a; padding: 20px 8px; /* تقليل الهامش الأفقي */ display: block; font-weight: 700; font-size: 0.9em; /* تصغير الخط قليلاً */ position: relative; transition: color 0.3s ease; white-space: nowrap; }
+nav.main-navigation ul li.menu-item-has-children > a::after { content: '▼'; font-size: 0.6em; margin-right: 5px; display: inline-block; transition: transform 0.2s ease; vertical-align: middle; }
 nav.main-navigation ul li:hover > a::after { transform: rotate(180deg); }
-nav.main-navigation ul li a::before { content: ''; position: absolute; bottom: 10px; right: 10px; width: 0; height: 2px; background-color: #0274be; transition: width 0.3s ease; }
-nav.main-navigation ul li:hover > a::before { width: calc(100% - 20px); }
+nav.main-navigation ul li a::before { content: ''; position: absolute; bottom: 10px; right: 8px; width: 0; height: 2px; background-color: #0274be; transition: width 0.3s ease; }
+nav.main-navigation ul li:hover > a::before { width: calc(100% - 16px); }
 nav.main-navigation ul li a:hover, nav.main-navigation ul li a.active { color: #0274be; }
 
-/* === Desktop Dropdown Position (Attempting "Below") === */
-nav.main-navigation ul li .dropdown {
-    display: none; position: absolute;
-    top: 100%; /* البدء مباشرة تحت العنصر الأب */
-    right: 0; /* محاذاة لليمين */
-    left: auto; /* إلغاء أي محاذاة لليسار */
-    transform: translateX(0); /* إلغاء أي تحريك افتراضي */
-    background-color: #ffffff; min-width: 220px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 1px solid #eee; border-top: 2px solid #0274be; border-radius: 0 0 4px 4px; padding: 5px 0; z-index: 1001; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; /* إزالة transform من التحريك */
-}
+/* Desktop Dropdown Position (Attempting "Below") */
+nav.main-navigation ul li .dropdown { display: none; position: absolute; top: 100%; /* **أسفل العنصر** */ right: 0; left: auto; transform: translateX(0); background-color: #ffffff; min-width: 220px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 1px solid #eee; border-top: 2px solid #0274be; border-radius: 0 0 4px 4px; padding: 5px 0; z-index: 1001; opacity: 0; visibility: hidden; transition: opacity 0.2s ease, visibility 0.2s ease; /* تحريك أسرع */ }
 nav.main-navigation ul li:hover .dropdown { display: block; opacity: 1; visibility: visible; transform: translateY(0); }
 nav.main-navigation ul li .dropdown li { width: 100%; }
-nav.main-navigation ul li .dropdown li a { padding: 12px 20px; white-space: nowrap; color: #3a3a3a; font-size: 0.9em; font-weight: normal; border: none; }
+nav.main-navigation ul li .dropdown li a { padding: 10px 18px; /* تعديل طفيف */ white-space: nowrap; color: #3a3a3a; font-size: 0.9em; font-weight: normal; border: none; }
 nav.main-navigation ul li .dropdown li a::before { display: none; }
 nav.main-navigation ul li .dropdown li a:hover { background-color: #f5f5f5; color: #0274be; }
 
-/* === Hide Mobile Toggle on Desktop === */
+/* Hide Mobile Toggle on Desktop */
 .submenu-toggle { display: none !important; }
 
 /* --- Header Right Controls (Auth + Mobile Toggle) --- */
-.header-right-controls { display: flex; align-items: center; gap: 15px; flex-shrink: 0; }
+.header-right-controls { display: flex; align-items: center; gap: 10px; /* تقليل المسافة */ flex-shrink: 0; }
 
 /* --- Auth Area Styles --- */
-.auth-area { display: flex; align-items: center; gap: 10px; }
-#google-signin-btn { padding: 7px 15px; font-size: 0.85em; border: none; border-radius: 51px; cursor: pointer; transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease; font-family: inherit; font-weight: bold; white-space: nowrap; background-color: #c18647; color: white; }
+.auth-area { display: flex; align-items: center; gap: 8px; }
+#google-signin-btn { padding: 7px 12px; /* تقليل الحشو */ font-size: 0.8em; border: none; border-radius: 51px; cursor: pointer; transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease; font-family: inherit; font-weight: bold; white-space: nowrap; background-color: #c18647; color: white; }
 #google-signin-btn:hover { background-color: #a96d34; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
 /* Profile Area & Dropdown */
 #user-profile-area { position: relative; }
-#user-profile-trigger { display: flex; align-items: center; gap: 8px; background: none; border: none; padding: 5px; cursor: pointer; border-radius: 4px; transition: background-color 0.2s ease; }
+#user-profile-trigger { display: flex; align-items: center; gap: 6px; background: none; border: none; padding: 3px; /* تقليل */ cursor: pointer; border-radius: 4px; transition: background-color 0.2s ease; }
 #user-profile-trigger:hover { background-color: rgba(0,0,0,0.05); }
-#user-profile-trigger img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #aed6f1; flex-shrink: 0; }
-#user-profile-trigger .user-info { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.2; }
-#user-profile-trigger span#user-name { font-weight: bold; font-size: 0.9em; color: #3a3a3a; white-space: nowrap; }
-#user-profile-trigger #student-level-title { font-weight: normal; color: #1e8449; font-size: 0.75em; background-color: #e8f5e9; padding: 1px 6px; border-radius: 10px; border: 1px solid #a9dfbf; white-space: nowrap; margin-top: 2px; display: block; }
-#user-profile-trigger .profile-arrow { font-size: 0.7em; margin-right: 5px; transition: transform 0.3s ease; }
+#user-profile-trigger img { width: 32px; height: 32px; border-radius: 50%; border: 1px solid #aed6f1; flex-shrink: 0; }
+#user-profile-trigger .user-info { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.1; }
+#user-profile-trigger span#user-name { font-weight: bold; font-size: 0.85em; color: #3a3a3a; white-space: nowrap; }
+#user-profile-trigger #student-level-title { font-weight: normal; color: #1e8449; font-size: 0.7em; background-color: #e8f5e9; padding: 1px 5px; border-radius: 10px; border: 1px solid #a9dfbf; white-space: nowrap; margin-top: 1px; display: block; }
+#user-profile-trigger .profile-arrow { font-size: 0.6em; margin-right: 4px; transition: transform 0.3s ease; }
 #user-profile-trigger[aria-expanded="true"] .profile-arrow { transform: rotate(180deg); }
-
-.profile-dropdown-menu { display: none; position: absolute; top: calc(100% + 5px); /* Slightly below trigger */ left: 0; min-width: 160px; background-color: white; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); z-index: 1010; padding: 5px 0; }
+.profile-dropdown-menu { display: none; position: absolute; top: calc(100% + 5px); left: 0; min-width: 160px; background-color: white; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); z-index: 1010; padding: 5px 0; }
 .profile-dropdown-menu.open { display: block; }
 .profile-dropdown-menu ul { list-style: none; padding: 0; margin: 0; }
 .profile-dropdown-menu ul li button, .profile-dropdown-menu ul li a { display: block; width: 100%; padding: 8px 15px; background: none; border: none; text-align: right; color: #333; font-size: 0.9em; cursor: pointer; white-space: nowrap; font-family: 'Tajawal', sans-serif; }
@@ -130,7 +108,7 @@ nav.main-navigation ul li .dropdown li a:hover { background-color: #f5f5f5; colo
 .mobile-menu-toggle { display: none; background: none; border: none; font-size: 1.8em; color: #1a5276; cursor: pointer; padding: 5px; line-height: 1; z-index: 1002; }
 
 /* --- Hero Section --- */
-.hero-section { display: flex; align-items: center; justify-content: center; min-height: calc(80vh - 70px); padding: 40px 20px; background-color: #f0f4f8; /* Placeholder BG */ overflow: hidden; }
+.hero-section { display: flex; align-items: center; justify-content: center; min-height: calc(80vh - 65px); /* Adjust based on header height */ padding: 40px 20px; background-color: #f0f4f8; /* Placeholder BG */ overflow: hidden; }
 .hero-content { display: flex; align-items: center; justify-content: space-between; gap: 40px; max-width: 1100px; width: 100%; }
 .hero-text { flex: 1; text-align: right; padding-left: 20px; }
 .hero-text h1 { font-family: 'Amiri', serif; font-size: 2.8em; color: #1a5276; margin-bottom: 15px; line-height: 1.3; }
@@ -142,13 +120,22 @@ nav.main-navigation ul li .dropdown li a:hover { background-color: #f5f5f5; colo
 .cta-button:hover, #hero-login-btn:hover { background-color: #a96d34; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
 
 /* --- General Content Sections --- */
-.content-section { padding: 60px 20px; /* **تأكد من وجود هوامش متساوية** */ width: 100%; /* **منع تجاوز العرض** */ }
-.content-section h2 { font-size: 2em; margin-bottom: 40px; position: relative; display: block; /* Change to block */ width: fit-content; /* جعل العرض يناسب المحتوى */ margin-left: auto; /* للتوسيط */ margin-right: auto; /* للتوسيط */ padding-bottom: 10px; /* إزالة left/transform */ }
-.content-section h2::after { content: ''; position: absolute; bottom: 0; left: 50%; /* Use left with translateX */ transform: translateX(-50%); /* للتوسيط */ width: 80px; height: 3px; background: linear-gradient(to left, #0274be, #1e8449); border-radius: 2px; }
+/* ** تعديل: إزالة الهامش التلقائي وتحديد الهوامش الداخلية لحل مشكلة الانزياح ** */
+.content-section {
+    padding: 60px 20px; /* هوامش داخلية متساوية */
+    width: 100%;
+    max-width: 100%; /* تأكيد عدم تجاوز العرض */
+}
+.content-section h2 {
+    font-size: 2em; margin-bottom: 40px; position: relative; display: block;
+    width: fit-content; margin-left: auto; margin-right: auto;
+    padding-bottom: 10px;
+}
+.content-section h2::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 3px; background: linear-gradient(to left, #0274be, #1e8449); border-radius: 2px; }
 .content-section p { max-width: 800px; margin-left: auto; margin-right: auto; text-align: center; color: #4B4F58; line-height: 1.9; font-size: 1.05em; }
 .alt-background { background-color: #eaf2f8; }
 
-/* --- Services/Features Section (Horizontal Icons) --- */
+/* --- Services/Features Section --- */
 .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 30px; margin-top: 40px; }
 .service-item { background-color: #ffffff; padding: 25px; border-radius: 8px; text-align: center; border: 1px solid #e0e0e0; transition: transform 0.3s ease, box-shadow 0.3s ease; }
 .service-item:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
@@ -156,7 +143,7 @@ nav.main-navigation ul li .dropdown li a:hover { background-color: #f5f5f5; colo
 .service-item h3 { font-size: 1.2em; margin-bottom: 10px; color: #1a5276; }
 .service-item p { font-size: 0.95em; color: #555; line-height: 1.6; }
 
-/* --- Features Section (Stacked Circular Icons) --- */
+/* --- Features Section --- */
 .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-top: 40px; }
 .feature-item { background-color: #ffffff; padding: 30px 20px; border-radius: 8px; text-align: center; border: 1px solid #e0e0e0; transition: transform 0.3s ease, box-shadow 0.3s ease; }
 .features-grid .feature-item:nth-child(4n+1) { background-color: #fff0e1; border-color: #ffe0c2;}
@@ -184,6 +171,7 @@ nav.main-navigation ul li .dropdown li a:hover { background-color: #f5f5f5; colo
 
 /* --- Plan Setup Section --- */
 #plan-setup-section { background-color: #fff; padding: 40px 30px; margin: 40px auto; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #eee; text-align: center; max-width: 950px; }
+/* ... (تنسيقات قسم إعداد الخطة كما هي) ... */
 #plan-setup-section h2 { color: #1a5276; margin-bottom: 20px; }
 #plan-setup-section > p { color: #2980b9; font-weight: bold; margin-bottom: 30px; }
 .plan-selection-area { margin-bottom: 30px; }
@@ -215,39 +203,53 @@ footer.main-footer a:hover { color: #5dade2; }
 /* Medium Screens & Smaller (Tablets -> Mobile) */
 @media (max-width: 1024px) {
     .header-container { padding: 8px 15px; position: relative; }
-    .site-name { font-size: 1.0em; line-height: 1.2; }
+    .site-name { font-size: 1.0em; line-height: 1.1; }
     .site-name span:last-child { font-size: 0.8em; }
-    .logo-container img { max-height: 50px; }
+    .logo-container img { max-height: 45px; /* تصغير الشعار أكثر */ }
 
-    /* Hide Desktop Nav, Position Mobile Nav */
-    nav.main-navigation { display: none; order: 3; width: 100%; position: absolute; top: 100%; right: 0; left: 0; background-color: #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-top: 1px solid #eee; max-height: calc(100vh - 65px); overflow-y: auto; z-index: 999; }
+    /* === تعديل: إخفاء القائمة الرئيسية، تحريك العناصر لليمين واليسار === */
+    nav.main-navigation {
+        display: none; /* مخفية حتى يتم فتحها */
+        order: 3; width: 100%; position: absolute; top: 100%; right: 0; left: 0;
+        background-color: #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        border-top: 1px solid #eee; max-height: calc(100vh - 60px); /* تعديل الارتفاع */
+        overflow-y: auto; z-index: 999;
+    }
     nav.main-navigation.mobile-menu-open { display: block; }
     nav.main-navigation ul { flex-direction: column; align-items: stretch; gap: 0; padding: 0; }
-    nav.main-navigation ul li { width: 100%; border-bottom: 1px solid #f0f0f0; display: flex; /* Changed to flex for toggle alignment */ justify-content: space-between; /* Push toggle to end */ align-items: center; }
+    nav.main-navigation ul li { width: 100%; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; /* للسماح بانتقال القائمة الفرعية لأسفل */ }
     nav.main-navigation ul li:last-child { border-bottom: none; }
-    /* Adjust link padding to accommodate toggle */
-    nav.main-navigation ul li a { padding: 14px 20px 14px 5px; /* Reduce left padding */ font-size: 1em; font-weight: bold; flex-grow: 1; /* Allow link to take space */ }
+    nav.main-navigation ul li a { padding: 12px 15px; /* تقليل الحشو */ font-size: 0.95em; flex-grow: 1; }
     nav.main-navigation ul li a::before, nav.main-navigation ul li.menu-item-has-children > a::after { display: none; }
 
     /* Mobile Dropdowns & Toggle */
-    /* === Style the mobile toggle indicator === */
-    .submenu-toggle { display: inline-flex !important; /* Ensure it shows */ align-items: center; justify-content: center; padding: 14px 15px; cursor: pointer; user-select: none; flex-shrink: 0; /* Prevent shrinking */ }
+    .submenu-toggle { display: inline-flex !important; align-items: center; justify-content: center; padding: 12px 15px; cursor: pointer; user-select: none; flex-shrink: 0; /* منع الانكماش */ }
     .submenu-toggle .arrow { font-size: 0.8em; color: #555; display: inline-block; transition: transform 0.2s ease; }
     li.submenu-open > .submenu-toggle .arrow { transform: rotate(180deg); color: #0274be; }
-    /* Remove the toggle from li that don't have dropdowns */
-    nav.main-navigation ul li:not(.menu-item-has-children) .submenu-toggle { display: none !important; }
+    /* إزالة المؤشر من العناصر التي ليس لها قائمة فرعية */
+     nav.main-navigation ul li:not(.menu-item-has-children) .submenu-toggle { display: none !important; }
+     /* تعديل لـ li التي تحتوي قائمة فرعية في الموبايل */
+     nav.main-navigation ul li.menu-item-has-children > a { flex-grow: 1; padding-left: 5px; /* السماح بمساحة للمؤشر */}
 
-    nav.main-navigation ul li .dropdown { display: none; position: static; box-shadow: none; border: none; border-top: 1px solid #eee; padding: 0; min-width: unset; background-color: #f8f9fa; opacity: 1; visibility: visible; transform: none; transition: none; width: 100%; /* Make dropdown full width */ padding-right: 15px; /* Indentation */ }
+    nav.main-navigation ul li .dropdown { display: none; position: static; box-shadow: none; border: none; border-top: 1px solid #eee; padding: 0; min-width: unset; background-color: #f8f9fa; opacity: 1; visibility: visible; transform: none; transition: none; width: 100%; padding-right: 15px; }
     nav.main-navigation ul li.submenu-open > .dropdown { display: block; }
-    nav.main-navigation ul li .dropdown li { border-bottom: 1px solid #e9ecef; flex-wrap: wrap; /* Allow wrapping if needed */ }
+    nav.main-navigation ul li .dropdown li { border-bottom: 1px solid #e9ecef; flex-wrap: wrap; }
     nav.main-navigation ul li .dropdown li:last-child { border-bottom: none; }
-    nav.main-navigation ul li .dropdown li a { padding: 10px 20px; /* Adjusted padding */ color: #454545; font-size: 0.9em; font-weight: normal; width: 100%; /* Ensure link takes full width */ }
+    nav.main-navigation ul li .dropdown li a { padding: 10px 20px 10px 0; color: #454545; font-size: 0.9em; font-weight: normal; width: 100%; }
     nav.main-navigation ul li .dropdown li a:hover { background-color: #e9ecef; }
 
-    /* Mobile Toggle Button */
-    .mobile-menu-toggle { display: block; order: 2; }
-    .header-right-controls { order: 1; margin-left: 0; }
-    .auth-area { flex-shrink: 0; }
+    /* === تعديل: تحريك منطقة التحكم لليسار === */
+    .mobile-menu-toggle { display: block; order: 2; /* يأتي ثانياً في اليسار */ }
+    .header-right-controls { order: 1; /* المجموعة كلها تأتي أولاً في الترتيب البصري (لليسار) */ margin-right: auto; /* دفعها لليسار */ margin-left: 0; }
+    .site-branding { order: 2; margin-left: auto; margin-right: 0; /* دفع الشعار لليمين */ }
+
+
+    /* Adjust Auth Area for more space */
+    .auth-area { gap: 5px; }
+    #user-profile-trigger { padding: 3px; gap: 5px; }
+    #user-profile-trigger img { width: 32px; height: 32px; }
+    #user-profile-trigger span#user-name { font-size: 0.85em; }
+    #user-profile-trigger #student-level-title { font-size: 0.7em; }
 
     /* Hero section adjustments */
     .hero-content { flex-direction: column; text-align: center; }
@@ -261,16 +263,16 @@ footer.main-footer a:hover { color: #5dade2; }
     .services-grid, .features-grid, .stats-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
     .plan-card { flex-basis: calc(50% - 20px); }
 
-    /* Content Shift Fix Attempt */
-    .content-section { padding: 40px 15px; /* **Ensure consistent padding** */ }
+    /* Content Shift Fix */
+    .content-section { padding-left: 15px; padding-right: 15px; }
     .content-section p { padding: 0 5px; }
     #about-site p { text-align: center; }
 }
 
 /* Smaller Mobile Screens */
 @media (max-width: 768px) {
-    .site-name { font-size: 1.0em; }
-    .site-name span:last-child { font-size: 0.75em; }
+    .site-name { font-size: 0.9em; line-height: 1.1; }
+    .site-name span:last-child { font-size: 0.7em; }
     .logo-container img { max-height: 40px; }
     .mobile-menu-toggle { font-size: 1.6em; }
     .auth-area { gap: 5px; }
@@ -279,8 +281,8 @@ footer.main-footer a:hover { color: #5dade2; }
     #user-profile-trigger img { width: 30px; height: 30px; }
     #user-profile-trigger span#user-name { font-size: 0.8em; }
     #user-profile-trigger #student-level-title { font-size: 0.7em; }
-    #user-profile-trigger .profile-arrow { display: none; } /* Hide arrow on smaller mobiles */
-    .profile-dropdown-menu { left: auto; right:0; min-width: 140px; }
+    #user-profile-trigger .profile-arrow { display: none; }
+    .profile-dropdown-menu { left: 0; right: auto; min-width: 140px; }
 
     h1 { font-size: 2em; }
     h2 { font-size: 1.5em; }
@@ -290,15 +292,14 @@ footer.main-footer a:hover { color: #5dade2; }
 
 /* Smallest Mobile Screens */
 @media (max-width: 480px) {
-    .header-container { padding: 8px 10px; flex-wrap: nowrap; /* Prevent wrapping */ }
-    .site-branding { flex-grow: 0; } /* Do not grow */
-    .site-name { display: none; } /* Hide name */
+    .header-container { padding: 8px 10px; }
+    .site-name { display: none; }
     .logo-container img { max-height: 35px; }
-    .header-right-controls { margin-left: auto; /* Push controls to right */ gap: 8px; } /* Adjust gap */
+    .header-right-controls { gap: 8px; }
     .auth-area { gap: 5px; }
     #google-signin-btn { padding: 5px 8px; font-size: 0.7em; }
     #user-profile-trigger img { width: 28px; height: 28px; }
-    #user-profile-trigger .user-info { display: none; } /* Hide name/title */
+    #user-profile-trigger .user-info { display: none; }
     .mobile-menu-toggle { font-size: 1.5em; }
 
     .hero-text h1 { font-size: 1.7em; }
