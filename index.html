@@ -26,11 +26,12 @@
             <span class="site-name">منارة الحفظ</span>
         </div>
 
-        <nav class="main-navigation" id="main-nav"> <ul>
+        <nav class="main-navigation" id="main-nav">
+            <ul>
                 <li><a href="index.html">الرئيسية</a></li>
                 <li class="menu-item-has-children">
                     <a href="#about-site">التعريف بالموقع</a>
-                </li>
+                    </li>
                 <li class="menu-item-has-children">
                     <a href="#">خطط الحفظ</a>
                     <ul class="dropdown">
@@ -71,33 +72,41 @@
             </ul>
         </nav>
 
-        <div class="auth-area">
-            <button id="google-signin-btn" class="google-signin-btn" style="display: inline-block;">
-                تسجيل الدخول
-            </button>
-            <div id="user-profile-area" style="display: none;">
-                <img id="user-photo" src="images/avatar_placeholder.png" alt="صورة المستخدم">
-                <div class="user-info"> <span id="user-name">أهلاً بك</span>
-                    <span id="student-level-title" style="display: none;"></span>
+        <div class="header-right-controls"> <div class="auth-area">
+                <button id="google-signin-btn" class="google-signin-btn" style="display: inline-block;">
+                    تسجيل الدخول
+                </button>
+                <div id="user-profile-area" style="display: none;">
+                    <button type="button" id="user-profile-trigger" aria-expanded="false" aria-controls="profile-dropdown">
+                        <img id="user-photo" src="images/avatar_placeholder.png" alt="صورة المستخدم">
+                        <div class="user-info">
+                            <span id="user-name">أهلاً بك</span>
+                            <span id="student-level-title" style="display: none;"></span>
+                        </div>
+                        <span class="profile-arrow">▼</span>
+                    </button>
+                    <div id="profile-dropdown" class="profile-dropdown-menu">
+                        <ul>
+                            <li><button id="logout-button" type="button">تسجيل الخروج</button></li>
+                        </ul>
+                    </div>
                 </div>
-                <button id="logout-button">خروج</button>
-            </div>
+                 </div>
+            <button class="mobile-menu-toggle" aria-label="فتح القائمة" aria-expanded="false" aria-controls="main-nav">
+                ☰
+            </button>
         </div>
 
-         <button class="mobile-menu-toggle" aria-label="فتح القائمة" aria-expanded="false" aria-controls="main-nav">
-             ☰
-         </button>
     </header>
 
     <main>
-
         <section class="hero-section">
             <div class="hero-content">
                 <div class="hero-text">
                     <h1>أهلاً بك في منارة الحفظ</h1>
                     <h2>منصة إلكترونية لتعليم وحفظ القرآن الكريم وعلومه</h2>
                     <p>والإبداع في غرس قيمه...</p>
-                     <div id="cta-button-container" style="margin-top: 30px;">
+                    <div id="cta-button-container" style="margin-top: 30px;">
                         </div>
                 </div>
                 <div class="hero-image">
@@ -107,113 +116,47 @@
         </section>
 
         <section id="about-site" class="content-section">
-            <h2>التعريف بالموقع</h2> <p>
+            <h2>التعريف بالموقع</h2>
+            <p>
                 منارة الحفظ هي منصة إلكترونية تطوعية تهدف لتيسير حفظ القرآن الكريم وعلومه ومراجعته للمسلمين حول العالم عبر خطط تفاعلية وأدوات متابعة حديثة. نسعى لتوفير بيئة محفزة ومنظمة تساعدك على الالتزام والمداومة على وردك القرآني.
             </p>
         </section>
 
         <section class="services-section content-section">
-             <h2>خدماتنا</h2>
+            <h2>خدماتنا</h2>
             <div class="services-grid">
-                <div class="service-item">
-                    <div class="service-icon"><span>📅</span></div>
-                    <h3>خطط حفظ تفاعلية</h3>
-                    <p>خطط يومية تلقائية للحفظ والمراجعة والربط تناسب مستواك.</p>
-                </div>
-                <div class="service-item">
-                    <div class="service-icon"><span>📊</span></div>
-                    <h3>متابعة دقيقة للتقدم</h3>
-                    <p>إحصائيات وتقويم مرئي لمتابعة إنجازك وصفحاتك المحفوظة.</p>
-                </div>
-                 <div class="service-item">
-                     <div class="service-icon"><span>✨</span></div>
-                    <h3>تحفيز وتشجيع</h3>
-                    <p>نظام ألقاب ومستويات وتتبع للإنجاز المتتالي لزيادة حماسك.</p>
-                 </div>
-                 <div class="service-item">
-                     <div class="service-icon"><span>🧠</span></div>
-                    <h3>أدوات مساعدة</h3>
-                     <p>إمكانية إضافة خرائط ذهنية ومسابقات وروابط مفيدة.</p>
-                </div>
+                <div class="service-item"><div class="service-icon"><span>📅</span></div><h3>خطط حفظ تفاعلية</h3><p>خطط يومية تلقائية للحفظ والمراجعة والربط تناسب مستواك.</p></div>
+                <div class="service-item"><div class="service-icon"><span>📊</span></div><h3>متابعة دقيقة للتقدم</h3><p>إحصائيات وتقويم مرئي لمتابعة إنجازك وصفحاتك المحفوظة.</p></div>
+                <div class="service-item"><div class="service-icon"><span>✨</span></div><h3>تحفيز وتشجيع</h3><p>نظام ألقاب ومستويات وتتبع للإنجاز المتتالي لزيادة حماسك.</p></div>
+                <div class="service-item"><div class="service-icon"><span>🧠</span></div><h3>أدوات مساعدة</h3><p>إمكانية إضافة خرائط ذهنية ومسابقات وروابط مفيدة.</p></div>
             </div>
         </section>
 
         <section class="features-section content-section alt-background">
-             <h2>مميزات الموقع</h2> <div class="features-grid">
-                <div class="feature-item">
-                    <div class="feature-icon-circle"><span>🎯</span></div>
-                    <h3>التركيز والمنهجية</h3>
-                    <p>نوفر لك خطة واضحة ومنظمة تساعدك على التركيز في حفظك ومراجعتك.</p>
-                </div>
-                <div class="feature-item">
-                     <div class="feature-icon-circle"><span>🤝</span></div>
-                    <h3>المرونة</h3>
-                    <p>تستطيع تسجيل الأعذار وتتأقلم الخطة تلقائياً مع ظروفك.</p>
-                </div>
-                 <div class="feature-item">
-                     <div class="feature-icon-circle"><span>💖</span></div>
-                     <h3>التحفيز الذاتي</h3>
-                     <p>نظام المستويات والألقاب يساعدك على مراقبة تطورك والاحتفاء بإنجازك.</p>
-                </div>
-                 <div class="feature-item">
-                     <div class="feature-icon-circle"><span>⏳</span></div>
-                     <h3>توفير الوقت</h3>
-                     <p>لا حاجة لحساب الصفحات أو المراجعات، المنصة تقوم بذلك نيابة عنك.</p>
-                </div>
+             <h2>مميزات الموقع</h2>
+            <div class="features-grid">
+                 <div class="feature-item"><div class="feature-icon-circle"><span>🎯</span></div><h3>التركيز والمنهجية</h3><p>نوفر لك خطة واضحة ومنظمة تساعدك على التركيز في حفظك ومراجعتك.</p></div>
+                <div class="feature-item"><div class="feature-icon-circle"><span>🤝</span></div><h3>المرونة</h3><p>تستطيع تسجيل الأعذار وتتأقلم الخطة تلقائياً مع ظروفك.</p></div>
+                <div class="feature-item"><div class="feature-icon-circle"><span>💖</span></div><h3>التحفيز الذاتي</h3><p>نظام المستويات والألقاب يساعدك على مراقبة تطورك والاحتفاء بإنجازك.</p></div>
+                <div class="feature-item"><div class="feature-icon-circle"><span>⏳</span></div><h3>توفير الوقت</h3><p>لا حاجة لحساب الصفحات أو المراجعات، المنصة تقوم بذلك نيابة عنك.</p></div>
             </div>
         </section>
 
         <section id="plan-setup-section">
              <h2>إعداد خطتك لأول مرة</h2>
              <p>يرجى اختيار الخطة المناسبة وتحديد تاريخ البدء.</p>
-             <div class="plan-selection-area">
-                 <div class="plans-container">
-                    <div class="plan-card" data-plan-type="1" style="border: 1px solid #ddd; padding: 20px; flex-basis: 200px; cursor: pointer;"> <h3>خطة صفحة واحدة</h3> <p>وصف...</p> <span class="plan-link">اختر</span></div>
-                    <div class="plan-card" data-plan-type="2" style="border: 1px solid #ddd; padding: 20px; flex-basis: 200px; cursor: pointer;"> <h3>خطة صفحتين</h3> <p>وصف...</p> <span class="plan-link">اختر</span></div>
-                    <div class="plan-card" data-plan-type="3" style="border: 1px solid #ddd; padding: 20px; flex-basis: 200px; cursor: pointer;"> <h3>خطة 3 صفحات</h3> <p>وصف...</p> <span class="plan-link">اختر</span></div>
-                    <div class="plan-card" data-plan-type="4" style="border: 1px solid #ddd; padding: 20px; flex-basis: 200px; cursor: pointer;"> <h3>خطة 4 صفحات</h3> <p>وصف...</p> <span class="plan-link">اختر</span></div>
-                 </div>
-             </div>
-             <div class="plan-setup-inputs">
-                 <div>
-                    <label for="planStartDate">تاريخ البدء:</label>
-                    <input type="date" id="planStartDate" required>
-                 </div>
-                 <div>
-                    <label for="planRepetitionMax">عدد التكرارات المفضل:</label>
-                    <select id="planRepetitionMax">
-                        <option value="20" selected>20</option>
-                        <option value="30">30</option>
-                        <option value="40">40</option>
-                    </select>
-                 </div>
-             </div>
+             <div class="plan-selection-area"> <div class="plans-container"> <div class="plan-card" data-plan-type="2"><h3>خطة صفحتين</h3><p>وصف...</p><span class="plan-link">اختر</span></div> </div> </div>
+             <div class="plan-setup-inputs"> <div><label for="planStartDate">تاريخ البدء:</label><input type="date" id="planStartDate" required></div><div><label for="planRepetitionMax">التكرارات:</label><select id="planRepetitionMax"><option value="20" selected>20</option><option value="30">30</option><option value="40">40</option></select></div></div>
              <button id="confirmPlanBtn" disabled>تأكيد الخطة والبدء</button>
              </section>
 
         <section class="stats-section content-section">
              <h2>منارة الحفظ بالأرقام</h2>
              <div class="stats-grid">
-                 <div class="stat-item">
-                     <span class="stat-icon">📊</span>
-                     <span class="stat-number">1000+</span>
-                     <span class="stat-title">خطة تم إنشاؤها</span>
-                 </div>
-                 <div class="stat-item">
-                    <span class="stat-icon">🧑‍🎓</span>
-                    <span class="stat-number">500+</span>
-                     <span class="stat-title">طالب ملتزم</span>
-                 </div>
-                 <div class="stat-item">
-                     <span class="stat-icon">📄</span>
-                     <span class="stat-number">5000+</span>
-                    <span class="stat-title">صفحة تم حفظها</span>
-                 </div>
-                 <div class="stat-item">
-                    <span class="stat-icon">🌟</span>
-                    <span class="stat-number">100+</span>
-                     <span class="stat-title">مستوى تم بلوغه</span>
-                </div>
+                 <div class="stat-item"><span class="stat-icon">📊</span><span class="stat-number">1000+</span><span class="stat-title">خطة تم إنشاؤها</span></div>
+                <div class="stat-item"><span class="stat-icon">🧑‍🎓</span><span class="stat-number">500+</span><span class="stat-title">طالب ملتزم</span></div>
+                <div class="stat-item"><span class="stat-icon">📄</span><span class="stat-number">5000+</span><span class="stat-title">صفحة تم حفظها</span></div>
+                <div class="stat-item"><span class="stat-icon">🌟</span><span class="stat-number">100+</span><span class="stat-title">مستوى تم بلوغه</span></div>
              </div>
          </section>
 
@@ -242,13 +185,15 @@
         const userProfileArea = document.getElementById('user-profile-area');
         const userNameSpan = document.getElementById('user-name');
         const userPhoto = document.getElementById('user-photo');
-        const logoutButton = document.getElementById('logout-button');
+        // Logout button is now inside the dropdown, we select it later in its event listener setup
         const studentLevelTitleSpan = document.getElementById('student-level-title');
         const currentYearSpan = document.getElementById('current-year');
         const dashboardLinkContainer = document.getElementById('dashboard-link-container');
-        const ctaContainer = document.getElementById('cta-button-container'); // Reference for hero button
-        const mobileMenuToggle = document.querySelector('.mobile-menu-toggle'); // Mobile toggle button
-        const mainNav = document.querySelector('nav.main-navigation'); // Main navigation container
+        const ctaContainer = document.getElementById('cta-button-container');
+        const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+        const mainNav = document.querySelector('nav.main-navigation');
+        const profileTrigger = document.getElementById('user-profile-trigger'); // New trigger for profile dropdown
+        const profileDropdown = document.getElementById('profile-dropdown'); // New profile dropdown
 
         // --- Global State ---
         let currentUser = null;
@@ -267,123 +212,90 @@
         function calculateLevelTitle(tableRows) {
             if (!tableRows || tableRows.length === 0) return { title: levelTitles[0], icon: '' };
             const sortedRows = [...tableRows].sort((a, b) => new Date(a.displayDate) - new Date(b.displayDate));
-            let currentStreak = 0;
-            let streakBroken = false;
-            const todayStr = formatDate(new Date());
-            let tempCurrentStreak = 0;
+            let currentStreak = 0; let streakBroken = false; const todayStr = formatDate(new Date()); let tempCurrentStreak = 0;
             for (let i = sortedRows.length - 1; i >= 0; i--) {
-                const row = sortedRows[i];
-                if (row.displayDate > todayStr) continue;
-                if (row.type === 'plan' && row.state?.completed) {
-                    if (!streakBroken) { tempCurrentStreak++; }
-                } else if (row.type === 'excuse') { continue; }
+                const row = sortedRows[i]; if (row.displayDate > todayStr) continue;
+                if (row.type === 'plan' && row.state?.completed) { if (!streakBroken) { tempCurrentStreak++; } }
+                else if (row.type === 'excuse') { continue; }
                 else { streakBroken = true; if (row.displayDate === todayStr) { tempCurrentStreak = 0; } break; }
             }
             currentStreak = tempCurrentStreak;
             const levelIndex = Math.min(Math.floor(currentStreak / 10), levelTitles.length - 1);
-            const title = levelTitles[levelIndex] || levelTitles[0];
-            const icon = levelIcons[levelIndex] || '';
+            const title = levelTitles[levelIndex] || levelTitles[0]; const icon = levelIcons[levelIndex] || '';
             return { title: title, icon: icon };
         }
 
         async function displayStudentLevel(uid) {
-            if (!studentLevelTitleSpan) return;
-            studentLevelTitleSpan.style.display = 'none'; // Hide initially
+            if (!studentLevelTitleSpan) return; studentLevelTitleSpan.style.display = 'none';
             try {
-                const planRef = db.collection("quranPlans").doc(uid);
-                const doc = await planRef.get();
+                const planRef = db.collection("quranPlans").doc(uid); const doc = await planRef.get();
                 if (doc.exists) {
                     const planData = doc.data();
                     if (planData.tableRows) {
                         const levelInfo = calculateLevelTitle(planData.tableRows);
-                        if (levelInfo && levelInfo.title) { // Check if title is valid
-                            studentLevelTitleSpan.textContent = `(${levelInfo.title} ${levelInfo.icon})`.trim();
-                            studentLevelTitleSpan.style.display = 'inline';
-                        }
+                        if (levelInfo && levelInfo.title) { studentLevelTitleSpan.textContent = `(${levelInfo.title} ${levelInfo.icon})`.trim(); studentLevelTitleSpan.style.display = 'block'; /* Changed to block */ }
                     }
                 }
             } catch (error) { console.error("Error fetching plan data for level title:", error); }
         }
 
-        // --- UI Update Function (Handles Conditional Button) ---
+        // --- UI Update Function (Handles Conditional Button & Profile) ---
         function updateUIBasedOnLoginAndPlanState() {
-             if (ctaContainer) ctaContainer.innerHTML = ''; // Clear hero button
-            if (dashboardLinkContainer) dashboardLinkContainer.innerHTML = ''; // Clear dashboard link
+            if (ctaContainer) ctaContainer.innerHTML = '';
+            if (dashboardLinkContainer) dashboardLinkContainer.innerHTML = '';
 
             if (currentUser) { // --- Logged IN ---
                 if(loginBtn) loginBtn.style.display = 'none';
-                if(userProfileArea) {
-                    userProfileArea.style.display = 'flex';
+                if(userProfileArea) userProfileArea.style.display = 'block'; // Show the profile area container
+                if(profileTrigger){ // Update profile trigger content
                     if(userNameSpan) userNameSpan.textContent = currentUser.displayName || 'مستخدم';
                     if(userPhoto) userPhoto.src = currentUser.photoURL || 'images/avatar_placeholder.png';
                 }
-                displayStudentLevel(currentUser.uid); // Attempt to display level
+                displayStudentLevel(currentUser.uid);
 
                 if (hasExistingPlan) { // --- Has Plan ---
-                    console.log("UI Update: User has plan.");
                     if(planSetupSection) planSetupSection.style.display = 'none';
-                    // Show "Go to Dashboard" button in Hero
-                    if (ctaContainer) {
-                        const dashboardButton = `<a href="dashboard.html" class="cta-button">الذهاب إلى لوحة المتابعة</a>`;
-                        ctaContainer.innerHTML = dashboardButton;
-                    }
+                    if (ctaContainer) { ctaContainer.innerHTML = `<a href="dashboard.html" class="cta-button">الذهاب إلى لوحة المتابعة</a>`; }
                 } else { // --- No Plan ---
-                    console.log("UI Update: User needs to set up plan.");
                     if(planSetupSection) planSetupSection.style.display = 'block';
-                    // Show "Choose Plan" button in Hero
-                    if (ctaContainer) {
-                        const choosePlanButton = `<a href="#plan-setup-section" class="cta-button">اختر خطتك الآن</a>`;
-                        ctaContainer.innerHTML = choosePlanButton;
-                    }
+                    if (ctaContainer) { ctaContainer.innerHTML = `<a href="#plan-setup-section" class="cta-button">اختر خطتك الآن</a>`; }
                     if (planStartDateInput && !planStartDateInput.value) planStartDateInput.value = formatDate(new Date());
                     updateConfirmButtonState();
                 }
             } else { // --- Logged OUT ---
                 if(loginBtn) loginBtn.style.display = 'inline-block';
-                if(userProfileArea) userProfileArea.style.display = 'none';
+                if(userProfileArea) userProfileArea.style.display = 'none'; // Hide profile area
                 if(planSetupSection) planSetupSection.style.display = 'none';
                 if (studentLevelTitleSpan) studentLevelTitleSpan.style.display = 'none';
                 if (dashboardLinkContainer) dashboardLinkContainer.innerHTML = '';
-
                 // Show "Login" button in Hero
                 if (ctaContainer) {
                     const loginPromptButtonHTML = `<button id="hero-login-btn" class="cta-button">سجل الدخول للبدء</button>`;
                     ctaContainer.innerHTML = loginPromptButtonHTML;
-                    // Add listener immediately after adding the button
                     const heroLoginBtn = document.getElementById('hero-login-btn');
                     if (heroLoginBtn) {
-                        heroLoginBtn.addEventListener('click', () => {
-                            const provider = new firebase.auth.GoogleAuthProvider();
-                            auth.signInWithPopup(provider).catch(err => { console.error("Sign-in error:", err); alert("حدث خطأ أثناء تسجيل الدخول: " + err.message); });
-                        });
+                        heroLoginBtn.addEventListener('click', () => { const provider = new firebase.auth.GoogleAuthProvider(); auth.signInWithPopup(provider).catch(err => { console.error("Sign-in error:", err); alert("حدث خطأ أثناء تسجيل الدخول: " + err.message); }); });
                     }
                 }
             }
         }
 
-        // --- Other Functions (Confirm Button State, Save Initial Data) ---
+        // --- Other Functions ---
         function updateConfirmButtonState() { if (!confirmPlanBtn) return; confirmPlanBtn.disabled = !(selectedPlanType && planStartDateInput?.value); }
-        async function saveInitialPlanData() { /* ... Same as before ... */ if (!currentUser || !selectedPlanType || !planStartDateInput || !planStartDateInput.value || !planRepetitionMaxSelect) { alert("يرجى اختيار خطة وتحديد تاريخ البدء وعدد التكرارات."); return; } const selectedStartDate = new Date(planStartDateInput.value + 'T00:00:00Z'); if (isNaN(selectedStartDate.getTime())) { alert('تاريخ البدء المحدد غير صالح.'); return; } if(confirmPlanBtn) { confirmPlanBtn.disabled = true; confirmPlanBtn.textContent = "جاري الحفظ..."; } const uid = currentUser.uid; const planRef = db.collection("quranPlans").doc(uid); const initialTableRows = []; let currentDate = new Date(selectedStartDate); for (let i = 0; i < initialTotalRows; i++) { const rowData = { type: 'plan', originalSequence: i, displaySeq: i + 1, displayDate: formatDate(currentDate), state: { yestRep: 0, listen: 0, interp: false, record: 0, rep: 0, linked: false, reviewed: false, completed: false } }; initialTableRows.push(rowData); if (i < initialTotalRows - 1) { currentDate.setUTCDate(currentDate.getUTCDate() + 1); } } const planDataToSave = { studentName: currentUser.displayName || "طالب علم", email: currentUser.email, startDate: planStartDateInput.value, planType: selectedPlanType, repetitionMax: parseInt(planRepetitionMaxSelect.value), excuseDates: [], tableRows: initialTableRows, createdAt: firebase.firestore.FieldValue.serverTimestamp(), lastUpdated: firebase.firestore.FieldValue.serverTimestamp() }; console.log("Saving initial plan data (including tableRows):", planDataToSave); try { await planRef.set(planDataToSave); console.log("Initial plan data saved!"); hasExistingPlan = true; window.location.href = 'dashboard.html'; } catch (error) { console.error("Error saving initial plan data: ", error); alert("حدث خطأ أثناء حفظ بيانات الخطة. حاول مرة أخرى."); if(confirmPlanBtn) { confirmPlanBtn.disabled = false; confirmPlanBtn.textContent = "تأكيد الخطة والبدء"; } } }
+        async function saveInitialPlanData() { /* ... Same logic as before ... */ if (!currentUser || !selectedPlanType || !planStartDateInput || !planStartDateInput.value || !planRepetitionMaxSelect) { alert("يرجى اختيار خطة وتحديد تاريخ البدء وعدد التكرارات."); return; } const selectedStartDate = new Date(planStartDateInput.value + 'T00:00:00Z'); if (isNaN(selectedStartDate.getTime())) { alert('تاريخ البدء المحدد غير صالح.'); return; } if(confirmPlanBtn) { confirmPlanBtn.disabled = true; confirmPlanBtn.textContent = "جاري الحفظ..."; } const uid = currentUser.uid; const planRef = db.collection("quranPlans").doc(uid); const initialTableRows = []; let currentDate = new Date(selectedStartDate); for (let i = 0; i < initialTotalRows; i++) { const rowData = { type: 'plan', originalSequence: i, displaySeq: i + 1, displayDate: formatDate(currentDate), state: { yestRep: 0, listen: 0, interp: false, record: 0, rep: 0, linked: false, reviewed: false, completed: false } }; initialTableRows.push(rowData); if (i < initialTotalRows - 1) { currentDate.setUTCDate(currentDate.getUTCDate() + 1); } } const planDataToSave = { studentName: currentUser.displayName || "طالب علم", email: currentUser.email, startDate: planStartDateInput.value, planType: selectedPlanType, repetitionMax: parseInt(planRepetitionMaxSelect.value), excuseDates: [], tableRows: initialTableRows, createdAt: firebase.firestore.FieldValue.serverTimestamp(), lastUpdated: firebase.firestore.FieldValue.serverTimestamp() }; console.log("Saving initial plan data (including tableRows):", planDataToSave); try { await planRef.set(planDataToSave); console.log("Initial plan data saved!"); hasExistingPlan = true; window.location.href = 'dashboard.html'; } catch (error) { console.error("Error saving initial plan data: ", error); alert("حدث خطأ أثناء حفظ بيانات الخطة. حاول مرة أخرى."); if(confirmPlanBtn) { confirmPlanBtn.disabled = false; confirmPlanBtn.textContent = "تأكيد الخطة والبدء"; } } }
+
 
         // --- Authentication State Listener ---
         auth.onAuthStateChanged(async (user) => {
             currentUser = user;
-            if (user) {
-                console.log("Index: Auth state changed: User logged in.");
-                hasExistingPlan = await checkIfPlanExists(user.uid);
-                updateUIBasedOnLoginAndPlanState();
-            } else {
-                console.log("Index: Auth state changed: User logged out.");
-                hasExistingPlan = false;
-                updateUIBasedOnLoginAndPlanState();
-            }
+            if (user) { hasExistingPlan = await checkIfPlanExists(user.uid); }
+            else { hasExistingPlan = false; }
+            updateUIBasedOnLoginAndPlanState(); // Update UI AFTER checking plan status
         });
 
         // --- Event Listeners ---
-        // Google Sign-in
+        // Google Sign-in (Header Button)
         if (loginBtn) { loginBtn.addEventListener('click', () => { const provider = new firebase.auth.GoogleAuthProvider(); auth.signInWithPopup(provider).catch(err => { console.error("Sign-in error:", err); alert("حدث خطأ أثناء تسجيل الدخول: " + err.message); }); }); }
-        // Logout
-        if (logoutButton) { logoutButton.addEventListener('click', () => { auth.signOut().catch((error) => { console.error('Sign out error:', error); }); }); }
         // Plan Card Selection
         if(planCards) { planCards.forEach(card => { card.addEventListener('click', () => { if(planCards) planCards.forEach(c => c.classList.remove('selected')); card.classList.add('selected'); selectedPlanType = parseInt(card.getAttribute('data-plan-type')); updateConfirmButtonState(); }); }); }
         // Date Input Change
@@ -398,50 +310,62 @@
                 mobileMenuToggle.setAttribute('aria-expanded', isOpen);
                 mobileMenuToggle.innerHTML = isOpen ? '✕' : '☰';
             });
-
-            // Close mobile menu if user clicks outside of it (optional)
             document.addEventListener('click', (event) => {
-                if (mainNav.classList.contains('mobile-menu-open') &&
-                    !mainNav.contains(event.target) &&
-                    !mobileMenuToggle.contains(event.target)) {
-                    mainNav.classList.remove('mobile-menu-open');
-                    mobileMenuToggle.setAttribute('aria-expanded', 'false');
-                    mobileMenuToggle.innerHTML = '☰';
+                if (mainNav.classList.contains('mobile-menu-open') && !mainNav.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
+                    mainNav.classList.remove('mobile-menu-open'); mobileMenuToggle.setAttribute('aria-expanded', 'false'); mobileMenuToggle.innerHTML = '☰';
                 }
             });
-
-            // Mobile Submenu Toggles
-             const menuItemsWithChildren = mainNav.querySelectorAll('li.menu-item-has-children');
-             menuItemsWithChildren.forEach(item => {
-                 // Add a toggle indicator if needed (e.g., a '+' sign)
-                 let subToggle = item.querySelector('.submenu-toggle');
-                 if (!subToggle) {
-                     subToggle = document.createElement('span');
-                     subToggle.classList.add('submenu-toggle');
-                     subToggle.innerHTML = ' <span class="arrow">▼</span>'; // Simple arrow
-                     subToggle.style.cursor = 'pointer';
-                     subToggle.style.paddingLeft = '10px'; // Space it out
-                     subToggle.style.display = 'inline-block'; // Make it part of the flow
-                     item.querySelector('a').after(subToggle); // Add after the link
-
-                     subToggle.addEventListener('click', (event) => {
-                         event.stopPropagation(); // Prevent parent li click event
-                         const parentLi = event.target.closest('li.menu-item-has-children');
-                         parentLi.classList.toggle('submenu-open');
-                         // Change arrow direction
-                         const arrow = event.target.querySelector ? event.target.querySelector('.arrow') : event.target; // Handle click on arrow itself
-                         if (arrow) {
-                            arrow.innerHTML = parentLi.classList.contains('submenu-open') ? '▲' : '▼';
-                         }
-                     });
-                 }
-             });
+            const menuItemsWithChildren = mainNav.querySelectorAll('li.menu-item-has-children');
+            menuItemsWithChildren.forEach(item => {
+                let subToggle = item.querySelector('.submenu-toggle');
+                if (!subToggle) {
+                    subToggle = document.createElement('span'); subToggle.classList.add('submenu-toggle'); subToggle.innerHTML = ' <span class="arrow">▼</span>';
+                    item.querySelector('a').after(subToggle);
+                    subToggle.addEventListener('click', (event) => {
+                        event.stopPropagation(); const parentLi = event.target.closest('li.menu-item-has-children'); parentLi.classList.toggle('submenu-open');
+                        const arrow = subToggle.querySelector('.arrow'); if (arrow) { arrow.innerHTML = parentLi.classList.contains('submenu-open') ? '▲' : '▼'; }
+                    });
+                }
+                // Prevent main link navigation if it has submenu and we are on mobile
+                const link = item.querySelector('a');
+                if(link) {
+                   link.addEventListener('click', (event) => {
+                       if (window.innerWidth <= 1024 && item.classList.contains('menu-item-has-children')) {
+                            event.preventDefault(); // Prevent navigation, let the toggle handle it
+                            // Optional: trigger the toggle click if user clicks the link itself
+                            item.querySelector('.submenu-toggle')?.click();
+                       }
+                   });
+                }
+            });
         }
+
+        // --- Profile Dropdown Toggle ---
+        if (profileTrigger && profileDropdown) {
+            const logoutBtn = profileDropdown.querySelector('#logout-button');
+            profileTrigger.addEventListener('click', (event) => {
+                event.stopPropagation();
+                const isOpen = profileDropdown.classList.toggle('open');
+                profileTrigger.setAttribute('aria-expanded', isOpen);
+                profileDropdown.style.display = isOpen ? 'block' : 'none';
+            });
+            if(logoutBtn) { // Add listener to the button inside the dropdown
+                 logoutBtn.addEventListener('click', () => {
+                     auth.signOut().catch((error) => { console.error('Sign out error:', error); });
+                 });
+            }
+            document.addEventListener('click', (event) => {
+                if (!profileTrigger.contains(event.target) && !profileDropdown.contains(event.target) && profileDropdown.classList.contains('open')) {
+                    profileDropdown.classList.remove('open'); profileTrigger.setAttribute('aria-expanded', 'false'); profileDropdown.style.display = 'none';
+                }
+            });
+        }
+
 
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
             if(currentYearSpan) { currentYearSpan.textContent = new Date().getFullYear(); }
-            // Auth listener handles initial UI state based on login
+            // Auth listener handles initial UI state
         });
 
     </script>
