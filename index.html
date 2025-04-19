@@ -21,7 +21,8 @@
     <header class="header-container">
         <div class="site-branding">
             <div class="logo-container">
-                <img src="images/logo.png" alt="شعار منارة الحفظ"> </div>
+                <img src="https://lh3.googleusercontent.com/d/1atLb1rloGmQVKXmQgfwTVMne8RMRWGvf" alt="شعار منارة الحفظ">
+            </div>
             <div class="site-name">
                 <span>منارة</span>
                 <span>الحفظ</span>
@@ -29,49 +30,47 @@
         </div>
 
         <nav class="main-navigation" id="main-nav">
-             <ul>
-                 <li><a href="index.html">الرئيسية</a></li>
+            <ul>
+                <li><a href="index.html">الرئيسية</a></li>
+                <li class="menu-item-has-children"><a href="#about-site">التعريف بالموقع</a></li>
+                <li class="menu-item-has-children">
+                    <a href="#">خطط الحفظ</a>
+                    <ul class="dropdown">
+                        <li><a href="#">خطة صفحة يومياً</a></li>
+                        <li><a href="#">خطة صفحتين يومياً</a></li>
+                        <li><a href="#">خطة 3 صفحات يومياً</a></li>
+                        <li><a href="#">خطة 4 صفحات يومياً</a></li>
+                    </ul>
+                </li>
+                <li class="menu-item-has-children">
+                    <a href="#">الدورات والبرامج</a>
+                    <ul class="dropdown">
+                        <li><a href="#">دورات التجويد</a></li>
+                        <li><a href="#">برامج المراجعة</a></li>
+                    </ul>
+                </li>
+                <li class="menu-item-has-children">
+                    <a href="#">الخرائط الذهنية</a>
+                    <ul class="dropdown">
+                        <li><a href="#">خرائط السور</a></li>
+                        <li><a href="#">خرائط المتشابهات</a></li>
+                    </ul>
+                </li>
                  <li class="menu-item-has-children">
-                     <a href="#about-site">التعريف بالموقع</a>
-                 </li>
-                 <li class="menu-item-has-children">
-                     <a href="#">خطط الحفظ</a>
+                    <a href="#">المسابقات</a>
                      <ul class="dropdown">
-                         <li><a href="#">خطة صفحة يومياً</a></li>
-                         <li><a href="#">خطة صفحتين يومياً</a></li>
-                         <li><a href="#">خطة 3 صفحات يومياً</a></li>
-                         <li><a href="#">خطة 4 صفحات يومياً</a></li>
-                     </ul>
-                 </li>
-                 <li class="menu-item-has-children">
-                     <a href="#">الدورات والبرامج</a>
-                     <ul class="dropdown">
-                         <li><a href="#">دورات التجويد</a></li>
-                         <li><a href="#">برامج المراجعة</a></li>
-                     </ul>
-                 </li>
-                 <li class="menu-item-has-children">
-                     <a href="#">الخرائط الذهنية</a>
-                     <ul class="dropdown">
-                         <li><a href="#">خرائط السور</a></li>
-                         <li><a href="#">خرائط المتشابهات</a></li>
-                     </ul>
-                 </li>
-                  <li class="menu-item-has-children">
-                     <a href="#">المسابقات</a>
-                      <ul class="dropdown">
-                          <li><a href="#">مسابقة رمضان</a></li>
-                          <li><a href="#">المسابقة الشهرية</a></li>
-                     </ul>
-                 </li>
-                 <li class="menu-item-has-children">
-                     <a href="#">التسجيل</a>
-                     <ul class="dropdown">
-                         <li><a href="plangen2.html">تسجيل طالب (بدء الخطة)</a></li>
-                         <li><a href="#">تسجيل معلم</a></li>
-                     </ul>
-                 </li>
-             </ul>
+                         <li><a href="#">مسابقة رمضان</a></li>
+                         <li><a href="#">المسابقة الشهرية</a></li>
+                    </ul>
+                </li>
+                <li class="menu-item-has-children">
+                    <a href="#">التسجيل</a>
+                    <ul class="dropdown">
+                        <li><a href="plangen2.html">تسجيل طالب (بدء الخطة)</a></li>
+                        <li><a href="#">تسجيل معلم</a></li>
+                    </ul>
+                </li>
+            </ul>
         </nav>
 
         <div class="header-right-controls">
@@ -79,27 +78,25 @@
                 <button id="google-signin-btn" class="google-signin-btn" style="display: inline-block;">
                     تسجيل الدخول
                 </button>
-                 <div id="user-profile-area" style="display: none;">
-                     <button type="button" id="user-profile-trigger" aria-expanded="false" aria-controls="profile-dropdown">
-                         <img id="user-photo" src="images/avatar_placeholder.png" alt="صورة المستخدم">
-                         <div class="user-info">
-                             <span id="user-name">أهلاً بك</span>
-                             <span id="student-level-title" style="display: none;"></span>
-                         </div>
-                         <span class="profile-arrow">▼</span>
-                     </button>
-                     <div id="profile-dropdown" class="profile-dropdown-menu">
-                         <ul>
-                             <li><button id="logout-button" type="button">تسجيل الخروج</button></li>
-                         </ul>
-                     </div>
-                 </div>
-                  </div>
+                <div id="user-profile-area" style="display: none;">
+                    <button type="button" id="user-profile-trigger" aria-expanded="false" aria-controls="profile-dropdown">
+                        <img id="user-photo" src="images/avatar_placeholder.png" alt="صورة المستخدم"> <div class="user-info">
+                            <span id="user-name">أهلاً بك</span>
+                            <span id="student-level-title" style="display: none;"></span>
+                        </div>
+                        <span class="profile-arrow">▼</span>
+                    </button>
+                    <div id="profile-dropdown" class="profile-dropdown-menu">
+                        <ul>
+                            <li><button id="logout-button" type="button">تسجيل الخروج</button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
             <button class="mobile-menu-toggle" aria-label="فتح القائمة" aria-expanded="false" aria-controls="main-nav">
                 ☰
             </button>
         </div>
-
     </header>
 
     <main>
@@ -113,33 +110,34 @@
                          </div>
                  </div>
                  <div class="hero-image">
-                     <img src="images/hero-illustration.png" alt="رسم توضيحي لحفظ القرآن"> </div>
+                     <img src="https://lh3.googleusercontent.com/d/1RyJNkHiGo4eESNzd2CjKfEgDnVkQaSul" alt="رسم توضيحي لحفظ القرآن">
+                 </div>
              </div>
         </section>
 
         <section id="about-site" class="content-section">
              <h2>التعريف بالموقع</h2>
-            <p> منارة الحفظ هي منصة إلكترونية تطوعية تهدف لتيسير حفظ القرآن الكريم وعلومه ومراجعته للمسلمين حول العالم عبر خطط تفاعلية وأدوات متابعة حديثة. نسعى لتوفير بيئة محفزة ومنظمة تساعدك على الالتزام والمداومة على وردك القرآني. </p>
+             <p> منارة الحفظ هي منصة إلكترونية تطوعية تهدف لتيسير حفظ القرآن الكريم وعلومه ومراجعته للمسلمين حول العالم عبر خطط تفاعلية وأدوات متابعة حديثة. نسعى لتوفير بيئة محفزة ومنظمة تساعدك على الالتزام والمداومة على وردك القرآني. </p>
         </section>
 
         <section class="services-section content-section">
              <h2>خدماتنا</h2>
-            <div class="services-grid">
-                <div class="service-item"><div class="service-icon"><span>📅</span></div><h3>خطط حفظ تفاعلية</h3><p>خطط يومية تلقائية للحفظ والمراجعة والربط تناسب مستواك.</p></div>
-                <div class="service-item"><div class="service-icon"><span>📊</span></div><h3>متابعة دقيقة للتقدم</h3><p>إحصائيات وتقويم مرئي لمتابعة إنجازك وصفحاتك المحفوظة.</p></div>
-                <div class="service-item"><div class="service-icon"><span>✨</span></div><h3>تحفيز وتشجيع</h3><p>نظام ألقاب ومستويات وتتبع للإنجاز المتتالي لزيادة حماسك.</p></div>
-                <div class="service-item"><div class="service-icon"><span>🧠</span></div><h3>أدوات مساعدة</h3><p>إمكانية إضافة خرائط ذهنية ومسابقات وروابط مفيدة.</p></div>
-            </div>
+             <div class="services-grid">
+                 <div class="service-item"><div class="service-icon"><span>📅</span></div><h3>خطط حفظ تفاعلية</h3><p>خطط يومية تلقائية للحفظ والمراجعة والربط تناسب مستواك.</p></div>
+                 <div class="service-item"><div class="service-icon"><span>📊</span></div><h3>متابعة دقيقة للتقدم</h3><p>إحصائيات وتقويم مرئي لمتابعة إنجازك وصفحاتك المحفوظة.</p></div>
+                 <div class="service-item"><div class="service-icon"><span>✨</span></div><h3>تحفيز وتشجيع</h3><p>نظام ألقاب ومستويات وتتبع للإنجاز المتتالي لزيادة حماسك.</p></div>
+                 <div class="service-item"><div class="service-icon"><span>🧠</span></div><h3>أدوات مساعدة</h3><p>إمكانية إضافة خرائط ذهنية ومسابقات وروابط مفيدة.</p></div>
+             </div>
         </section>
 
         <section class="features-section content-section alt-background">
-             <h2>مميزات الموقع</h2>
-             <div class="features-grid">
-                 <div class="feature-item"><div class="feature-icon-circle"><span>🎯</span></div><h3>التركيز والمنهجية</h3><p>نوفر لك خطة واضحة ومنظمة تساعدك على التركيز في حفظك ومراجعتك.</p></div>
-                 <div class="feature-item"><div class="feature-icon-circle"><span>🤝</span></div><h3>المرونة</h3><p>تستطيع تسجيل الأعذار وتتأقلم الخطة تلقائياً مع ظروفك.</p></div>
-                 <div class="feature-item"><div class="feature-icon-circle"><span>💖</span></div><h3>التحفيز الذاتي</h3><p>نظام المستويات والألقاب يساعدك على مراقبة تطورك والاحتفاء بإنجازك.</p></div>
-                 <div class="feature-item"><div class="feature-icon-circle"><span>⏳</span></div><h3>توفير الوقت</h3><p>لا حاجة لحساب الصفحات أو المراجعات، المنصة تقوم بذلك نيابة عنك.</p></div>
-             </div>
+              <h2>مميزات الموقع</h2>
+              <div class="features-grid">
+                  <div class="feature-item"><div class="feature-icon-circle"><span>🎯</span></div><h3>التركيز والمنهجية</h3><p>نوفر لك خطة واضحة ومنظمة تساعدك على التركيز في حفظك ومراجعتك.</p></div>
+                  <div class="feature-item"><div class="feature-icon-circle"><span>🤝</span></div><h3>المرونة</h3><p>تستطيع تسجيل الأعذار وتتأقلم الخطة تلقائياً مع ظروفك.</p></div>
+                  <div class="feature-item"><div class="feature-icon-circle"><span>💖</span></div><h3>التحفيز الذاتي</h3><p>نظام المستويات والألقاب يساعدك على مراقبة تطورك والاحتفاء بإنجازك.</p></div>
+                  <div class="feature-item"><div class="feature-icon-circle"><span>⏳</span></div><h3>توفير الوقت</h3><p>لا حاجة لحساب الصفحات أو المراجعات، المنصة تقوم بذلك نيابة عنك.</p></div>
+              </div>
         </section>
 
         <section id="plan-setup-section">
@@ -151,14 +149,14 @@
              </section>
 
         <section class="stats-section content-section">
-             <h2>منارة الحفظ بالأرقام</h2>
-             <div class="stats-grid">
-                 <div class="stat-item"><span class="stat-icon">📊</span><span class="stat-number">1000+</span><span class="stat-title">خطة تم إنشاؤها</span></div>
-                 <div class="stat-item"><span class="stat-icon">🧑‍🎓</span><span class="stat-number">500+</span><span class="stat-title">طالب ملتزم</span></div>
-                 <div class="stat-item"><span class="stat-icon">📄</span><span class="stat-number">5000+</span><span class="stat-title">صفحة تم حفظها</span></div>
-                 <div class="stat-item"><span class="stat-icon">🌟</span><span class="stat-number">100+</span><span class="stat-title">مستوى تم بلوغه</span></div>
-             </div>
-         </section>
+              <h2>منارة الحفظ بالأرقام</h2>
+              <div class="stats-grid">
+                  <div class="stat-item"><span class="stat-icon">📊</span><span class="stat-number">1000+</span><span class="stat-title">خطة تم إنشاؤها</span></div>
+                  <div class="stat-item"><span class="stat-icon">🧑‍🎓</span><span class="stat-number">500+</span><span class="stat-title">طالب ملتزم</span></div>
+                  <div class="stat-item"><span class="stat-icon">📄</span><span class="stat-number">5000+</span><span class="stat-title">صفحة تم حفظها</span></div>
+                  <div class="stat-item"><span class="stat-icon">🌟</span><span class="stat-number">100+</span><span class="stat-title">مستوى تم بلوغه</span></div>
+              </div>
+          </section>
 
         <div id="dashboard-link-container" style="text-align: center; padding: 20px 0;"></div>
 
@@ -207,73 +205,11 @@
         // --- Level/Title Calculation & Display ---
         const levelTitles = ["ابدأ رحلتك!", "🌱 غرسة الإيمان", "✨ بادرة أمل", "🏃 ساعٍ للعلا", "⭐ نجم صاعد", "💪 مثابر مجتهد", "🧭 على الدرب", "💯 صاحب السبعين", "🚀 انطلاقة قوية", "💎 جوهرة مصقولة", "👑 صاحب المئة يوم", "📖 رفيق القرآن", "🕯️ منارة هدى", "🏔️ قمة شامخة", "🌳 شجرة طيبة", "⏳ عابر منتصف الطريق", "🎯 دقة والتزام", "🌊 بحر زاخر", "🌟 كوكب دري", "🧭 بوصلة الحق", "💯💯 المئتان لا تقفان!", "🤲 قلب خاشع", "🕊️ روح مطمئنة", "💖 محب للرحمن", "🙏 عبد شكور", "💡 بصيرة نافذة", "🕌 معمّر بيوت الله", "🌙 هلال الكمال", "✨ نور على نور", "🏁 قاب قوسين أو أدنى", "🏆 فارس الثلاثمائة", "🎉 مقترب من الختام", "🎊 خاتم مبارك"];
         const levelIcons = { 10: '👑', 20: '💯', 30: '🏆', 32: '🎊' };
-
-        function calculateLevelTitle(tableRows) {
-            // ... (Same calculation logic as before) ...
-             if (!tableRows || tableRows.length === 0) return { title: levelTitles[0], icon: '' };
-             const sortedRows = [...tableRows].sort((a, b) => new Date(a.displayDate) - new Date(b.displayDate));
-             let currentStreak = 0; let streakBroken = false; const todayStr = formatDate(new Date()); let tempCurrentStreak = 0;
-             for (let i = sortedRows.length - 1; i >= 0; i--) {
-                 const row = sortedRows[i]; if (row.displayDate > todayStr) continue;
-                 if (row.type === 'plan' && row.state?.completed) { if (!streakBroken) { tempCurrentStreak++; } }
-                 else if (row.type === 'excuse') { continue; }
-                 else { streakBroken = true; if (row.displayDate === todayStr) { tempCurrentStreak = 0; } break; }
-             }
-             currentStreak = tempCurrentStreak;
-             const levelIndex = Math.min(Math.floor(currentStreak / 10), levelTitles.length - 1);
-             const title = levelTitles[levelIndex] || levelTitles[0]; const icon = levelIcons[levelIndex] || '';
-             return { title: title, icon: icon };
-        }
-
-        async function displayStudentLevel(uid) {
-            // ... (Same display logic as before) ...
-             if (!studentLevelTitleSpan) return; studentLevelTitleSpan.style.display = 'none';
-             try {
-                 const planRef = db.collection("quranPlans").doc(uid); const doc = await planRef.get();
-                 if (doc.exists) {
-                     const planData = doc.data();
-                     if (planData.tableRows) {
-                         const levelInfo = calculateLevelTitle(planData.tableRows);
-                         if (levelInfo && levelInfo.title) { studentLevelTitleSpan.textContent = `(${levelInfo.title} ${levelInfo.icon})`.trim(); studentLevelTitleSpan.style.display = 'block'; }
-                     }
-                 }
-             } catch (error) { console.error("Error fetching plan data for level title:", error); }
-        }
+        function calculateLevelTitle(tableRows) { /* ... Same calculation logic ... */ if (!tableRows || tableRows.length === 0) return { title: levelTitles[0], icon: '' }; const sortedRows = [...tableRows].sort((a, b) => new Date(a.displayDate) - new Date(b.displayDate)); let currentStreak = 0; let streakBroken = false; const todayStr = formatDate(new Date()); let tempCurrentStreak = 0; for (let i = sortedRows.length - 1; i >= 0; i--) { const row = sortedRows[i]; if (row.displayDate > todayStr) continue; if (row.type === 'plan' && row.state?.completed) { if (!streakBroken) { tempCurrentStreak++; } } else if (row.type === 'excuse') { continue; } else { streakBroken = true; if (row.displayDate === todayStr) { tempCurrentStreak = 0; } break; } } currentStreak = tempCurrentStreak; const levelIndex = Math.min(Math.floor(currentStreak / 10), levelTitles.length - 1); const title = levelTitles[levelIndex] || levelTitles[0]; const icon = levelIcons[levelIndex] || ''; return { title: title, icon: icon }; }
+        async function displayStudentLevel(uid) { /* ... Same display logic ... */ if (!studentLevelTitleSpan) return; studentLevelTitleSpan.style.display = 'none'; try { const planRef = db.collection("quranPlans").doc(uid); const doc = await planRef.get(); if (doc.exists) { const planData = doc.data(); if (planData.tableRows) { const levelInfo = calculateLevelTitle(planData.tableRows); if (levelInfo && levelInfo.title) { studentLevelTitleSpan.textContent = `(${levelInfo.title} ${levelInfo.icon})`.trim(); studentLevelTitleSpan.style.display = 'block'; } } } } catch (error) { console.error("Error fetching plan data for level title:", error); } }
 
         // --- UI Update Function (Handles Conditional Button & Profile) ---
-        function updateUIBasedOnLoginAndPlanState() {
-             if (ctaContainer) ctaContainer.innerHTML = '';
-            if (dashboardLinkContainer) dashboardLinkContainer.innerHTML = '';
-
-            if (currentUser) { // --- Logged IN ---
-                if(loginBtn) loginBtn.style.display = 'none';
-                if(userProfileArea) userProfileArea.style.display = 'block'; // Show profile area
-                if(profileTrigger){ if(userNameSpan) userNameSpan.textContent = currentUser.displayName || 'مستخدم'; if(userPhoto) userPhoto.src = currentUser.photoURL || 'images/avatar_placeholder.png'; }
-                displayStudentLevel(currentUser.uid);
-
-                if (hasExistingPlan) { // --- Has Plan ---
-                    if(planSetupSection) planSetupSection.style.display = 'none';
-                    if (ctaContainer) { ctaContainer.innerHTML = `<a href="dashboard.html" class="cta-button">الذهاب إلى لوحة المتابعة</a>`; }
-                } else { // --- No Plan ---
-                    if(planSetupSection) planSetupSection.style.display = 'block';
-                    if (ctaContainer) { ctaContainer.innerHTML = `<a href="#plan-setup-section" class="cta-button">اختر خطتك الآن</a>`; }
-                    if (planStartDateInput && !planStartDateInput.value) planStartDateInput.value = formatDate(new Date());
-                    updateConfirmButtonState();
-                }
-            } else { // --- Logged OUT ---
-                if(loginBtn) loginBtn.style.display = 'inline-block';
-                if(userProfileArea) userProfileArea.style.display = 'none';
-                if(planSetupSection) planSetupSection.style.display = 'none';
-                if (studentLevelTitleSpan) studentLevelTitleSpan.style.display = 'none';
-                if (dashboardLinkContainer) dashboardLinkContainer.innerHTML = '';
-                if (ctaContainer) {
-                    const loginPromptButtonHTML = `<button id="hero-login-btn" class="cta-button">سجل الدخول للبدء</button>`;
-                    ctaContainer.innerHTML = loginPromptButtonHTML;
-                    const heroLoginBtn = document.getElementById('hero-login-btn');
-                    if (heroLoginBtn) { heroLoginBtn.addEventListener('click', () => { const provider = new firebase.auth.GoogleAuthProvider(); auth.signInWithPopup(provider).catch(err => { console.error("Sign-in error:", err); alert("حدث خطأ أثناء تسجيل الدخول: " + err.message); }); }); }
-                }
-            }
-        }
+        function updateUIBasedOnLoginAndPlanState() { /* ... Same logic as before ... */ if (ctaContainer) ctaContainer.innerHTML = ''; if (dashboardLinkContainer) dashboardLinkContainer.innerHTML = ''; if (currentUser) { if(loginBtn) loginBtn.style.display = 'none'; if(userProfileArea) userProfileArea.style.display = 'block'; if(profileTrigger){ if(userNameSpan) userNameSpan.textContent = currentUser.displayName || 'مستخدم'; if(userPhoto) userPhoto.src = currentUser.photoURL || 'images/avatar_placeholder.png'; } displayStudentLevel(currentUser.uid); if (hasExistingPlan) { if(planSetupSection) planSetupSection.style.display = 'none'; if (ctaContainer) { ctaContainer.innerHTML = `<a href="dashboard.html" class="cta-button">الذهاب إلى لوحة المتابعة</a>`; } } else { if(planSetupSection) planSetupSection.style.display = 'block'; if (ctaContainer) { ctaContainer.innerHTML = `<a href="#plan-setup-section" class="cta-button">اختر خطتك الآن</a>`; } if (planStartDateInput && !planStartDateInput.value) planStartDateInput.value = formatDate(new Date()); updateConfirmButtonState(); } } else { if(loginBtn) loginBtn.style.display = 'inline-block'; if(userProfileArea) userProfileArea.style.display = 'none'; if(planSetupSection) planSetupSection.style.display = 'none'; if (studentLevelTitleSpan) studentLevelTitleSpan.style.display = 'none'; if (dashboardLinkContainer) dashboardLinkContainer.innerHTML = ''; if (ctaContainer) { const loginPromptButtonHTML = `<button id="hero-login-btn" class="cta-button">سجل الدخول للبدء</button>`; ctaContainer.innerHTML = loginPromptButtonHTML; const heroLoginBtn = document.getElementById('hero-login-btn'); if (heroLoginBtn) { heroLoginBtn.addEventListener('click', () => { const provider = new firebase.auth.GoogleAuthProvider(); auth.signInWithPopup(provider).catch(err => { console.error("Sign-in error:", err); alert("حدث خطأ أثناء تسجيل الدخول: " + err.message); }); }); } } } }
 
         // --- Other Functions (Confirm Button State, Save Initial Data) ---
         function updateConfirmButtonState() { if (!confirmPlanBtn) return; confirmPlanBtn.disabled = !(selectedPlanType && planStartDateInput?.value); }
@@ -306,39 +242,46 @@
             });
             document.addEventListener('click', (event) => { /* Close on outside click */ if (mainNav.classList.contains('mobile-menu-open') && !mainNav.contains(event.target) && !mobileMenuToggle.contains(event.target)) { mainNav.classList.remove('mobile-menu-open'); mobileMenuToggle.setAttribute('aria-expanded', 'false'); mobileMenuToggle.innerHTML = '☰'; } });
 
-            // === Mobile Submenu Toggle (Improved) ===
+             // === Mobile Submenu Toggle (Updated for better closing behavior) ===
              const menuItemsWithChildren = mainNav.querySelectorAll('li.menu-item-has-children');
              menuItemsWithChildren.forEach(item => {
                  let subToggle = item.querySelector('.submenu-toggle');
-                 if (!subToggle) { // Add toggle only if it doesn't exist
+                 if (!subToggle) {
                      subToggle = document.createElement('span'); subToggle.classList.add('submenu-toggle'); subToggle.innerHTML = '<span class="arrow">▼</span>';
-                     item.appendChild(subToggle); // Append to li instead of after a
+                     // Append directly to the li, so it's easier to manage layout with flex
+                     item.appendChild(subToggle);
 
                      subToggle.addEventListener('click', (event) => {
-                         event.stopPropagation(); // Prevent clicks on toggle bubbling up
-                         const parentLi = item; // Current li element
-                         const isOpen = parentLi.classList.toggle('submenu-open'); // Toggle current submenu
+                         event.stopPropagation();
+                         const parentLi = item;
+                         const currentlyOpen = parentLi.classList.contains('submenu-open');
 
-                         // Close other open submenus *at the same level*
-                         if (isOpen) {
-                             const parentUl = parentLi.parentElement; // Get the ul containing this li
-                             parentUl.querySelectorAll('li.menu-item-has-children.submenu-open').forEach(otherItem => {
-                                 if (otherItem !== parentLi) { // Don't close the one just opened
-                                     otherItem.classList.remove('submenu-open');
-                                     const otherToggle = otherItem.querySelector('.submenu-toggle .arrow');
-                                     if (otherToggle) otherToggle.innerHTML = '▼';
-                                 }
-                             });
-                         }
+                         // Close ALL other submenus first
+                         mainNav.querySelectorAll('li.menu-item-has-children.submenu-open').forEach(otherItem => {
+                             if (otherItem !== parentLi) { // Don't close the one we might be opening
+                                 otherItem.classList.remove('submenu-open');
+                                 const otherArrow = otherItem.querySelector('.submenu-toggle .arrow');
+                                 if (otherArrow) otherArrow.innerHTML = '▼';
+                             }
+                         });
 
-                         // Change arrow direction for the clicked toggle
+                         // Toggle the current submenu
+                         parentLi.classList.toggle('submenu-open');
                          const arrow = subToggle.querySelector('.arrow');
-                         if (arrow) arrow.innerHTML = isOpen ? '▲' : '▼';
+                         if (arrow) arrow.innerHTML = parentLi.classList.contains('submenu-open') ? '▲' : '▼';
                      });
+
+                      // Also allow clicking the main link text to toggle the submenu on mobile
+                      const link = item.querySelector('a');
+                      if(link && subToggle){
+                           link.addEventListener('click', (e) => {
+                               if(window.innerWidth <= 1024 && item.querySelector('.dropdown')) { // Check if it has a dropdown
+                                   e.preventDefault(); // Prevent link navigation
+                                   subToggle.click(); // Trigger the toggle click
+                               }
+                           });
+                      }
                  }
-                 // Optional: Allow clicking the link itself to also toggle (if desired)
-                 // const link = item.querySelector('a');
-                 // if(link && subToggle){ link.addEventListener('click', (e) => { if(window.innerWidth <= 1024) { e.preventDefault(); subToggle.click(); } });}
              });
         }
 
@@ -347,7 +290,7 @@
             const logoutBtn = profileDropdown.querySelector('#logout-button');
             profileTrigger.addEventListener('click', (event) => { event.stopPropagation(); const isOpen = profileDropdown.classList.toggle('open'); profileTrigger.setAttribute('aria-expanded', isOpen); /* CSS handles display */ });
             if(logoutBtn) { logoutBtn.addEventListener('click', () => { auth.signOut().catch((error) => { console.error('Sign out error:', error); }); }); }
-            document.addEventListener('click', (event) => { if (!profileTrigger.contains(event.target) && !profileDropdown.contains(event.target) && profileDropdown.classList.contains('open')) { profileDropdown.classList.remove('open'); profileTrigger.setAttribute('aria-expanded', 'false'); } });
+            document.addEventListener('click', (event) => { if (!profileTrigger?.contains(event.target) && !profileDropdown?.contains(event.target) && profileDropdown?.classList.contains('open')) { profileDropdown.classList.remove('open'); profileTrigger.setAttribute('aria-expanded', 'false'); } });
         }
 
         // --- Initial Load ---
