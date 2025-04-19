@@ -1,11 +1,12 @@
 /* ========================================
    ملف التنسيقات الرئيسي لـ "منارة الحفظ"
-   v3 - مع إصلاحات للموبايل وقائمة البروفايل
+   v4 - إصلاحات الموبايل، اسم مكدس، قائمة البروفايل
    ======================================== */
 
 /* --- General & Reset --- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Tajawal', 'Somar', sans-serif; direction: rtl; line-height: 1.7; background-color: #fafafa; color: #3a3a3a; font-size: 16px; overflow-x: hidden; }
+html { scroll-behavior: smooth; } /* Optional: Smooth scroll for # links */
+body { font-family: 'Tajawal', 'Somar', sans-serif; direction: rtl; line-height: 1.7; background-color: #fafafa; color: #3a3a3a; font-size: 16px; overflow-x: hidden; /* منع الانزياح الأفقي */ }
 .container { max-width: 1240px; margin: 0 auto; padding: 0 15px; }
 a { text-decoration: none; color: #0274be; transition: color 0.3s ease; }
 a:hover { color: #004de5; }
@@ -18,13 +19,17 @@ p { margin-bottom: 1.5em; color: #4B4F58; }
 
 /* --- Header Styles --- */
 .header-container { display: flex; justify-content: space-between; align-items: center; padding: 8px 25px; background-color: #ffffff; border-bottom: 1px solid #dbdee0; box-shadow: 0 1px 3px rgba(0,0,0,0.04); position: sticky; top: 0; z-index: 1000; }
-.site-branding { display: flex; align-items: center; gap: 10px; flex-shrink: 0; /* منع الانكماش الزائد */ }
+.site-branding { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .logo-container img { max-height: 55px; width: auto; }
-.site-name { font-size: 1.5em; font-weight: bold; color: #1a5276; white-space: nowrap; margin-right: 5px; } /* إضافة هامش بسيط */
+/* === تعديل: تنسيق اسم الموقع المكدس === */
+.site-name { font-weight: bold; color: #1a5276; text-align: right; line-height: 1.1; /* تقليل المسافة بين السطرين */ }
+.site-name span { display: block; /* جعل كل كلمة في سطر */ }
+.site-name span:first-child { font-size: 1.1em; /* "منارة" أكبر قليلاً */ }
+.site-name span:last-child { font-size: 0.9em; /* "الحفظ" أصغر قليلاً */ color: #555; /* لون أبهت قليلاً */ }
 
 /* --- Desktop Navigation Menu Styles --- */
-nav.main-navigation { margin: 0 auto; /* محاولة توسيط القائمة بين الشعار ومنطقة الدخول */ }
-nav.main-navigation ul { list-style: none; padding: 0; margin: 0; display: flex; align-items: center; gap: 35px; /* المسافة بين العناصر */ }
+nav.main-navigation { margin: 0 20px; /* إضافة هوامش أفقية بسيطة */ flex-grow: 1; /* السماح للقائمة بأخذ المساحة المتاحة */ display: flex; justify-content: center; /* توسيط القائمة */ }
+nav.main-navigation ul { list-style: none; padding: 0; margin: 0; display: flex; align-items: center; gap: 35px; }
 nav.main-navigation ul li { position: relative; }
 nav.main-navigation ul li a { text-decoration: none; color: #3a3a3a; padding: 20px 10px; display: block; font-weight: 700; font-size: 0.95em; position: relative; transition: color 0.3s ease; white-space: nowrap; }
 nav.main-navigation ul li.menu-item-has-children > a::after { content: '▼'; font-size: 0.6em; margin-right: 6px; display: inline-block; transition: transform 0.2s ease; vertical-align: middle; }
@@ -40,39 +45,39 @@ nav.main-navigation ul li .dropdown li { width: 100%; }
 nav.main-navigation ul li .dropdown li a { padding: 12px 20px; white-space: nowrap; color: #3a3a3a; font-size: 0.9em; font-weight: normal; border: none; }
 nav.main-navigation ul li .dropdown li a::before { display: none; }
 nav.main-navigation ul li .dropdown li a:hover { background-color: #f5f5f5; color: #0274be; }
+/* === إخفاء مؤشر الموبايل على الحاسوب === */
+.submenu-toggle { display: none !important; }
 
 /* --- Header Right Controls (Auth + Mobile Toggle) --- */
-.header-right-controls { display: flex; align-items: center; gap: 15px; }
+.header-right-controls { display: flex; align-items: center; gap: 15px; flex-shrink: 0; /* منع الانكماش الزائد */ }
 
 /* --- Auth Area Styles --- */
-.auth-area { display: flex; align-items: center; gap: 10px; flex-shrink: 0; /* منع الانكماش */ }
-
+.auth-area { display: flex; align-items: center; gap: 10px; }
 #google-signin-btn { padding: 7px 15px; font-size: 0.85em; border: none; border-radius: 51px; cursor: pointer; transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease; font-family: inherit; font-weight: bold; white-space: nowrap; background-color: #c18647; color: white; }
 #google-signin-btn:hover { background-color: #a96d34; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
-/* Profile Area */
-#user-profile-area { position: relative; /* Needed for dropdown positioning */ }
+/* Profile Area & Dropdown */
+#user-profile-area { position: relative; }
 #user-profile-trigger { display: flex; align-items: center; gap: 8px; background: none; border: none; padding: 5px; cursor: pointer; border-radius: 4px; transition: background-color 0.2s ease; }
 #user-profile-trigger:hover { background-color: rgba(0,0,0,0.05); }
 #user-profile-trigger img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #aed6f1; flex-shrink: 0; }
 #user-profile-trigger .user-info { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.2; }
 #user-profile-trigger span#user-name { font-weight: bold; font-size: 0.9em; color: #3a3a3a; white-space: nowrap; }
-#user-profile-trigger #student-level-title { font-weight: normal; color: #1e8449; font-size: 0.75em; background-color: #e8f5e9; padding: 1px 6px; border-radius: 10px; border: 1px solid #a9dfbf; white-space: nowrap; margin-top: 2px; }
+#user-profile-trigger #student-level-title { font-weight: normal; color: #1e8449; font-size: 0.75em; background-color: #e8f5e9; padding: 1px 6px; border-radius: 10px; border: 1px solid #a9dfbf; white-space: nowrap; margin-top: 2px; display: block; }
 #user-profile-trigger .profile-arrow { font-size: 0.7em; margin-right: 5px; transition: transform 0.3s ease; }
 #user-profile-trigger[aria-expanded="true"] .profile-arrow { transform: rotate(180deg); }
 
-/* Profile Dropdown Menu */
-.profile-dropdown-menu { display: none; position: absolute; top: calc(100% + 5px); left: 0; /* محاذاة لليسار */ min-width: 160px; background-color: white; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); z-index: 1010; padding: 5px 0; }
+.profile-dropdown-menu { display: none; position: absolute; top: calc(100% + 5px); left: 0; min-width: 160px; background-color: white; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); z-index: 1010; padding: 5px 0; }
 .profile-dropdown-menu.open { display: block; }
 .profile-dropdown-menu ul { list-style: none; padding: 0; margin: 0; }
-.profile-dropdown-menu ul li button, .profile-dropdown-menu ul li a { display: block; width: 100%; padding: 8px 15px; background: none; border: none; text-align: right; color: #333; font-size: 0.9em; cursor: pointer; white-space: nowrap; font-family: 'Tajawal', sans-serif; /* Ensure font consistency */ }
+.profile-dropdown-menu ul li button, .profile-dropdown-menu ul li a { display: block; width: 100%; padding: 8px 15px; background: none; border: none; text-align: right; color: #333; font-size: 0.9em; cursor: pointer; white-space: nowrap; font-family: 'Tajawal', sans-serif; }
 .profile-dropdown-menu ul li button:hover, .profile-dropdown-menu ul li a:hover { background-color: #f0f0f0; color: #000; }
 
 /* --- Mobile Menu Toggle Button --- */
 .mobile-menu-toggle { display: none; background: none; border: none; font-size: 1.8em; color: #1a5276; cursor: pointer; padding: 5px; line-height: 1; z-index: 1002; }
 
 /* --- Hero Section --- */
-.hero-section { display: flex; align-items: center; justify-content: center; min-height: calc(80vh - 70px); padding: 40px 20px; background-color: #f0f4f8; overflow: hidden; }
+.hero-section { display: flex; align-items: center; justify-content: center; min-height: calc(80vh - 70px); padding: 40px 20px; background-color: #f0f4f8; /* Placeholder BG */ overflow: hidden; }
 .hero-content { display: flex; align-items: center; justify-content: space-between; gap: 40px; max-width: 1100px; width: 100%; }
 .hero-text { flex: 1; text-align: right; padding-left: 20px; }
 .hero-text h1 { font-family: 'Amiri', serif; font-size: 2.8em; color: #1a5276; margin-bottom: 15px; line-height: 1.3; }
@@ -154,47 +159,57 @@ footer.main-footer a:hover { color: #5dade2; }
    Mobile Responsiveness
    ======================================== */
 
-/* Medium Screens (Tablets, Smaller Laptops) */
+/* Medium Screens & Smaller (Tablets -> Mobile) */
 @media (max-width: 1024px) {
-    .header-container { padding: 8px 15px; position: relative; }
-    .site-name { font-size: 1.3em; }
-    .logo-container img { max-height: 50px; }
-
-    /* Hide Desktop Nav, Show Toggle */
-    nav.main-navigation {
-        display: none; position: absolute; top: 100%; right: 0; left: 0;
-        width: 100%; background-color: #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        border-top: 1px solid #eee; max-height: calc(100vh - 65px); /* Adjust based on header height */
-        overflow-y: auto; z-index: 999; /* Below header but above content */
+    /* === Header Adjustments === */
+    .header-container {
+        padding: 8px 15px;
+        position: relative; /* Ensures mobile menu positions correctly */
+        flex-wrap: wrap; /* Allow wrapping for smaller screens */
+        justify-content: space-between; /* Keep space between branding and controls */
     }
-    nav.main-navigation.mobile-menu-open { display: block; }
+    .site-branding { flex-grow: 1; } /* Allow branding to take available space */
+    .site-name { /* Optional: Slightly smaller stacked name on tablets */
+         font-size: 1.0em; /* Adjust first line */
+         line-height: 1.2;
+     }
+     .site-name span:last-child { font-size: 0.8em; }
+
+    /* Hide Desktop Nav, Position Mobile Nav */
+    nav.main-navigation {
+        display: none; /* Hidden until toggled */
+        order: 3; /* Place below branding and controls */
+        width: 100%; /* Full width */
+        position: absolute; top: 100%; right: 0; left: 0; /* Position below header */
+        background-color: #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        border-top: 1px solid #eee; max-height: calc(100vh - 65px);
+        overflow-y: auto; z-index: 999;
+    }
+    nav.main-navigation.mobile-menu-open { display: block; } /* Show when toggled */
     nav.main-navigation ul { flex-direction: column; align-items: stretch; gap: 0; padding: 0; }
     nav.main-navigation ul li { width: 100%; border-bottom: 1px solid #f0f0f0; }
     nav.main-navigation ul li:last-child { border-bottom: none; }
     nav.main-navigation ul li a { padding: 14px 20px; font-size: 1em; font-weight: bold; }
-    nav.main-navigation ul li a::before { display: none; }
-    nav.main-navigation ul li.menu-item-has-children > a::after { display: none; }
+    nav.main-navigation ul li a::before,
+    nav.main-navigation ul li.menu-item-has-children > a::after { display: none; } /* Hide desktop indicators */
 
-    /* Mobile Dropdowns */
-    .submenu-toggle { display: inline-block; /* Show toggle */ padding: 14px 20px; cursor: pointer; margin-left: auto; user-select: none; }
+    /* Mobile Dropdowns & Toggle */
+    .submenu-toggle { display: inline-flex; /* Use flex to center arrow */ align-items: center; justify-content: center; padding: 14px 15px; cursor: pointer; user-select: none; margin-left: auto; /* Push to the left */ }
     .submenu-toggle .arrow { font-size: 0.8em; color: #555; display: inline-block; transition: transform 0.2s ease; }
     li.submenu-open > .submenu-toggle .arrow { transform: rotate(180deg); color: #0274be; }
     nav.main-navigation ul li.menu-item-has-children { display: flex; justify-content: space-between; align-items: center; }
-    nav.main-navigation ul li.menu-item-has-children > a { flex-grow: 1; padding-right: 20px; /* Indent main link slightly */ }
-    nav.main-navigation ul li .dropdown { display: none; position: static; box-shadow: none; border: none; border-top: 1px solid #eee; padding: 0; min-width: unset; background-color: #f8f9fa; opacity: 1; visibility: visible; transform: none; transition: none; }
+    nav.main-navigation ul li.menu-item-has-children > a { flex-grow: 1; padding-left: 5px; } /* Allow space for toggle */
+    nav.main-navigation ul li .dropdown { display: none; position: static; box-shadow: none; border: none; border-top: 1px solid #eee; padding: 0; min-width: unset; background-color: #f8f9fa; opacity: 1; visibility: visible; transform: none; transition: none; padding-right: 15px; /* Indentation */ }
     nav.main-navigation ul li.submenu-open > .dropdown { display: block; }
-    nav.main-navigation ul li .dropdown li a { padding: 10px 35px 10px 20px; /* Increased right padding for sub-items */ color: #454545; font-size: 0.9em; font-weight: normal; }
+    nav.main-navigation ul li .dropdown li { border-bottom: 1px solid #e9ecef; }
+    nav.main-navigation ul li .dropdown li:last-child { border-bottom: none; }
+    nav.main-navigation ul li .dropdown li a { padding: 10px 15px 10px 0; color: #454545; font-size: 0.9em; font-weight: normal; }
     nav.main-navigation ul li .dropdown li a:hover { background-color: #e9ecef; }
 
-    /* Show Mobile Toggle Button */
-    .mobile-menu-toggle { display: block; }
-
-    /* Adjust Auth Area for more space */
-    .auth-area { gap: 5px; }
-    #user-profile-trigger { padding: 3px; gap: 5px; }
-    #user-profile-trigger img { width: 32px; height: 32px; }
-    #user-profile-trigger span#user-name { font-size: 0.85em; }
-    #user-profile-trigger #student-level-title { font-size: 0.7em; }
+    /* Mobile Toggle Button */
+    .mobile-menu-toggle { display: block; order: 2; /* Place it after auth area in flow */ }
+    .header-right-controls { /* Ensure this container wraps auth and toggle nicely */ order: 1; margin-left: 0; /* Reset margin if needed */ }
+    .auth-area { flex-shrink: 0; /* Prevent excessive shrinking */ }
 
     /* Hero section adjustments */
     .hero-content { flex-direction: column; text-align: center; }
@@ -208,20 +223,29 @@ footer.main-footer a:hover { color: #5dade2; }
     .services-grid, .features-grid, .stats-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
     .plan-card { flex-basis: calc(50% - 20px); }
 
-    /* Fix content shift */
-    .content-section p { padding: 0 5px; /* Add slight horizontal padding */ }
-    #about-site p { /* Ensure text aligns center on mobile */ text-align: center; }
+    /* Fix content shift (General approach) */
+    .content-section p { padding: 0 5px; }
+    #about-site p { text-align: center; } /* Ensure center alignment */
+    main, .content-section { padding-left: 15px; padding-right: 15px; /* Ensure consistent padding */ }
 }
 
 /* Smaller Mobile Screens */
 @media (max-width: 768px) {
-    .site-name { font-size: 1.15em; }
+    .site-name { font-size: 1.0em; } /* Further reduce name size */
+    .site-name span:last-child { font-size: 0.75em; }
     .logo-container img { max-height: 40px; }
     .mobile-menu-toggle { font-size: 1.6em; }
 
-    /* Further adjustments for auth area if needed */
+    /* Auth Area Adjustments */
+    .header-right-controls { gap: 10px; } /* Space between auth and toggle */
+    .auth-area { gap: 5px; }
+    #google-signin-btn { padding: 6px 10px; font-size: 0.75em; }
+    #user-profile-trigger { padding: 2px; gap: 4px; }
     #user-profile-trigger img { width: 30px; height: 30px; }
     #user-profile-trigger span#user-name { font-size: 0.8em; }
+    #user-profile-trigger #student-level-title { font-size: 0.7em; }
+    #user-profile-trigger .profile-arrow { display: none; } /* Hide arrow on smaller mobiles */
+    .profile-dropdown-menu { left: auto; right:0; /* Align to right */ min-width: 140px; } /* Adjust dropdown position */
 
     h1 { font-size: 2em; }
     h2 { font-size: 1.6em; }
@@ -232,25 +256,24 @@ footer.main-footer a:hover { color: #5dade2; }
 
 /* Smallest Mobile Screens */
 @media (max-width: 480px) {
-    .header-container { justify-content: space-between; } /* Override potential center */
-    .site-branding { flex-grow: 0; } /* Don't allow branding to push others too much */
-    .header-right-controls { /* Container for auth and toggle */ margin-left: auto; /* Push to the right */ }
-    .auth-area { gap: 5px; /* Further reduce gap */ }
-    #google-signin-btn { padding: 5px 8px; font-size: 0.7em; }
-    #user-profile-trigger { padding: 2px; }
-    #user-profile-trigger img { width: 28px; height: 28px; }
-    /* Hide name and title on very small screens if needed */
-    /* #user-profile-trigger .user-info { display: none; } */
-    /* #user-profile-trigger .profile-arrow { display: none; } */
+    .header-container { padding: 8px 10px; } /* Reduce padding further */
+    .site-branding { /* Maybe hide name entirely? */ gap: 5px; }
+    .site-name { display: none; /* Hide name on very small screens */ }
+    .logo-container img { max-height: 35px; }
     .mobile-menu-toggle { font-size: 1.5em; }
+    .header-right-controls { gap: 8px; }
+    .auth-area { gap: 5px; }
+    #google-signin-btn { padding: 5px 8px; font-size: 0.7em; }
+    #user-profile-trigger img { width: 28px; height: 28px; }
+    #user-profile-trigger .user-info { display: none; } /* Hide name/title */
 
     .hero-text h1 { font-size: 1.7em; }
     .hero-text h2 { font-size: 1.1em; }
-    .hero-image img { max-width: 260px; }
+    .hero-image img { max-width: 240px; }
     .services-grid, .features-grid, .stats-grid { grid-template-columns: 1fr; }
     .plan-card { flex-basis: 90%; }
     .plan-setup-inputs { flex-direction: column; gap: 15px; }
-    .plan-setup-inputs input[type="date"], .plan-setup-inputs select { min-width: 200px; width: 80%; }
+    .plan-setup-inputs input[type="date"], .plan-setup-inputs select { min-width: 180px; width: 80%; }
     .cta-button, #hero-login-btn { padding: 10px 25px; font-size: 1em; }
     #confirmPlanBtn { padding: 12px 30px; font-size: 1em; }
 }
