@@ -3,48 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منارة الحفظ - الرئيسية</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <title>منارة الحفظ - الرئيسية</title> <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Somar:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
 
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
+
     <style>
-        /* --- CSS مؤقت للتوضيح --- */
-        /* سنحتاج لتطوير هذا بشكل كبير لاحقاً */
-        body { font-family: 'Tajawal', sans-serif; margin: 0; background-color: #f9f9f9; }
-        .header-container { display: flex; justify-content: space-between; align-items: center; padding: 10px 25px; background-color: #eaf2f8; border-bottom: 2px solid #aed6f1; }
-        .logo-container img { max-height: 50px; /* مثال */ }
-        .site-branding { display: flex; align-items: center; gap: 15px; }
-        .site-name { font-size: 1.5em; font-weight: bold; color: #1a5276; }
-        nav ul { list-style: none; padding: 0; margin: 0; display: flex; gap: 15px; }
-        nav ul li { position: relative; } /* للقوائم المنسدلة */
-        nav ul li a { text-decoration: none; color: #333; padding: 10px 5px; display: block; }
-        nav ul li a:hover { color: #2980b9; }
-        /* إخفاء القوائم المنسدلة مبدئياً */
-        nav ul li .dropdown { display: none; position: absolute; background-color: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); padding: 0; min-width: 180px; z-index: 100; border: 1px solid #eee; border-radius: 4px; }
-        nav ul li:hover .dropdown { display: block; }
-        nav ul li .dropdown li { width: 100%; }
-        nav ul li .dropdown li a { padding: 10px 15px; white-space: nowrap; }
-        nav ul li .dropdown li a:hover { background-color: #f1f1f1; }
-
-        .auth-area { display: flex; align-items: center; gap: 15px; }
-        #user-profile-area img { width: 40px; height: 40px; border-radius: 50%; border: 1px solid #ccc; }
-        #user-profile-area button { /* تنسيق زر الخروج */ padding: 5px 10px; cursor: pointer; }
-        .google-signin-btn { /* تنسيق زر الدخول */ padding: 8px 15px; cursor: pointer; background-color: #4285F4; color: white; border: none; border-radius: 4px; }
-        #student-level-title { font-weight: bold; color: #1e8449; font-size: 0.9em; }
-
-        main { padding: 20px; }
-        footer { text-align: center; padding: 20px; margin-top: 40px; background-color: #2c3e50; color: #ecf0f1; font-size: 0.9em; }
-        footer a { color: #3498db; }
-
-        /* تنسيق مبدئي لقسم إعداد الخطة - يمكن تحسينه */
-        #plan-setup-section { background-color: #fff; padding: 30px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #eee; text-align: center; }
-        #plan-setup-section h2 { color: #1a5276; }
-        /* ... (قد تحتاج لإضافة تنسيقات أخرى من ملفك الأصلي إذا أردت) ... */
-
+        /* Add some basic styles here if needed for immediate structure */
+        /* Example: Hide plan setup initially */
+        #plan-setup-section { display: none; }
     </style>
 </head>
 <body>
@@ -54,45 +26,48 @@
             <div class="logo-container">
                 <img src="images/logo-placeholder.png" alt="شعار منارة الحفظ" style="height: 50px;">
             </div>
-            <span class="site-name">منارة الحفظ</span>
-        </div>
+            <span class="site-name">منارة الحفظ</span> </div>
 
-        <nav>
+        <nav class="main-navigation">
             <ul>
                 <li><a href="index.html">الرئيسية</a></li>
                 <li>
-                    <a href="#about">عن منارة الحفظ</a>
-                    </li>
-                 <li>
+                    <a href="#about-site">التعريف بالموقع</a> </li>
+                <li>
                     <a href="#">خطط الحفظ</a>
                     <ul class="dropdown">
                         <li><a href="#">خطة صفحة يومياً</a></li>
                         <li><a href="#">خطة صفحتين يومياً</a></li>
                         <li><a href="#">خطة 3 صفحات يومياً</a></li>
-                         <li><a href="#">خطة 4 صفحات يومياً</a></li>
-                        </ul>
+                        <li><a href="#">خطة 4 صفحات يومياً</a></li>
+                    </ul>
                 </li>
-                 <li>
+                <li>
                     <a href="#">الدورات والبرامج</a>
-                     <ul class="dropdown">
+                    <ul class="dropdown">
                         <li><a href="#">دورات التجويد</a></li>
-                        <li><a href="#">برامج المراجعة المكثفة</a></li>
-                        </ul>
+                        <li><a href="#">برامج المراجعة</a></li>
+                    </ul>
                 </li>
-                 <li>
+                <li>
                     <a href="#">الخرائط الذهنية</a>
-                     <ul class="dropdown">
+                    <ul class="dropdown">
                         <li><a href="#">خرائط السور</a></li>
                         <li><a href="#">خرائط المتشابهات</a></li>
-                         </ul>
+                    </ul>
+                </li>
+                 <li>
+                    <a href="#">المسابقات</a> <ul class="dropdown">
+                         <li><a href="#">مسابقة رمضان</a></li>
+                         <li><a href="#">المسابقة الشهرية</a></li>
+                    </ul>
                 </li>
                 <li>
                     <a href="#">التسجيل</a>
-                     <ul class="dropdown">
-                        <li><a href="#">تسجيل طالب</a></li>
+                    <ul class="dropdown">
+                        <li><a href="plangen2.html">تسجيل طالب (بدء الخطة)</a></li>
                         <li><a href="#">تسجيل معلم</a></li>
-                        <li><a href="#">تسجيل مشرف</a></li>
-                        </ul>
+                         </ul>
                 </li>
                  </ul>
         </nav>
@@ -104,111 +79,159 @@
             <div id="user-profile-area" style="display: none; align-items: center; gap: 10px;">
                 <img id="user-photo" src="placeholder.png" alt="صورة المستخدم">
                 <span id="user-name">أهلاً بك</span>
-                <span id="student-level-title" style="display: none; margin-right: 10px;"></span>
+                <span id="student-level-title" style="display: none;"></span>
                 <button id="logout-button">تسجيل الخروج</button>
             </div>
-            <p id="welcome-message" style="display: none;">أهلاً بك!</p>
         </div>
     </header>
 
     <main>
-        <section class="hero-section" style="text-align: center; padding: 50px 20px; background-color: #d6eaf8;">
-             <h2>مرحباً بك في منارة الحفظ</h2>
-            <p>حيث التميز في تعليم القرآن وتجويده وحفظه، والإبداع في غرس قِيَمه.</p>
-             <div style="padding: 50px; background-color: #ccc; margin: 20px auto; max-width: 400px;">(صورة أو رسم توضيحي)</div>
+
+        <section class="hero-section">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>أهلاً بك في منارة الحفظ</h1>
+                    <h2>منصة إلكترونية لتعليم وحفظ القرآن الكريم وعلومه</h2>
+                    <p>والإبداع في غرس قيمه...</p>
+                    <a href="#plan-setup-section" class="cta-button">ابدأ خطتك الآن</a>
+                </div>
+                <div class="hero-image">
+                    <img src="images/hero-illustration-placeholder.png" alt="رسم توضيحي لحفظ القرآن">
+                </div>
+            </div>
         </section>
 
-        <section id="about" style="padding: 40px 20px;">
-            <h2 style="text-align: center;">تعريف بمنارة الحفظ</h2>
-            <p style="max-width: 800px; margin: 0 auto; text-align: center;">
-                منارة الحفظ هي منصة إلكترونية تطوعية تهدف لتيسير حفظ القرآن الكريم وعلومه ومراجعته للمسلمين حول العالم عبر خطط تفاعلية وأدوات متابعة حديثة... (أكمل النص هنا)
-            </p>
+        <section id="about-site" class="content-section">
+            <h2>التعريف بالموقع</h2>
+            <p>
+                منارة الحفظ هي منصة إلكترونية تطوعية تهدف لتيسير حفظ القرآن الكريم وعلومه ومراجعته للمسلمين حول العالم عبر خطط تفاعلية وأدوات متابعة حديثة. نسعى لتوفير بيئة محفزة ومنظمة تساعدك على الالتزام والمداومة على وردك القرآني.
+                </p>
             </section>
 
-        <section class="features-section" style="padding: 40px 20px; background-color: #eaf2f8;">
-            <h2 style="text-align: center;">خدماتنا ومميزاتنا</h2>
-            <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px; text-align: center;">
-                <div class="feature-item" style="flex-basis: 200px; padding: 15px; background-color: #fff; border-radius: 5px;">
-                     <div class="icon" style="font-size: 2em; margin-bottom: 10px;">📅</div>
+        <section class="services-section content-section">
+            <h2>خدماتنا ومميزاتنا</h2>
+            <div class="services-grid">
+                <div class="service-item">
+                    <div class="service-icon">
+                        <span>📅</span> </div>
                     <h3>خطط حفظ تفاعلية</h3>
-                    <p>خطط يومية تلقائية للحفظ والمراجعة والربط.</p>
+                    <p>خطط يومية تلقائية للحفظ والمراجعة والربط تناسب مستواك.</p>
                 </div>
-                <div class="feature-item" style="flex-basis: 200px; padding: 15px; background-color: #fff; border-radius: 5px;">
-                     <div class="icon" style="font-size: 2em; margin-bottom: 10px;">📊</div>
-                    <h3>متابعة التقدم</h3>
-                    <p>إحصائيات وتقويم مرئي لمتابعة إنجازك.</p>
+                <div class="service-item">
+                    <div class="service-icon">
+                        <span>📊</span> </div>
+                    <h3>متابعة دقيقة للتقدم</h3>
+                    <p>إحصائيات وتقويم مرئي لمتابعة إنجازك وصفحاتك المحفوظة.</p>
+                </div>
+                <div class="service-item">
+                     <div class="service-icon">
+                         <span>✨</span> </div>
+                    <h3>تحفيز وتشجيع</h3>
+                    <p>نظام ألقاب ومستويات وتتبع للإنجاز المتتالي لزيادة حماسك.</p>
                  </div>
-                <div class="feature-item" style="flex-basis: 200px; padding: 15px; background-color: #fff; border-radius: 5px;">
-                    <div class="icon" style="font-size: 2em; margin-bottom: 10px;">✨</div>
-                   <h3>تحفيز مستمر</h3>
-                   <p>نظام ألقاب ومستويات وتتبع للإنجاز المتتالي.</p>
-               </div>
-                <div class="feature-item" style="flex-basis: 200px; padding: 15px; background-color: #fff; border-radius: 5px;">
-                    <div class="icon" style="font-size: 2em; margin-bottom: 10px;">🤝</div>
-                   <h3>مجتمع داعم</h3>
-                   <p>(اختياري) إمكانية إضافة أقسام للتفاعل أو المنافسة.</p>
-               </div>
+                 <div class="service-item">
+                     <div class="service-icon">
+                        <span>🧠</span> </div>
+                    <h3>أدوات مساعدة</h3>
+                     <p>إمكانية إضافة خرائط ذهنية ومسابقات وروابط مفيدة (حسب الإضافات المستقبلية).</p>
+                </div>
                 </div>
         </section>
 
-         <section id="plan-setup-section" style="display: none;">
+        <section class="features-section content-section alt-background"> <h2>لماذا منارة الحفظ؟</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon-circle">
+                        <span>🎯</span> </div>
+                    <h3>التركيز والمنهجية</h3>
+                    <p>نوفر لك خطة واضحة ومنظمة تساعدك على التركيز في حفظك ومراجعتك.</p>
+                </div>
+                <div class="feature-item">
+                     <div class="feature-icon-circle">
+                        <span>🤝</span> </div>
+                    <h3>المرونة</h3>
+                    <p>تستطيع تسجيل الأعذار وتتأقلم الخطة تلقائياً مع ظروفك.</p>
+                </div>
+                 <div class="feature-item">
+                     <div class="feature-icon-circle">
+                        <span>💖</span> </div>
+                     <h3>التحفيز الذاتي</h3>
+                     <p>نظام المستويات والألقاب يساعدك على مراقبة تطورك والاحتفاء بإنجازك.</p>
+                </div>
+                 <div class="feature-item">
+                     <div class="feature-icon-circle">
+                        <span>⏳</span> </div>
+                     <h3>توفير الوقت</h3>
+                     <p>لا حاجة لحساب الصفحات أو المراجعات، المنصة تقوم بذلك نيابة عنك.</p>
+                </div>
+                 </div>
+        </section>
+
+        <section id="plan-setup-section">
              <h2>إعداد خطتك لأول مرة</h2>
             <p>يرجى اختيار الخطة المناسبة وتحديد تاريخ البدء.</p>
-            <div class="plan-selection-area">
-                <div class="plans-container" style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px;">
-                     <div class="plan-card" data-plan-type="2" style="border: 1px solid #ddd; padding: 20px; flex-basis: 200px; cursor: pointer;">
-                        <h3>خطة حفظ صفحتين يوميًا</h3>
+             <div class="plan-selection-area">
+                 <div class="plans-container">
+                     <div class="plan-card" data-plan-type="2"> <h3>خطة حفظ صفحتين يوميًا</h3>
                          <p>الخطة الأساسية والموصى بها.</p>
-                         <span class="plan-link" style="color: #2980b9; font-weight: bold; margin-top: 10px; display: block;">اختر هذه الخطة</span>
-                    </div>
+                         <span class="plan-link">اختر هذه الخطة</span>
+                     </div>
                      </div>
              </div>
-            <div class="plan-setup-inputs" style="margin-top: 20px;">
-                 <label for="planStartDate">تاريخ البدء:</label>
-                 <input type="date" id="planStartDate" required>
-                <label for="planRepetitionMax">التكرارات:</label>
-                 <select id="planRepetitionMax">
-                    <option value="20" selected>20</option>
-                    <option value="30">30</option>
-                    <option value="40">40</option>
-                 </select>
+             <div class="plan-setup-inputs">
+                <div>
+                    <label for="planStartDate">تاريخ البدء:</label>
+                    <input type="date" id="planStartDate" required>
+                 </div>
+                 <div>
+                     <label for="planRepetitionMax">عدد التكرارات المفضل:</label>
+                    <select id="planRepetitionMax">
+                        <option value="20" selected>20</option>
+                        <option value="30">30</option>
+                        <option value="40">40</option>
+                    </select>
+                 </div>
              </div>
-            <button id="confirmPlanBtn" disabled style="margin-top: 20px; padding: 10px 20px; cursor: pointer;">تأكيد الخطة والبدء</button>
+             <button id="confirmPlanBtn" disabled>تأكيد الخطة والبدء</button>
+        </section>
+
+        <section class="stats-section content-section">
+             <h2>منارة الحفظ بالأرقام</h2>
+             <div class="stats-grid">
+                 <div class="stat-item">
+                     <span class="stat-icon">📊</span> <span class="stat-number">1000+</span> <span class="stat-title">خطة تم إنشاؤها</span>
+                 </div>
+                 <div class="stat-item">
+                    <span class="stat-icon">🧑‍🎓</span> <span class="stat-number">500+</span> <span class="stat-title">طالب ملتزم</span>
+                 </div>
+                 <div class="stat-item">
+                     <span class="stat-icon">📄</span> <span class="stat-number">5000+</span> <span class="stat-title">صفحة تم حفظها</span>
+                 </div>
+                 <div class="stat-item">
+                    <span class="stat-icon">🌟</span> <span class="stat-number">100+</span> <span class="stat-title">مستوى تم بلوغه</span>
+                </div>
+             </div>
          </section>
 
-         </main>
+        <div id="dashboard-link-container" style="text-align: center; padding: 20px;"></div>
+
+        </main>
 
     <footer class="main-footer">
         <p>&copy; <span id="current-year">2025</span> منارة الحفظ. جميع الحقوق محفوظة.</p>
         </footer>
 
-    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
-
     <script>
-        // --- Firebase Configuration ---
-        // يجب أن يكون نفس الموجود في ملفك الأصلي
-        const firebaseConfig = {
-         apiKey: "AIzaSyDuUebu7Qzz3JnTfa-58EIPZjOcrkmdGHU",
-         authDomain: "quranplan2.firebaseapp.com",
-         projectId: "quranplan2",
-         storageBucket: "quranplan2.appspot.com",
-         messagingSenderId: "1098692856811",
-         appId: "1:1098692856811:web:923bca3a54fd78b1b267ae"
-        };
-
-        // --- Initialize Firebase ---
-         try { firebase.initializeApp(firebaseConfig); } catch (e) { console.error("Init Error:", e); }
+         // --- Firebase Configuration ---
+         const firebaseConfig = { /* ... بياناتك ... */ apiKey: "AIzaSyDuUebu7Qzz3JnTfa-58EIPZjOcrkmdGHU", authDomain: "quranplan2.firebaseapp.com", projectId: "quranplan2", storageBucket: "quranplan2.appspot.com", messagingSenderId: "1098692856811", appId: "1:1098692856811:web:923bca3a54fd78b1b267ae" };
+        try { firebase.initializeApp(firebaseConfig); } catch (e) { console.error("Init Error:", e); }
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // --- Get DOM Elements ---
-        // (يجب نقل كل تعريفات العناصر من ملفك الأصلي والتأكد من مطابقتها للهيكل الجديد)
+        // --- DOM Elements ---
         const loginBtn = document.getElementById('google-signin-btn');
-        const welcomeMessage = document.getElementById('welcome-message'); // قد لا نستخدمها بنفس الطريقة
         const planSetupSection = document.getElementById('plan-setup-section');
-        const planCards = planSetupSection?.querySelectorAll('.plan-card'); // استخدام '?' للأمان
+        const planCards = planSetupSection?.querySelectorAll('.plan-card');
         const planStartDateInput = document.getElementById('planStartDate');
         const planRepetitionMaxSelect = document.getElementById('planRepetitionMax');
         const confirmPlanBtn = document.getElementById('confirmPlanBtn');
@@ -216,53 +239,58 @@
         const userNameSpan = document.getElementById('user-name');
         const userPhoto = document.getElementById('user-photo');
         const logoutButton = document.getElementById('logout-button');
-        const studentLevelTitleSpan = document.getElementById('student-level-title'); // عنصر اللقب الجديد
-        const currentYearSpan = document.getElementById('current-year'); // للفوتر
+        const studentLevelTitleSpan = document.getElementById('student-level-title');
+        const currentYearSpan = document.getElementById('current-year');
+        const dashboardLinkContainer = document.getElementById('dashboard-link-container'); // Get the container
 
         // --- Global State ---
         let currentUser = null;
         let selectedPlanType = null;
         let hasExistingPlan = false;
-
-        // --- Constants ---
-        const initialTotalRows = 320; // Consistent with plangen2.html structure
+        const initialTotalRows = 320;
 
         // --- Helper Functions ---
-        function formatDate(date) { /* ... نفس الدالة من ملفك الأصلي ... */ if (!(date instanceof Date)) { date = new Date(date); } if (isNaN(date.getTime())) { return ""; } const year = date.getFullYear(); const month = String(date.getMonth() + 1).padStart(2, '0'); const day = String(date.getDate()).padStart(2, '0'); return `${year}-${month}-${day}`; }
+        function formatDate(date) { if (!(date instanceof Date)) { date = new Date(date); } if (isNaN(date.getTime())) { return ""; } const year = date.getFullYear(); const month = String(date.getMonth() + 1).padStart(2, '0'); const day = String(date.getDate()).padStart(2, '0'); return `${year}-${month}-${day}`; }
+        async function checkIfPlanExists(uid) { if (!uid) return false; const planRef = db.collection("quranPlans").doc(uid); try { const doc = await planRef.get(); console.log(`Index: Plan check for ${uid}: Exists = ${doc.exists}`); return doc.exists; } catch (error) { console.error("Error checking plan existence:", error); return false; } }
 
-        // --- Firestore Check ---
-        async function checkIfPlanExists(uid) { /* ... نفس الدالة من ملفك الأصلي ... */ if (!uid) return false; const planRef = db.collection("quranPlans").doc(uid); try { const doc = await planRef.get(); console.log(`Index: Plan check for ${uid}: Exists = ${doc.exists}`); return doc.exists; } catch (error) { console.error("Error checking plan existence:", error); return false; } }
+        // --- Level/Title Calculation & Display ---
+         const levelTitles = ["ابدأ رحلتك!", "🌱 غرسة الإيمان", "✨ بادرة أمل", "🏃 ساعٍ للعلا", "⭐ نجم صاعد", "💪 مثابر مجتهد", "🧭 على الدرب", "💯 صاحب السبعين", "🚀 انطلاقة قوية", "💎 جوهرة مصقولة", "👑 صاحب المئة يوم", "📖 رفيق القرآن", "🕯️ منارة هدى", "🏔️ قمة شامخة", "🌳 شجرة طيبة", "⏳ عابر منتصف الطريق", "🎯 دقة والتزام", "🌊 بحر زاخر", "🌟 كوكب دري", "🧭 بوصلة الحق", "💯💯 المئتان لا تقفان!", "🤲 قلب خاشع", "🕊️ روح مطمئنة", "💖 محب للرحمن", "🙏 عبد شكور", "💡 بصيرة نافذة", "🕌 معمّر بيوت الله", "🌙 هلال الكمال", "✨ نور على نور", "🏁 قاب قوسين أو أدنى", "🏆 فارس الثلاثمائة", "🎉 مقترب من الختام", "🎊 خاتم مبارك"];
+         const levelIcons = { 10: '👑', 20: '💯', 30: '🏆', 32: '🎊' }; // Example icons
 
-        // --- *** START: دالة جلب اللقب (جديدة) *** ---
-        const levelTitles = ["ابدأ رحلتك!", "🌱 غرسة الإيمان", "✨ بادرة أمل", "🏃 ساعٍ للعلا", "⭐ نجم صاعد", "💪 مثابر مجتهد", "🧭 على الدرب", "💯 صاحب السبعين", "🚀 انطلاقة قوية", "💎 جوهرة مصقولة", "👑 صاحب المئة يوم", "📖 رفيق القرآن", "🕯️ منارة هدى", "🏔️ قمة شامخة", "🌳 شجرة طيبة", "⏳ عابر منتصف الطريق", "🎯 دقة والتزام", "🌊 بحر زاخر", "🌟 كوكب دري", "🧭 بوصلة الحق", "💯💯 المئتان لا تقفان!", "🤲 قلب خاشع", "🕊️ روح مطمئنة", "💖 محب للرحمن", "🙏 عبد شكور", "💡 بصيرة نافذة", "🕌 معمّر بيوت الله", "🌙 هلال الكمال", "✨ نور على نور", "🏁 قاب قوسين أو أدنى", "🏆 فارس الثلاثمائة", "🎉 مقترب من الختام", "🎊 خاتم مبارك"];
-        const levelIcons = { 10: '👑', 20: '💯', 30: '🏆', 32: '🎊' }; // Example icons
-
-        function calculateLevelTitle(tableRows) {
-            // (هذه نسخة مبسطة من دالة حساب الإنجاز المتتالي من dashboard.html)
-            if (!tableRows || tableRows.length === 0) return levelTitles[0]; // اللقب الافتراضي
+         function calculateLevelTitle(tableRows) {
+            if (!tableRows || tableRows.length === 0) return { title: levelTitles[0], icon: '' };
             const sortedRows = [...tableRows].sort((a, b) => new Date(a.displayDate) - new Date(b.displayDate));
             let currentStreak = 0;
             let streakBroken = false;
             const todayStr = formatDate(new Date());
-            for (let i = sortedRows.length - 1; i >= 0; i--) {
-                const row = sortedRows[i];
-                if (row.displayDate > todayStr) continue;
-                if (row.type === 'plan' && row.state?.completed) {
-                    if (!streakBroken) tempCurrentStreak++;
-                } else if (row.type === 'excuse') {
-                    continue; // Skip excuses for streak count
-                } else {
-                    streakBroken = true;
-                    // If today's task exists and is not complete, streak is 0 for today
-                    if (row.displayDate === todayStr) tempCurrentStreak = 0;
-                    break; // Stop counting streak
-                }
-            }
-             currentStreak = tempCurrentStreak;
+             let tempCurrentStreak = 0; // Use temporary variable inside loop
+
+             for (let i = sortedRows.length - 1; i >= 0; i--) {
+                 const row = sortedRows[i];
+                 if (row.displayDate > todayStr) continue; // Skip future dates
+                 if (row.type === 'plan' && row.state?.completed) {
+                     if (!streakBroken) {
+                        tempCurrentStreak++;
+                     }
+                 } else if (row.type === 'excuse') {
+                     // Excuses maintain the streak, so continue without incrementing or breaking
+                     continue;
+                 } else {
+                    // If it's today and not completed, or any past day not completed/excused
+                     streakBroken = true;
+                     // If today's task exists and is not complete, streak resets to 0 *for today*
+                    if (row.displayDate === todayStr) {
+                        tempCurrentStreak = 0;
+                    }
+                     break; // Stop counting streak
+                 }
+             }
+             currentStreak = tempCurrentStreak; // Assign calculated streak
+
             const levelIndex = Math.min(Math.floor(currentStreak / 10), levelTitles.length - 1);
             const title = levelTitles[levelIndex] || levelTitles[0];
             const icon = levelIcons[levelIndex] || '';
-            return `${title} ${icon}`.trim(); // Return title with icon
+            return { title: title, icon: icon };
         }
 
         async function displayStudentLevel(uid) {
@@ -273,94 +301,63 @@
                 if (doc.exists) {
                     const planData = doc.data();
                     if (planData.tableRows) {
-                        const title = calculateLevelTitle(planData.tableRows);
-                        studentLevelTitleSpan.textContent = `(لقبك: ${title})`;
-                        studentLevelTitleSpan.style.display = 'inline'; // أو 'block' حسب التنسيق
-                    } else {
-                         studentLevelTitleSpan.style.display = 'none';
-                    }
-                } else {
-                     studentLevelTitleSpan.style.display = 'none';
-                }
-            } catch (error) {
-                console.error("Error fetching plan data for level title:", error);
-                studentLevelTitleSpan.style.display = 'none';
-            }
+                        const levelInfo = calculateLevelTitle(planData.tableRows);
+                        studentLevelTitleSpan.textContent = `(لقبك: ${levelInfo.title} ${levelInfo.icon})`.trim();
+                        studentLevelTitleSpan.style.display = 'inline';
+                    } else { studentLevelTitleSpan.style.display = 'none'; }
+                } else { studentLevelTitleSpan.style.display = 'none'; }
+            } catch (error) { console.error("Error fetching plan data for level title:", error); studentLevelTitleSpan.style.display = 'none'; }
         }
-         // --- *** END: دالة جلب اللقب (جديدة) *** ---
 
-        // --- UI Update Functions ---
-        function updateUIBasedOnLoginAndPlanState() {
-            // (نفس الدالة من ملفك الأصلي مع تعديل إخفاء وإظهار العناصر حسب الهيكل الجديد)
-             const dashboardLinkContainer = document.getElementById('dashboard-link-container'); // سنحتاج لإضافة هذا العنصر
-             if (dashboardLinkContainer) dashboardLinkContainer.innerHTML = ''; // Clear previous link/button
+        // --- UI Update Function ---
+         function updateUIBasedOnLoginAndPlanState() {
+             if (dashboardLinkContainer) dashboardLinkContainer.innerHTML = '';
 
-            if (currentUser) {
+             if (currentUser) {
                  if(loginBtn) loginBtn.style.display = 'none';
-                 // welcomeMessage لا نستخدمها بنفس الطريقة
                  if(userProfileArea) {
-                      userProfileArea.style.display = 'flex'; // تأكد من استخدام flex أو block حسب التصميم
-                      if(userNameSpan) userNameSpan.textContent = currentUser.displayName || 'مستخدم';
-                      if(userPhoto) userPhoto.src = currentUser.photoURL || 'placeholder.png';
+                     userProfileArea.style.display = 'flex';
+                     if(userNameSpan) userNameSpan.textContent = currentUser.displayName || 'مستخدم';
+                     if(userPhoto) userPhoto.src = currentUser.photoURL || 'images/avatar_placeholder.png'; // Placeholder avatar
                  }
-                  // جلب وعرض اللقب
-                 displayStudentLevel(currentUser.uid);
+                 displayStudentLevel(currentUser.uid); // Display level
 
                  if (hasExistingPlan) {
-                     console.log("UI Update: User has plan. Hiding setup, showing dashboard link.");
+                     console.log("UI Update: User has plan.");
                      if(planSetupSection) planSetupSection.style.display = 'none';
-
-                     // إنشاء وعرض رابط لوحة المتابعة (يمكن وضعه في مكان آخر إذا أردت)
-                    if (!dashboardLinkContainer) { // إنشاء الحاوية إذا لم تكن موجودة
-                         const newDiv = document.createElement('div');
-                         newDiv.id = 'dashboard-link-container';
-                         newDiv.style.textAlign = 'center';
-                         newDiv.style.padding = '20px';
-                         // إلحاقه بمكان مناسب، مثلاً داخل main
-                         document.querySelector('main')?.appendChild(newDiv);
-                    }
-                     document.getElementById('dashboard-link-container').innerHTML = `<a href="dashboard.html" class="google-signin-btn" style="background-color: #1e8449; display: inline-block; margin-top: 15px;">الذهاب إلى لوحة المتابعة الخاصة بك</a>`;
-
+                     if (dashboardLinkContainer) { // Add the dashboard link
+                         dashboardLinkContainer.innerHTML = `<a href="dashboard.html" class="cta-button" style="background-color: #1e8449; display: inline-block; margin-top: 15px; color:white; padding: 10px 25px; border-radius: 5px; text-decoration: none;">الذهاب إلى لوحة المتابعة</a>`;
+                     }
                  } else {
-                     console.log("UI Update: User needs to set up plan. Showing setup section.");
-                     if(planSetupSection) planSetupSection.style.display = 'block'; // إظهار قسم الإعداد
-                     if (dashboardLinkContainer) { // إخفاء رابط لوحة المتابعة
-                           dashboardLinkContainer.innerHTML = '';
-                     }
-                     // تحديد تاريخ اليوم كقيمة افتراضية لحقل البدء
-                     if (planStartDateInput && !planStartDateInput.value) {
-                          planStartDateInput.value = formatDate(new Date());
-                     }
-                     updateConfirmButtonState(); // تحديث حالة زر التأكيد
+                     console.log("UI Update: User needs to set up plan.");
+                     if(planSetupSection) planSetupSection.style.display = 'block';
+                     if (dashboardLinkContainer) dashboardLinkContainer.innerHTML = '';
+                     if (planStartDateInput && !planStartDateInput.value) planStartDateInput.value = formatDate(new Date());
+                     updateConfirmButtonState();
                  }
-            } else {
+             } else {
                  // Logged Out
-                 if(loginBtn) loginBtn.style.display = 'inline-block'; // إظهار زر الدخول
-                 if(userProfileArea) userProfileArea.style.display = 'none'; // إخفاء منطقة المستخدم
-                 if(planSetupSection) planSetupSection.style.display = 'none'; // إخفاء قسم الإعداد
-                 if (studentLevelTitleSpan) studentLevelTitleSpan.style.display = 'none'; // إخفاء اللقب
-                 if (dashboardLinkContainer) { // إخفاء رابط لوحة المتابعة
-                      dashboardLinkContainer.innerHTML = '';
-                 }
-            }
-        }
+                 if(loginBtn) loginBtn.style.display = 'inline-block';
+                 if(userProfileArea) userProfileArea.style.display = 'none';
+                 if(planSetupSection) planSetupSection.style.display = 'none';
+                 if (studentLevelTitleSpan) studentLevelTitleSpan.style.display = 'none';
+                 if (dashboardLinkContainer) dashboardLinkContainer.innerHTML = '';
+             }
+         }
 
-        // Enable/disable confirm button based on selection
-        function updateConfirmButtonState() { /* ... نفس الدالة من ملفك الأصلي ... */ if (!confirmPlanBtn) return; if (selectedPlanType && planStartDateInput && planStartDateInput.value) { confirmPlanBtn.disabled = false; } else { confirmPlanBtn.disabled = true; } }
 
-        // --- Save Initial Plan Data ---
-        async function saveInitialPlanData() { /* ... نفس الدالة من ملفك الأصلي ... */ if (!currentUser || !selectedPlanType || !planStartDateInput || !planStartDateInput.value || !planRepetitionMaxSelect) { alert("يرجى اختيار خطة وتحديد تاريخ البدء وعدد التكرارات."); return; } const selectedStartDate = new Date(planStartDateInput.value + 'T00:00:00Z'); if (isNaN(selectedStartDate.getTime())) { alert('تاريخ البدء المحدد غير صالح.'); return; } if(confirmPlanBtn) { confirmPlanBtn.disabled = true; confirmPlanBtn.textContent = "جاري الحفظ..."; } const uid = currentUser.uid; const planRef = db.collection("quranPlans").doc(uid); const initialTableRows = []; let currentDate = new Date(selectedStartDate); for (let i = 0; i < initialTotalRows; i++) { const rowData = { type: 'plan', originalSequence: i, displaySeq: i + 1, displayDate: formatDate(currentDate), state: { yestRep: 0, listen: 0, interp: false, record: 0, rep: 0, linked: false, reviewed: false, completed: false } }; initialTableRows.push(rowData); if (i < initialTotalRows - 1) { currentDate.setUTCDate(currentDate.getUTCDate() + 1); } } const planDataToSave = { studentName: currentUser.displayName || "طالب علم", email: currentUser.email, startDate: planStartDateInput.value, planType: selectedPlanType, repetitionMax: parseInt(planRepetitionMaxSelect.value), excuseDates: [], tableRows: initialTableRows, createdAt: firebase.firestore.FieldValue.serverTimestamp(), lastUpdated: firebase.firestore.FieldValue.serverTimestamp() }; console.log("Saving initial plan data (including tableRows):", planDataToSave); try { await planRef.set(planDataToSave); console.log("Initial plan data saved!"); hasExistingPlan = true; window.location.href = 'dashboard.html'; } catch (error) { console.error("Error saving initial plan data: ", error); alert("حدث خطأ أثناء حفظ بيانات الخطة. حاول مرة أخرى."); if(confirmPlanBtn) { confirmPlanBtn.disabled = false; confirmPlanBtn.textContent = "تأكيد الخطة والبدء"; } } }
+        // --- Other Functions (Confirm Button State, Save Initial Data) ---
+         function updateConfirmButtonState() { if (!confirmPlanBtn) return; confirmPlanBtn.disabled = !(selectedPlanType && planStartDateInput?.value); }
+        async function saveInitialPlanData() { /* ... نفس الدالة من الرد السابق ... */ if (!currentUser || !selectedPlanType || !planStartDateInput || !planStartDateInput.value || !planRepetitionMaxSelect) { alert("يرجى اختيار خطة وتحديد تاريخ البدء وعدد التكرارات."); return; } const selectedStartDate = new Date(planStartDateInput.value + 'T00:00:00Z'); if (isNaN(selectedStartDate.getTime())) { alert('تاريخ البدء المحدد غير صالح.'); return; } if(confirmPlanBtn) { confirmPlanBtn.disabled = true; confirmPlanBtn.textContent = "جاري الحفظ..."; } const uid = currentUser.uid; const planRef = db.collection("quranPlans").doc(uid); const initialTableRows = []; let currentDate = new Date(selectedStartDate); for (let i = 0; i < initialTotalRows; i++) { const rowData = { type: 'plan', originalSequence: i, displaySeq: i + 1, displayDate: formatDate(currentDate), state: { yestRep: 0, listen: 0, interp: false, record: 0, rep: 0, linked: false, reviewed: false, completed: false } }; initialTableRows.push(rowData); if (i < initialTotalRows - 1) { currentDate.setUTCDate(currentDate.getUTCDate() + 1); } } const planDataToSave = { studentName: currentUser.displayName || "طالب علم", email: currentUser.email, startDate: planStartDateInput.value, planType: selectedPlanType, repetitionMax: parseInt(planRepetitionMaxSelect.value), excuseDates: [], tableRows: initialTableRows, createdAt: firebase.firestore.FieldValue.serverTimestamp(), lastUpdated: firebase.firestore.FieldValue.serverTimestamp() }; console.log("Saving initial plan data (including tableRows):", planDataToSave); try { await planRef.set(planDataToSave); console.log("Initial plan data saved!"); hasExistingPlan = true; window.location.href = 'dashboard.html'; } catch (error) { console.error("Error saving initial plan data: ", error); alert("حدث خطأ أثناء حفظ بيانات الخطة. حاول مرة أخرى."); if(confirmPlanBtn) { confirmPlanBtn.disabled = false; confirmPlanBtn.textContent = "تأكيد الخطة والبدء"; } } }
 
-        // --- Authentication State Observer ---
-        // (نفس الكود من ملفك الأصلي، سأقوم بتعديله ليشمل استدعاء عرض اللقب)
+
+        // --- Authentication Listener ---
          auth.onAuthStateChanged(async (user) => {
              currentUser = user;
              if (user) {
                  console.log("Index: Auth state changed: User logged in.");
-                 // التحقق من وجود خطة أولاً
                  hasExistingPlan = await checkIfPlanExists(user.uid);
-                 // ثم تحديث الواجهة بناءً على حالة تسجيل الدخول ووجود الخطة
-                 updateUIBasedOnLoginAndPlanState(); // هذه الدالة ستستدعي displayStudentLevel داخلياً
+                 updateUIBasedOnLoginAndPlanState();
              } else {
                  console.log("Index: Auth state changed: User logged out.");
                  hasExistingPlan = false;
@@ -368,35 +365,20 @@
              }
          });
 
-
         // --- Event Listeners ---
-        // Sign-in Button
-        if (loginBtn) { loginBtn.addEventListener('click', () => { /* ... نفس الكود من ملفك الأصلي ... */ console.log("Login button clicked"); const provider = new firebase.auth.GoogleAuthProvider(); auth.signInWithPopup(provider).then(result => { const user = result.user; console.log("Sign-in successful:", user.displayName); const userRef = db.collection("students").doc(user.uid); userRef.get().then((doc) => { const userData = { name: user.displayName, email: user.email, photo: user.photoURL, lastLogin: firebase.firestore.FieldValue.serverTimestamp() }; if (!doc.exists) { userData.joinedAt = firebase.firestore.FieldValue.serverTimestamp(); userRef.set(userData).catch(err => console.error("Error saving new user:", err)); } else { userRef.update(userData).catch(err => console.error("Error updating user:", err)); } }).catch(err => console.error("Error checking user existence:", err)); }).catch(err => { console.error("Sign-in error:", err); alert("حدث خطأ أثناء تسجيل الدخول. رمز الخطأ: " + err.code); }); }); }
-        // Logout Button
+        if (loginBtn) { loginBtn.addEventListener('click', () => { const provider = new firebase.auth.GoogleAuthProvider(); auth.signInWithPopup(provider).catch(err => { console.error("Sign-in error:", err); alert("حدث خطأ أثناء تسجيل الدخول: " + err.message); }); }); } // Simplified error handling
         if (logoutButton) { logoutButton.addEventListener('click', () => { auth.signOut().catch((error) => { console.error('Sign out error:', error); }); }); }
-        // Plan Card Selection in Setup Section
-        // تأكد من أن planCards تم تعريفه بشكل صحيح ويشير للعناصر الجديدة إذا تغيرت الـ classes
-        if(planCards) {
-            planCards.forEach(card => { card.addEventListener('click', () => { if(planCards) planCards.forEach(c => c.classList.remove('selected')); card.classList.add('selected'); selectedPlanType = parseInt(card.getAttribute('data-plan-type')); console.log("Selected Plan Type:", selectedPlanType); updateConfirmButtonState(); }); });
-        }
-        // Input fields change listener (for enabling confirm button)
+        if(planCards) { planCards.forEach(card => { card.addEventListener('click', () => { if(planCards) planCards.forEach(c => c.classList.remove('selected')); card.classList.add('selected'); selectedPlanType = parseInt(card.getAttribute('data-plan-type')); updateConfirmButtonState(); }); }); }
         if (planStartDateInput) { planStartDateInput.addEventListener('change', updateConfirmButtonState); }
-        // Confirm Plan Button
         if (confirmPlanBtn) { confirmPlanBtn.addEventListener('click', saveInitialPlanData); }
 
         // --- Initial Load ---
-         document.addEventListener('DOMContentLoaded', () => {
-            // إخفاء العناصر التي تعتمد على حالة تسجيل الدخول مبدئياً
-             if(userProfileArea) userProfileArea.style.display = 'none';
-             if(planSetupSection) planSetupSection.style.display = 'none';
-             if(loginBtn) loginBtn.style.display = 'inline-block'; // إظهار زر الدخول مبدئياً
-             if (studentLevelTitleSpan) studentLevelTitleSpan.style.display = 'none';
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial UI state handled by auth listener
+            if(currentYearSpan) { currentYearSpan.textContent = new Date().getFullYear(); }
+        });
 
-             if(currentYearSpan) { currentYearSpan.textContent = new Date().getFullYear(); }
-             // Auth listener will handle UI updates after checking login status
-         });
-
-    </script>
+     </script>
 
 </body>
 </html>
