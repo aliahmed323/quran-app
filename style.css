@@ -57,7 +57,7 @@ p { margin-bottom: 1.5em; color: #4B4F58; }
 
 
 /* --- Header Styles --- */
-.header-container { display: flex; justify-content: space-between; align-items: center; padding: 8px 25px; background-color: #ffffff; border-bottom: 1px solid #dbdee0; box-shadow: 0 1px 3px rgba(0,0,0,0.04); position: sticky; top: 0; z-index: 1000; }
+.header-container { display: flex; justify-content: space-between; align-items: center; padding: 8px 25px; background-color: #49406D; border-bottom: 1px solid #dbdee0; box-shadow: 0 1px 3px rgba(0,0,0,0.04); position: sticky; top: 0; z-index: 1000; }
 .site-branding { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .logo-container img { max-height: 55px; width: auto; }
 /* === اسم الموقع المكدس === */
@@ -65,7 +65,7 @@ p { margin-bottom: 1.5em; color: #4B4F58; }
 .site-name span {
     display: block;
     color: #1a5276; /* **توحيد اللون** */
-    font-size: 1.15em; /* **تكبير طفيف للكل** */
+    font-size: 1.50em; /* **تكبير طفيف للكل** */
 }
 .site-name span:last-child {
     font-size: 0.95em; /* تعديل الحجم النسبي قليلاً */
