@@ -1,0 +1,372 @@
+/* --- General Styles --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Tajawal', sans-serif;
+    direction: rtl; /* الاتجاه من اليمين لليسار */
+    line-height: 1.7;
+    background-color: #f9f9f9; /* لون خلفية الصفحة العام */
+    color: #333; /* لون النص الافتراضي */
+}
+
+.container { /* يمكنك استخدام هذا الكلاس لتوسيط المحتوى إذا أردت */
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+a {
+    text-decoration: none;
+    color: #2980b9; /* لون الروابط الافتراضي */
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #1a5276; /* لون الروابط عند المرور */
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* --- Header Styles --- */
+.header-container {
+    display: flex;
+    justify-content: space-between; /* توزيع العناصر على الأطراف والوسط */
+    align-items: center; /* محاذاة العناصر عمودياً في المنتصف */
+    padding: 10px 25px; /* هوامش داخلية للهيدر */
+    background-color: #ffffff; /* لون خلفية الهيدر (أبيض مبدئي) */
+    border-bottom: 2px solid #aed6f1; /* خط أسفل الهيدر */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* ظل خفيف */
+    position: sticky; /* جعل الهيدر ثابتاً عند التمرير (اختياري) */
+    top: 0;
+    z-index: 1000; /* لضمان ظهوره فوق العناصر الأخرى */
+}
+
+/* شعار واسم الموقع */
+.site-branding {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* مسافة بين الشعار والاسم */
+}
+
+.logo-container img {
+    max-height: 50px; /* تحديد ارتفاع أقصى للشعار (يمكن تعديله) */
+    display: block; /* لإزالة أي مسافات إضافية */
+}
+
+.site-name {
+    font-size: 1.6em; /* حجم خط اسم الموقع */
+    font-weight: bold;
+    color: #1a5276; /* لون خط اسم الموقع */
+}
+
+/* --- Navigation Menu Styles --- */
+nav ul {
+    list-style: none; /* إزالة نقاط القائمة */
+    padding: 0;
+    margin: 0;
+    display: flex; /* جعل عناصر القائمة أفقية */
+    align-items: center; /* محاذاة عناصر القائمة عمودياً */
+    gap: 20px; /* مسافة بين عناصر القائمة الرئيسية */
+}
+
+nav ul li {
+    position: relative; /* ضروري لتموضع القوائم المنسدلة */
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #1a5276; /* لون روابط القائمة */
+    padding: 15px 10px; /* هوامش داخلية للروابط لزيادة مساحة النقر */
+    display: block;
+    font-weight: bold;
+    font-size: 0.9em; /* تعديل حجم الخط حسب الحاجة */
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+nav ul li a:hover {
+    color: #2980b9; /* تغيير اللون عند المرور */
+    background-color: rgba(234, 242, 248, 0.5); /* خلفية خفيفة عند المرور */
+    border-radius: 4px;
+}
+
+/* Dropdown Menu Styles */
+nav ul li .dropdown {
+    display: none; /* إخفاء القائمة المنسدلة مبدئياً */
+    position: absolute; /* تموضع مطلق بالنسبة لعنصر القائمة الأب */
+    top: 100%; /* البدء من أسفل العنصر الأب */
+    right: 0; /* محاذاة لليمين (بسبب rtl) */
+    background-color: #ffffff;
+    min-width: 200px; /* أقل عرض للقائمة المنسدلة */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 5px 0; /* هوامش داخلية علوية وسفلية */
+    z-index: 1001; /* للتأكد من ظهورها فوق العناصر الأخرى */
+    opacity: 0; /* للتحريك التدريجي (اختياري) */
+    visibility: hidden; /* للتحريك التدريجي (اختياري) */
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+nav ul li:hover .dropdown {
+    display: block; /* إظهار القائمة عند مرور الفأرة على العنصر الأب */
+    opacity: 1;
+    visibility: visible;
+}
+
+nav ul li .dropdown li {
+    width: 100%; /* جعل عناصر القائمة تأخذ عرض الحاوية */
+}
+
+nav ul li .dropdown li a {
+    padding: 10px 20px; /* هوامش داخلية لعناصر القائمة المنسدلة */
+    white-space: nowrap; /* منع التفاف النص */
+    color: #333; /* لون نص القائمة المنسدلة */
+    font-size: 0.85em;
+    font-weight: normal;
+}
+
+nav ul li .dropdown li a:hover {
+    background-color: #eaf2f8; /* تغيير الخلفية عند المرور */
+    color: #1a5276;
+}
+
+/* --- Auth Area Styles --- */
+.auth-area {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* مسافة بين العناصر */
+}
+
+#google-signin-btn {
+    padding: 8px 18px;
+    font-size: 0.9em;
+    background-color: #4285F4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#google-signin-btn:hover {
+    background-color: #357ae8;
+}
+
+#user-profile-area {
+    display: flex; /* يتم التحكم به بالجافاسكريبت */
+    align-items: center;
+    gap: 10px;
+}
+
+#user-profile-area img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+}
+
+#user-profile-area span#user-name {
+    font-weight: bold;
+    font-size: 0.95em;
+}
+/* تنسيق اللقب */
+#student-level-title {
+    font-weight: bold;
+    color: #1e8449; /* لون أخضر للقب */
+    font-size: 0.9em;
+    background-color: #e8f5e9; /* خلفية خضراء فاتحة */
+    padding: 2px 8px;
+    border-radius: 10px;
+    border: 1px solid #a9dfbf;
+}
+
+#user-profile-area button#logout-button {
+    padding: 5px 12px;
+    font-size: 0.85em;
+    background-color: #f1f1f1;
+    border: 1px solid #ccc;
+    color: #333;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#user-profile-area button#logout-button:hover {
+    background-color: #e0e0e0;
+    color: #000;
+}
+
+/* --- Main Content Area --- */
+main {
+    padding: 30px 15px; /* هوامش للمحتوى الرئيسي */
+}
+
+/* تنسيق مبدئي للأقسام (يمكن تخصيصه لكل قسم) */
+section {
+    padding: 50px 20px;
+    margin-bottom: 30px;
+    background-color: #fff; /* خلفية بيضاء للأقسام */
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+section h2 {
+    text-align: center;
+    color: #1a5276;
+    margin-bottom: 30px;
+    font-size: 1.8em;
+}
+
+section p {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    color: #555;
+    line-height: 1.8;
+}
+
+/* تنسيق قسم إعداد الخطة إذا ظهر */
+#plan-setup-section {
+    background-color: #fff;
+    padding: 30px;
+    margin: 20px auto; /* يتوسط في الصفحة */
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+    text-align: center;
+    max-width: 900px; /* تحديد عرض أقصى */
+}
+
+#plan-setup-section h2 {
+    color: #1a5276;
+    margin-bottom: 15px;
+}
+#plan-setup-section > p { /* الفقرة المباشرة تحت القسم */
+    color: #2980b9;
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+.plan-selection-area {
+    margin-bottom: 25px;
+}
+.plans-container {
+     display: flex;
+     justify-content: center; /* توسيط البطاقات */
+     align-items: stretch;
+     flex-wrap: wrap;
+     gap: 20px;
+}
+.plan-card {
+    background-color: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    flex-basis: calc(25% - 20px); /* توزيع على 4 أعمدة تقريباً */
+    min-width: 200px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.plan-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+}
+.plan-card.selected { /* تنسيق البطاقة المختارة */
+    border-color: #1e8449;
+    box-shadow: 0 4px 10px rgba(30, 132, 73, 0.2);
+    transform: translateY(-3px);
+}
+.plan-card h3 {
+    font-size: 1.1em;
+    color: #1e8449;
+    margin-bottom: 10px;
+}
+.plan-card p {
+    font-size: 0.9em;
+    color: #555;
+    margin-bottom: 15px;
+    flex-grow: 1; /* لجعل النص يأخذ المساحة المتاحة */
+    text-align: right; /* محاذاة النص لليمين */
+}
+.plan-card .plan-link {
+    color: #2980b9;
+    font-weight: bold;
+    margin-top: 10px;
+    display: block;
+    text-align: center;
+}
+.plan-setup-inputs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+    margin-top: 20px;
+}
+.plan-setup-inputs div { /* لجعل الليبل والحقل فوق بعضهما */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+.plan-setup-inputs label {
+    font-weight: bold;
+    color: #21618c;
+    font-size: 0.9em;
+}
+.plan-setup-inputs input[type="date"],
+.plan-setup-inputs select {
+    border: 1px solid #aed6f1;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: 'Tajawal', sans-serif;
+    min-width: 160px;
+}
+#confirmPlanBtn {
+    display: inline-block;
+    background-color: #1e8449;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, opacity 0.3s;
+}
+#confirmPlanBtn:hover {
+    background-color: #239b56;
+}
+#confirmPlanBtn:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+
+/* --- Footer Styles --- */
+footer.main-footer {
+    text-align: center;
+    padding: 25px;
+    margin-top: 40px;
+    background-color: #2c3e50; /* لون خلفية الفوتر */
+    color: #ecf0f1; /* لون نص الفوتر */
+    font-size: 0.9em;
+}
+
+footer.main-footer a {
+    color: #3498db;
+}
