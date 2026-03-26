@@ -278,10 +278,6 @@
         function getPlanData(originalIndex) { const index = parseInt(originalIndex); if (isNaN(index) || index < 0 || index >= initialTotalRows) { return null; } let fromPage = '', toPage = ''; if (index < 299) { fromPage = index * 2 + 1; toPage = fromPage + 1; } else if (index === 299) { fromPage = 601; toPage = 604; } return { fromPage: fromPage, toPage: toPage, surah: surahs[index] || '', linkFrom: linkFromData[index] ?? '', linkTo: linkToData[index] ?? '', reviewFrom: reviewFromData[index] ?? '', reviewTo: reviewToData[index] ?? '', round: calculateRoundNumber(index) }; }
         function calculateRoundNumber(originalIndex) { if (originalIndex < 32 || !reviewFromData || reviewFromData[originalIndex] == null || reviewFromData[originalIndex] === '') { return ''; } let reviewDataStartIndex = 32; let reviewCounter = 0; for(let i = reviewDataStartIndex; i <= originalIndex; i++){ if(reviewFromData[i] != null && reviewFromData[i] !== '') reviewCounter++; } if (reviewCounter === 0) return ''; return Math.ceil(reviewCounter / 6); }
 
-        // --- UI State helpers ---
-        function showLoading(msg = 'جاري التحميل...') { if(ldMsg) ldMsg.textContent=msg; if(loadDash) loadDash.classList.remove('gone'); if(dashMain) dashMain.style.display='none'; if(notAuthEl) notAuthEl.style.display='none'; }
-        function hideLoading() { if(loadDash) loadDash.classList.add('gone'); }
-        function displayDashboard() { hideLoading(); if(dashMain) dashMain.style.display='block'; }
 
         // --- displayProgress (updated) ---
         function displayProgress(stats) {
