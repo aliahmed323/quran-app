@@ -854,80 +854,113 @@
             const pageTo   = taskDetails.toPage || '';
             const quranUrl = pageFrom ? `https://quran.com/?page=${pageFrom}` : 'https://quran.com/';
 
-            let html = `<div class="task-blocks">`;
+            let html = `<div class="task-grid">`;
 
             // Memorization block
             html += `<div class="task-block">
-                <div class="task-block-label"><span class="icon">📖</span> الحفظ الجديد</div>
-                <div class="task-block-value">${pageFrom ? `صفحة ${pageFrom} ← ${pageTo}` : 'لا يوجد حفظ جديد'}</div>
+                <div class="task-block-lbl"><span>📖</span> الحفظ الجديد</div>
+                <div class="task-block-val">${pageFrom ? `صفحة ${pageFrom} ← ${pageTo}` : 'لا يوجد حفظ جديد'}</div>
                 <div class="task-block-sub">${taskDetails.surah || ''}</div>
-                ${pageFrom ? `<a class="quran-page-link" href="${quranUrl}" target="_blank" rel="noopener">🔗 فتح الصفحة في القرآن</a>` : ''}
+                ${pageFrom ? `<a class="quran-link-btn" href="${quranUrl}" target="_blank" rel="noopener">🔗 فتح الصفحة</a>` : ''}
             </div>`;
 
             // Link block
             if (taskDetails.linkFrom) {
                 html += `<div class="task-block">
-                    <div class="task-block-label"><span class="icon">🔗</span> الربط</div>
-                    <div class="task-block-value"> ${taskDetails.linkFrom} ← ${taskDetails.linkTo}</div>
+                    <div class="task-block-lbl"><span>🔗</span> الربط</div>
+                    <div class="task-block-val">صفحة ${taskDetails.linkFrom} ← ${taskDetails.linkTo}</div>
                 </div>`;
             }
 
             // Review block
             if (taskDetails.reviewFrom) {
                 html += `<div class="task-block">
-                    <div class="task-block-label"><span class="icon">🔄</span> المراجعة ${taskDetails.round ? `(جولة ${taskDetails.round})` : ''}</div>
-                    <div class="task-block-value">${taskDetails.reviewFrom} ← ${taskDetails.reviewTo}</div>
+                    <div class="task-block-lbl"><span>🔄</span> المراجعة ${taskDetails.round ? `(جولة ${taskDetails.round})` : ''}</div>
+                    <div class="task-block-val">صفحة ${taskDetails.reviewFrom} ← ${taskDetails.reviewTo}</div>
                 </div>`;
             }
             html += '</div>';
 
-            // Counters row
             html += `<div class="counters-row">
-                <div class="counter-widget">
-                    <div class="counter-label">تكرار اليوم <small>الحد الأقصى: ${repMax}</small></div>
-                    <div class="counter-controls">
-                        <button class="counter-btn dec" onclick="changeCounter('rep',-1,${repMax})">−</button>
-                        <span class="counter-value" id="cnt-rep">${todayCounters.rep}</span>
-                        <button class="counter-btn inc" onclick="changeCounter('rep',1,${repMax})">+</button>
+                <div class="counter-w">
+                    <div class="counter-lbl">تكرار الأمس <small>الحد: 5</small></div>
+                    <div class="counter-ctrl">
+                        <button class="cnt-btn dec" onclick="changeCounter('yestRep',-1,5)">−</button>
+                        <span class="cnt-val" id="cnt-yest">${todayCounters.yestRep}</span>
+                        <button class="cnt-btn inc" onclick="changeCounter('yestRep',1,5)">+</button>
                     </div>
                 </div>
-                <div class="counter-widget">
-                    <div class="counter-label">تكرار أمس <small>مراجعة الصفحة السابقة</small></div>
-                    <div class="counter-controls">
-                        <button class="counter-btn dec" onclick="changeCounter('yestRep',-1,${repMax})">−</button>
-                        <span class="counter-value" id="cnt-yest">${todayCounters.yestRep}</span>
-                        <button class="counter-btn inc" onclick="changeCounter('yestRep',1,${repMax})">+</button>
+                <div class="counter-w">
+                    <div class="counter-lbl">الاستماع <small>عدد المرات</small></div>
+                    <div class="counter-ctrl">
+                        <button class="cnt-btn dec" onclick="changeCounter('listen',-1)">−</button>
+                        <span class="cnt-val" id="cnt-listen">${todayCounters.listen}</span>
+                        <button class="cnt-btn inc" onclick="changeCounter('listen',1)">+</button>
                     </div>
                 </div>
-                <div class="counter-widget">
-                    <div class="counter-label">الاستماع <small>عدد مرات الاستماع</small></div>
-                    <div class="counter-controls">
-                        <button class="counter-btn dec" onclick="changeCounter('listen',-1)">−</button>
-                        <span class="counter-value" id="cnt-listen">${todayCounters.listen}</span>
-                        <button class="counter-btn inc" onclick="changeCounter('listen',1)">+</button>
+                <div class="toggle-w">
+                    <span class="toggle-lbl">📚 قراءة التفسير</span>
+                    <button class="toggle-sw ${todayCounters.tafsir ? 'on' : ''}" id="tafsir-toggle" onclick="toggleTafsir()"></button>
+                </div>
+            </div>`;
+
+            // Second row: record + repetition
+            html += `<div class="counters-row">
+                <div class="counter-w">
+                    <div class="counter-lbl">الحفظ <small>تسجيل غيب 3 مرات</small></div>
+                    <div class="counter-ctrl">
+                        <button class="cnt-btn dec" onclick="changeCounter('record',-1,3)">−</button>
+                        <span class="cnt-val" id="cnt-record">${todayCounters.record || 0}</span>
+                        <button class="cnt-btn inc" onclick="changeCounter('record',1,3)">+</button>
                     </div>
                 </div>
-                <div class="toggle-widget">
-                    <span class="toggle-label">📚 قراءة التفسير</span>
-                    <button class="toggle-switch ${todayCounters.tafsir ? 'on' : ''}" id="tafsir-toggle" onclick="toggleTafsir()"></button>
+                <div class="counter-w">
+                    <div class="counter-lbl">التكرارات <small>الحد الأقصى: ${repMax}</small></div>
+                    <div class="counter-ctrl">
+                        <button class="cnt-btn dec" onclick="changeCounter('rep',-1,${repMax})">−</button>
+                        <span class="cnt-val" id="cnt-rep">${todayCounters.rep}</span>
+                        <button class="cnt-btn inc" onclick="changeCounter('rep',1,${repMax})">+</button>
+                    </div>
                 </div>
             </div>`;
 
             // Audio recorder
-            html += `<div class="audio-section">
-                <button class="record-btn idle" id="record-btn" onclick="toggleRecording()">🎙️ تسجيل التلاوة</button>
-                <div class="recording-indicator" id="rec-indicator">
+            html += `<div class="audio-row">
+                <button class="rec-btn idle" id="record-btn" onclick="toggleRecording()">🎙️ تسجيل التلاوة</button>
+                <div class="rec-ind" id="rec-indicator">
                     <div class="rec-dot"></div>
                     <span>يسجّل...</span>
-                    <span class="rec-timer" id="rec-timer">00:00</span>
+                    <span id="rec-timer">00:00</span>
                 </div>
-                <div class="recordings-list" id="recordings-list"></div>
+                <div class="rec-list" id="recordings-list"></div>
             </div>`;
+
+            // Link/Review toggles
+            if (taskDetails.linkFrom) {
+                html += `<div class="counters-row">
+                    <div class="toggle-w" style="flex:1">
+                        <span class="toggle-lbl">🔗 الربط (ص${taskDetails.linkFrom}–${taskDetails.linkTo})</span>
+                        <button class="toggle-sw ${todayCounters.linked ? 'on' : ''}" id="link-toggle" onclick="toggleLink()"></button>
+                    </div>
+                </div>`;
+            } else {
+                html += `<div style="padding:8px 0;font-size:.85em;color:var(--c-text-3);"><span class="none-badge">🔗 لا توجد مهمة ربط لهذا اليوم</span></div>`;
+            }
+            if (taskDetails.reviewFrom) {
+                html += `<div class="counters-row">
+                    <div class="toggle-w" style="flex:1">
+                        <span class="toggle-lbl">🔄 المراجعة (ص${taskDetails.reviewFrom}–${taskDetails.reviewTo}) ${taskDetails.round ? 'جولة '+taskDetails.round : ''}</span>
+                        <button class="toggle-sw ${todayCounters.reviewed ? 'on' : ''}" id="review-toggle" onclick="toggleReview()"></button>
+                    </div>
+                </div>`;
+            } else {
+                html += `<div style="padding:8px 0;font-size:.85em;color:var(--c-text-3);"><span class="none-badge">🔄 لا توجد مراجعة لهذا اليوم</span></div>`;
+            }
 
             // Action buttons
             html += `<div class="task-actions">
-                <button class="btn-complete" id="complete-btn" onclick="markTodayComplete()">✅ تأكيد إتمام الواجب</button>
-                <a href="plangen2.html" class="btn-plan-link">📋 الجدول التفصيلي</a>
+                <button class="btn btn-primary" id="complete-btn" onclick="markTodayComplete()">✅ تأكيد إتمام الواجب</button>
+                <a href="plangen2.html" class="btn btn-outline">📋 الجدول التفصيلي</a>
             </div>`;
 
             dailyTaskContent.innerHTML = html;
@@ -972,26 +1005,22 @@
          }
 
         // --- Authentication Listener ---
-        auth.onAuthStateChanged(user => { /* ... كما هي ... */
+        auth.onAuthStateChanged(user => {
              currentUser = user;
              if (user) { loadDashboardData(user); }
-             else { /* Not logged in logic */
-                 showLoading("غير مسجل الدخول. يرجى تسجيل الدخول أولاً.");
-                 if(dashboardContent) dashboardContent.style.display = 'block';
-                 if(dailyTaskContent) dailyTaskContent.innerHTML = '<p style="color:red;">يرجى <a href="index.html">تسجيل الدخول</a> لعرض لوحة المتابعة.</p>';
-                 const sectionsToHide = ['plan-progress', 'quick-stats', 'calendar-view'];
-                 sectionsToHide.forEach(id => { const section = document.getElementById(id); if (section) section.style.display = 'none'; });
-                 // Disconnect observer if user logs out
-                 if (calendarObserver) { calendarObserver.disconnect(); calendarObserver = null; console.log("Disconnected observer on logout.");}
-                 if (calendarInstance && typeof calendarInstance.destroy === 'function') { calendarInstance.destroy(); calendarInstance = null;}
+             else {
+                 // Not logged in - show not-auth screen
+                 if (calendarObserver) { calendarObserver.disconnect(); calendarObserver = null; }
+                 if (calendarInstance && typeof calendarInstance.destroy === 'function') { calendarInstance.destroy(); calendarInstance = null; }
                  hideLoading();
+                 if(notAuthEl) notAuthEl.style.display = 'flex';
+                 if(dashMain) dashMain.style.display = 'none';
              }
          });
 
-        // --- Initial Load & Footer Year ---
-        document.addEventListener('DOMContentLoaded', () => { /* ... كما هي ... */
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
               showLoading("جاري التحقق من تسجيل الدخول...");
-              if(currentYearSpan) { currentYearSpan.textContent = new Date().getFullYear(); }
           });
 
         // --- Print Function ---
