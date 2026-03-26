@@ -1,22 +1,67 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#1B4332">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>لوحة المتابعة - منارة الحفظ</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="dashboard.css">
-    <link href="vanilla-calendar.min.css" rel="stylesheet">
-    <script src="vanilla-calendar.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#1B4332">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="منارة الحفظ">
+  <title>لوحة المتابعة - منارة الحفظ</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="app.css">
+  <link href="vanilla-calendar.min.css" rel="stylesheet">
+  <script src="vanilla-calendar.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
+  <script>if(navigator.serviceWorker)navigator.serviceWorker.register('./sw.js').catch(()=>{});</script>
 
-    <style>/* legacy overrides removed - see dashboard.css */
+  <style>
+    /* Dashboard-specific additions on top of app.css */
+    .dash-wrap { max-width:1280px; margin:0 auto; padding:24px 16px; }
+    .dash-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; align-items:start; }
+    #sec-daily-task { grid-column:1/3; }
+    #sec-stats      { grid-column:1/3; }
+    #sec-progress   { grid-column:1/2; }
+    #sec-calendar   { grid-column:2/3; grid-row:3/5; }
+    #sec-streaks    { grid-column:1/2; }
+    @media(max-width:860px){ .dash-grid{grid-template-columns:1fr;} #sec-daily-task,#sec-stats,#sec-progress,#sec-streaks,#sec-calendar{grid-column:1;grid-row:auto;} }
+    .progress-label{display:flex;justify-content:space-between;align-items:center;font-size:.82em;color:var(--c-text-3);margin-bottom:6px;}
+    .progress-plan-name{font-size:.92em;font-weight:700;color:var(--c-primary);margin-bottom:10px;}
+    [data-theme="dark"] .progress-plan-name{color:var(--c-gold-l);}
+    .quick-list{list-style:none;margin-top:4px;}
+    .quick-list li{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--c-border);font-size:.9em;}
+    .quick-list li:last-child{border:none;}
+    .quick-list li strong{color:var(--c-text-2);}
+    .quick-list li span{color:var(--c-primary);font-weight:700;font-size:1.05em;}
+    [data-theme="dark"] .quick-list li span{color:var(--c-gold-l);}
+    #load-dash{position:fixed;inset:0;background:var(--c-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:400;transition:opacity .4s,visibility .4s;}
+    #load-dash.gone{opacity:0;visibility:hidden;pointer-events:none;}
+    .ld-spinner{width:40px;height:40px;border:3px solid var(--c-border);border-top-color:var(--c-primary);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:14px;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .ld-msg{color:var(--c-text-2);font-size:.95em;}
+    .not-auth{display:flex;align-items:center;justify-content:center;min-height:60vh;}
+    .not-auth-box{text-align:center;padding:40px;}
+    .not-auth-box h2{font-family:'Amiri',serif;color:var(--c-primary);}
+    [data-theme="dark"] .not-auth-box h2{color:var(--c-gold-l);}
+    .streak-grid{display:flex;flex-wrap:wrap;gap:10px;}
+    .streak-item{flex:1;min-width:100px;background:var(--c-bg-3);border:1.5px solid var(--c-border);border-radius:var(--rad-s);padding:12px;text-align:center;}
+    .streak-item .si-val{font-size:1.7em;font-weight:700;color:var(--c-primary);display:block;}
+    [data-theme="dark"] .streak-item .si-val{color:var(--c-gold-l);}
+    .streak-item .si-lbl{font-size:.72em;color:var(--c-text-3);}
+    .level-display{margin-top:12px;padding:10px;background:var(--c-bg);border-radius:var(--rad-s);border:1px solid var(--c-border);text-align:center;}
+    .level-display .lv-name{font-weight:700;color:var(--c-primary);font-size:.95em;}
+    [data-theme="dark"] .level-display .lv-name{color:var(--c-gold-l);}
+    .level-display .lv-sub{font-size:.75em;color:var(--c-text-3);margin-top:2px;}
+    /* calendar override */
+    #calendar-container{direction:ltr;width:100%;max-width:100%;min-height:260px;}
+    .vc-legend{display:flex;gap:12px;justify-content:center;margin-top:10px;flex-wrap:wrap;}
+    .vc-leg-item{display:flex;align-items:center;gap:5px;font-size:.75em;color:var(--c-text-3);}
+    .vc-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  </style>
         /* --- General Styles --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Tajawal', sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.7; }
@@ -177,77 +222,150 @@
 </head>
 <body>
 
-    <div class="container">
+<!-- Loading -->
+<div id="load-dash">
+  <div class="ld-spinner"></div>
+  <span class="ld-msg" id="ld-msg">جاري التحقق من تسجيل الدخول...</span>
+</div>
 
-        <header class="dashboard-header">
-            <div class="logo"><a href="index.html"><h1>🕌 منارة الحفظ</h1></a></div>
-            <nav class="dash-nav-links">
-                <a href="dashboard.html" class="active">لوحة المتابعة</a>
-                <a href="plangen2.html">الجدول التفصيلي</a>
-                <a href="index.html">الرئيسية</a>
-            </nav>
-        </header>
+<!-- Header -->
+<header class="app-header">
+  <div class="header-brand">
+    <a href="index.html"><span class="brand-icon">🕌</span><span class="brand-name">منارة الحفظ</span></a>
+  </div>
+  <nav class="header-nav">
+    <a href="index.html">الرئيسية</a>
+    <a href="dashboard.html" class="active">لوحة المتابعة</a>
+    <a href="plangen2.html">الجدول التفصيلي</a>
+  </nav>
+  <div class="header-actions">
+    <button class="theme-toggle" id="theme-btn" title="تبديل المظهر">🌙</button>
+    <button class="hamburger" id="hamburger">☰</button>
+  </div>
+</header>
 
-        <div id="loading-indicator">جاري التحميل...</div>
-
-        <main id="dashboard-content" style="display: none;">
-
-            <div class="dashboard-grid">
-
-                <section id="daily-task" class="card">
-                    <div class="daily-task-header">
-                        <h3>🌟 واجب اليوم</h3>
-                        <span class="task-date-badge" id="today-date-display">...</span>
-                    </div>
-                    <div id="daily-task-content"><p><i>يتم تحديد الواجب...</i></p></div>
-                </section>
-
-                <section id="plan-progress" class="card">
-                    <h3>الخطة والتقدم العام</h3>
-                    <p><strong>خطتك الحالية:</strong> <span id="current-plan-name">-</span></p>
-                    <p><strong>التقدم الكلي:</strong></p>
-                    <div class="progress-bar-container">
-                        <div id="progress-bar-value" class="progress-bar-value" style="width: 0%;">0%</div>
-                    </div>
-                    <p style="font-size: 0.9em; text-align: center; margin-top: 5px;">
-                        <span id="completed-pages-progress">0</span> / 604 صفحة
-                    </p>
-                </section>
-
-                <section id="quick-stats" class="card">
-                    <h3>إحصائيات سريعة</h3>
-                    <ul>
-                        <li><strong>الصفحات المحفوظة:</strong> <span id="stat-memorized">0</span></li>
-                        <li><strong>الصفحات المتقنة:</strong> <span id="stat-perfected">0</span></li>
-                        <li><strong>الصفحات المربوطة:</strong> <span id="stat-linked">0</span></li>
-                        <li><strong>أيام الأعذار:</strong> <span id="stat-excuses">0</span></li>
-                    </ul>
-                </section>
-
-                <section id="calendar-view" class="card">
-                    <div class="card-header">
-                      <h3>التقويم والتتبع المرئي</h3>
-                    </div>
-                    <div id="calendar-container">
-                        <p class="text" style="text-align: center; margin-top: 20px;">(جاري تحميل التقويم...)</p>
-                    </div>
-                    <div id="calendar-streak-info" class="streak-info-condensed" style="display: none;">
-                        </div>
-                </section>
-
-                <section id="competition-section" class="card" style="display: none;">...</section>
-                <section id="badges-section" class="card" style="display: none;">...</section>
-            </div>
-        </main>
-
-        <footer class="main-footer">
-             <p>&copy; <span id="current-year">2025</span> خطة حفظ القرآن الكريم. جميع الحقوق محفوظة.</p>
-         </footer>
+<!-- Mobile Nav -->
+<div class="mobile-nav" id="mobile-nav">
+  <div class="mobile-nav-panel">
+    <div class="mobile-nav-header">
+      <span class="mobile-nav-title">🕌 القائمة</span>
+      <button class="mobile-close" id="mobile-close">✕</button>
     </div>
+    <a href="index.html" class="mobile-nav-link">🏠 الرئيسية</a>
+    <a href="dashboard.html" class="mobile-nav-link active">📊 لوحة المتابعة</a>
+    <a href="plangen2.html" class="mobile-nav-link">📋 الجدول التفصيلي</a>
+    <hr style="border-color:var(--c-border);margin:8px 0">
+    <button onclick="auth.signOut().then(()=>window.location='index.html')" class="mobile-nav-link" style="background:none;border:none;cursor:pointer;font-family:inherit;width:100%;text-align:right;">🚪 تسجيل الخروج</button>
+  </div>
+</div>
+
+<!-- Not Authenticated -->
+<div id="not-auth" style="display:none;" class="not-auth">
+  <div class="not-auth-box">
+    <div style="font-size:3em;margin-bottom:10px;">🔒</div>
+    <h2>يرجى تسجيل الدخول</h2>
+    <p style="color:var(--c-text-3);margin-bottom:20px;">للوصول إلى لوحة المتابعة</p>
+    <a href="index.html" class="btn btn-primary btn-lg">🔑 تسجيل الدخول</a>
+  </div>
+</div>
+
+<!-- Main Dashboard -->
+<main id="dash-main" style="display:none;" class="page-fade">
+  <div class="dash-wrap">
+    <div class="dash-grid">
+
+      <!-- DAILY TASK -->
+      <section id="sec-daily-task" class="card">
+        <div class="task-header">
+          <div class="card-title" style="margin:0;border:none;padding:0;">🌟 واجب اليوم</div>
+          <span class="task-date-pill" id="today-date-display">...</span>
+        </div>
+        <div id="daily-task-content" style="margin-top:14px;"><p><i>يتم تحديد الواجب...</i></p></div>
+      </section>
+
+      <!-- STATS STRIP -->
+      <section id="sec-stats" style="background:none;border:none;box-shadow:none;padding:0;">
+        <div class="stats-strip">
+          <div class="stat-card"><span class="stat-icon">📖</span><span class="stat-val" id="stat-memorized">0</span><div class="stat-lbl">صفحة محفوظة</div></div>
+          <div class="stat-card"><span class="stat-icon">⭐</span><span class="stat-val" id="stat-perfected">0</span><div class="stat-lbl">صفحة متقنة</div></div>
+          <div class="stat-card"><span class="stat-icon">🔗</span><span class="stat-val" id="stat-linked">0</span><div class="stat-lbl">صفحة مربوطة</div></div>
+          <div class="stat-card"><span class="stat-icon">📅</span><span class="stat-val" id="stat-excuses">0</span><div class="stat-lbl">يوم عذر</div></div>
+        </div>
+      </section>
+
+      <!-- PROGRESS -->
+      <section id="sec-progress" class="card">
+        <div class="card-title">📈 التقدم في الحفظ</div>
+        <div class="progress-plan-name" id="current-plan-name">-</div>
+        <div class="progress-label">
+          <span>التقدم الكلي</span>
+          <span><span id="completed-pages-progress">0</span> / 604 صفحة</span>
+        </div>
+        <div class="progress-wrap">
+          <div id="progress-bar-value" class="progress-fill" style="width:0%">0%</div>
+        </div>
+        <div style="margin-top:18px;">
+          <div class="progress-label"><span>الصفحات المربوطة</span><span id="linked-pct">0%</span></div>
+          <div class="progress-wrap" style="height:12px;margin-bottom:10px;">
+            <div id="linked-bar" class="progress-fill" style="width:0%;background:linear-gradient(to left,#C9A84C,#A07A2A);"></div>
+          </div>
+          <div class="progress-label"><span>الصفحات المتقنة</span><span id="perf-pct">0%</span></div>
+          <div class="progress-wrap" style="height:12px;">
+            <div id="perf-bar" class="progress-fill" style="width:0%;background:linear-gradient(to left,#2563eb,#1e40af);"></div>
+          </div>
+        </div>
+        <div style="margin-top:16px;">
+          <div class="progress-label"><span>معلومات الخطة</span></div>
+          <ul class="quick-list" id="plan-info-list"></ul>
+        </div>
+      </section>
+
+      <!-- CALENDAR -->
+      <section id="sec-calendar" class="card">
+        <div class="card-title">📅 التقويم والمتابعة</div>
+        <div id="calendar-container"><p style="text-align:center;color:var(--c-text-3);">جاري التحميل...</p></div>
+        <div class="vc-legend">
+          <div class="vc-leg-item"><div class="vc-dot" style="background:#16a34a"></div>يوم مكتمل</div>
+          <div class="vc-leg-item"><div class="vc-dot" style="background:#dc2626"></div>يوم عذر</div>
+          <div class="vc-leg-item"><div class="vc-dot" style="background:var(--c-primary)"></div>اليوم</div>
+        </div>
+        <div id="calendar-streak-info" style="display:none"></div>
+      </section>
+
+      <!-- STREAKS -->
+      <section id="sec-streaks" class="card">
+        <div class="card-title">🏅 السلاسل والمستوى</div>
+        <div class="streak-grid" id="streak-area"></div>
+        <div class="level-display" id="level-area"></div>
+      </section>
+
+    </div><!-- end grid -->
+  </div><!-- end wrap -->
+</main>
+
+<footer class="app-footer">
+  <p>منارة الحفظ &mdash; رفيقك في رحلة حفظ القرآن الكريم 🌟</p>
+</footer>
 
     <script>
+        // === THEME ===
+        (function(){
+          const t = localStorage.getItem('theme')==='dark';
+          document.documentElement.setAttribute('data-theme', t ? 'dark':'light');
+        })();
+        document.addEventListener('DOMContentLoaded', function(){
+          const btn = document.getElementById('theme-btn');
+          const isDark = () => document.documentElement.getAttribute('data-theme')==='dark';
+          if(btn){ btn.textContent = isDark() ? '\u2600\uFE0F':'\uD83C\uDF19'; btn.onclick = () => { const d=!isDark(); document.documentElement.setAttribute('data-theme',d?'dark':'light'); localStorage.setItem('theme',d?'dark':'light'); btn.textContent=d?'\u2600\uFE0F':'\uD83C\uDF19'; }; }
+          // mobile nav
+          const h=document.getElementById('hamburger'),mn=document.getElementById('mobile-nav'),mc=document.getElementById('mobile-close');
+          if(h) h.onclick=()=>mn.classList.add('open');
+          if(mc) mc.onclick=()=>mn.classList.remove('open');
+          if(mn) mn.onclick=e=>{if(e.target===mn)mn.classList.remove('open');};
+        });
+
         // --- Firebase Config ---
-        const firebaseConfig = { /* ... */ apiKey: "AIzaSyDuUebu7Qzz3JnTfa-58EIPZjOcrkmdGHU", authDomain: "quranplan2.firebaseapp.com", projectId: "quranplan2", storageBucket: "quranplan2.appspot.com", messagingSenderId: "1098692856811", appId: "1:1098692856811:web:923bca3a54fd78b1b267ae" };
+        const firebaseConfig = { apiKey: "AIzaSyDuUebu7Qzz3JnTfa-58EIPZjOcrkmdGHU", authDomain: "quranplan2.firebaseapp.com", projectId: "quranplan2", storageBucket: "quranplan2.appspot.com", messagingSenderId: "1098692856811", appId: "1:1098692856811:web:923bca3a54fd78b1b267ae" };
 
         // --- Initialize Firebase ---
          try { firebase.initializeApp(firebaseConfig); } catch (e) { console.error("Firebase initialization error:", e); }
@@ -255,8 +373,8 @@
         const db = firebase.firestore();
 
         // --- DOM References ---
-        const loadingIndicator = document.getElementById('loading-indicator');
-        const dashboardContent = document.getElementById('dashboard-content');
+        const loadingIndicator = document.getElementById('load-dash'); // compat
+        const dashboardContent = document.getElementById('dash-main'); // compat
         const dailyTaskContent = document.getElementById('daily-task-content');
         const currentPlanNameSpan = document.getElementById('current-plan-name');
         const progressBarValue = document.getElementById('progress-bar-value');
@@ -268,7 +386,7 @@
         const todayDateSpan = document.getElementById('today-date-display');
         const calendarContainer = document.getElementById('calendar-container');
         const calendarStreakInfoDiv = document.getElementById('calendar-streak-info');
-        const currentYearSpan = document.getElementById('current-year');
+        const currentYearSpan = null; // removed from new layout
 
         // --- Constants ---
         const totalQuranPages = 604;
@@ -292,10 +410,64 @@
         function getPlanData(originalIndex) { const index = parseInt(originalIndex); if (isNaN(index) || index < 0 || index >= initialTotalRows) { return null; } let fromPage = '', toPage = ''; if (index < 299) { fromPage = index * 2 + 1; toPage = fromPage + 1; } else if (index === 299) { fromPage = 601; toPage = 604; } return { fromPage: fromPage, toPage: toPage, surah: surahs[index] || '', linkFrom: linkFromData[index] ?? '', linkTo: linkToData[index] ?? '', reviewFrom: reviewFromData[index] ?? '', reviewTo: reviewToData[index] ?? '', round: calculateRoundNumber(index) }; }
         function calculateRoundNumber(originalIndex) { if (originalIndex < 32 || !reviewFromData || reviewFromData[originalIndex] == null || reviewFromData[originalIndex] === '') { return ''; } let reviewDataStartIndex = 32; let reviewCounter = 0; for(let i = reviewDataStartIndex; i <= originalIndex; i++){ if(reviewFromData[i] != null && reviewFromData[i] !== '') reviewCounter++; } if (reviewCounter === 0) return ''; return Math.ceil(reviewCounter / 6); }
 
-        // --- UI Update Functions ---
-        function showLoading(message = "جاري التحميل...") { if(loadingIndicator){ loadingIndicator.textContent = message; loadingIndicator.style.display = 'block';} if(dashboardContent) dashboardContent.style.display = 'none'; }
-        function hideLoading() { if(loadingIndicator) loadingIndicator.style.display = 'none'; }
-        function displayDashboard() { hideLoading(); if(dashboardContent) dashboardContent.style.display = 'block'; }
+        // --- UI State helpers ---
+        function showLoading(msg = 'جاري التحميل...') { if(ldMsg) ldMsg.textContent=msg; if(loadDash) loadDash.classList.remove('gone'); if(dashMain) dashMain.style.display='none'; if(notAuthEl) notAuthEl.style.display='none'; }
+        function hideLoading() { if(loadDash) loadDash.classList.add('gone'); }
+        function displayDashboard() { hideLoading(); if(dashMain) dashMain.style.display='block'; }
+
+        // --- displayProgress (updated) ---
+        function displayProgress(stats) {
+            if (!currentPlanData) return;
+            const planType = currentPlanData.planType || '2';
+            const planLabel = planType === 'rev' ? 'خطة المراجعة' : `خطة ${planType} صفحة/يوم`;
+            const mPages = Math.min(stats.memorizedPages||0, totalQuranPages);
+            const lPages = Math.min(stats.linkedTasks||0, totalQuranPages);
+            const pPages = Math.min(stats.perfectedTasks||0, totalQuranPages);
+            const pct = v => totalQuranPages > 0 ? Math.min(100,(v/totalQuranPages)*100).toFixed(1) : 0;
+            if (currentPlanNameSpan) currentPlanNameSpan.textContent = `📘 ${planLabel} — ${currentPlanData.studentName||'طالب العلم'}`;
+            if (progressBarValue) { progressBarValue.style.width=`${pct(mPages)}%`; progressBarValue.textContent=`${pct(mPages)}%`; }
+            if (completedPagesProgressSpan) completedPagesProgressSpan.textContent = mPages;
+            const lb = document.getElementById('linked-bar'), lp = document.getElementById('linked-pct');
+            const pb = document.getElementById('perf-bar'), pp = document.getElementById('perf-pct');
+            if(lb) lb.style.width=`${pct(lPages)}%`; if(lp) lp.textContent=`${pct(lPages)}%`;
+            if(pb) pb.style.width=`${pct(pPages)}%`; if(pp) pp.textContent=`${pct(pPages)}%`;
+            const list = document.getElementById('plan-info-list');
+            if (list && currentPlanData.startDate) {
+                const sd = new Date(currentPlanData.startDate+'T00:00:00Z');
+                const today = new Date(); today.setUTCHours(0,0,0,0);
+                const days = Math.max(0,Math.floor((today-sd)/86400000));
+                list.innerHTML = `
+                    <li><strong>بداية الخطة</strong><span>${currentPlanData.startDate}</span></li>
+                    <li><strong>أيام منذ البداية</strong><span>${days} يوم</span></li>
+                    <li><strong>أيام الأعذار</strong><span>${stats.excuseCount||0} يوم</span></li>
+                    <li><strong>الصفحات المتبقية</strong><span>${totalQuranPages-mPages} صفحة</span></li>
+                    <li><strong>التكرار الأقصى</strong><span>${currentPlanData.repetitionMax||7}×</span></li>
+                `;
+            }
+        }
+        function displayStats(stats) {
+            if (statMemorized) statMemorized.textContent = stats.memorizedPages||0;
+            if (statPerfected) statPerfected.textContent = stats.perfectedTasks||0;
+            if (statLinked) statLinked.textContent = stats.linkedTasks||0;
+            if (statExcuses) statExcuses.textContent = stats.excuseCount||0;
+        }
+        function displayStreakInfoInCalendarCard(streakData) {
+            const area = document.getElementById('streak-area');
+            const lvArea = document.getElementById('level-area');
+            if (!area || !streakData) return;
+            area.innerHTML = `
+                <div class="streak-item"><span class="si-val">🔥 ${streakData.currentStreak}</span><div class="si-lbl">سلسلة حالية</div></div>
+                <div class="streak-item"><span class="si-val">🏆 ${streakData.longestStreak}</span><div class="si-lbl">أفضل سلسلة</div></div>
+                <div class="streak-item"><span class="si-val">✅ ${streakData.totalCompleted}</span><div class="si-lbl">يوم مكتمل</div></div>
+                <div class="streak-item"><span class="si-val">📅 ${streakData.totalExcuses}</span><div class="si-lbl">يوم عذر</div></div>
+            `;
+            if (lvArea) {
+                const titles = ['','مبتدئ 🌱','متعلم 📖','منتظم 🌟','متقدم 🚀','متقن ⚡','حافظ 🏆'];
+                const level = streakData.level||1;
+                const title = titles[Math.min(level,titles.length-1)]||'🌱';
+                lvArea.innerHTML = `<div class="lv-name">المستوى ${level}: ${title}</div><div class="lv-sub">استمر في التقدم للوصول للمستوى التالي</div>`;
+            }
+        }
 
         // --- Stats Calculation ---
         function calculateDashboardStats(tableRows) { /* ... كما هي ... */ let lastCompletedPage = 0; let linkedTasks = 0; let perfectedTasks = 0; let excuseCount = 0; if (!tableRows) return { memorizedPages: 0, linkedTasks: 0, perfectedTasks: 0, excuseCount: 0 }; tableRows.forEach(row => { if (row.type === 'excuse') { excuseCount++; } else if (row.type === 'plan' && row.state?.completed) { const planInfo = getPlanData(row.originalSequence); if (planInfo && planInfo.toPage) { const pageNum = parseInt(planInfo.toPage); if (!isNaN(pageNum)) { lastCompletedPage = Math.max(lastCompletedPage, pageNum); } } if (planInfo && planInfo.linkTo !== '' && row.state.linked) { linkedTasks++; } if (planInfo && planInfo.reviewTo !== '' && row.state.reviewed) { perfectedTasks++; } } }); const memorizedPages = Math.min(lastCompletedPage, totalQuranPages); return { memorizedPages: memorizedPages, linkedTasks: linkedTasks, perfectedTasks: perfectedTasks, excuseCount: excuseCount }; }
