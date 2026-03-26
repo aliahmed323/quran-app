@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl" data-theme="light">
 <head>
   <meta charset="UTF-8">
@@ -223,8 +223,10 @@
         const db = firebase.firestore();
 
         // --- DOM References ---
-        const loadingIndicator = document.getElementById('load-dash'); // compat
-        const dashboardContent = document.getElementById('dash-main'); // compat
+        const loadDashEl = document.getElementById('load-dash');
+        const ldMsgEl = document.getElementById('ld-msg');
+        const notAuthEl = document.getElementById('not-auth');
+        const dashMain = document.getElementById('dash-main');
         const dailyTaskContent = document.getElementById('daily-task-content');
         const currentPlanNameSpan = document.getElementById('current-plan-name');
         const progressBarValue = document.getElementById('progress-bar-value');
@@ -236,7 +238,19 @@
         const todayDateSpan = document.getElementById('today-date-display');
         const calendarContainer = document.getElementById('calendar-container');
         const calendarStreakInfoDiv = document.getElementById('calendar-streak-info');
-        const currentYearSpan = null; // removed from new layout
+
+        // --- Utility Functions ---
+        function showLoading(msg) {
+            if(ldMsgEl) ldMsgEl.textContent = msg || 'جاري التحميل...';
+            if(loadDashEl) { loadDashEl.classList.remove('gone'); loadDashEl.style.display = ''; }
+        }
+        function hideLoading() {
+            if(loadDashEl) loadDashEl.classList.add('gone');
+        }
+        function displayDashboard() {
+            if(dashMain) dashMain.style.display = 'block';
+            if(notAuthEl) notAuthEl.style.display = 'none';
+        }
 
         // --- Constants ---
         const totalQuranPages = 604;
