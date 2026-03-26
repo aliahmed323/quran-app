@@ -56,9 +56,14 @@ a:hover { color:var(--c-gold-dark); }
 .dashboard-header .logo h1 {
   margin:0;
   font-size:1.5em;
-  color:var(--c-gold-light);
+  color: var(--c-gold-light);
   font-family:'Amiri',serif;
   letter-spacing:0.5px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+.dashboard-header .logo a {
+  text-decoration: none;
+  color: inherit;
 }
 .dash-nav-links { display:flex; gap:14px; align-items:center; }
 .dash-nav-links a {
