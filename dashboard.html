@@ -2,20 +2,21 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة المتابعة - خطة حفظ القرآن</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#1B4332">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>لوحة المتابعة - منارة الحفظ</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="dashboard.css">
     <link href="vanilla-calendar.min.css" rel="stylesheet">
     <script src="vanilla-calendar.min.js"></script>
-
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
 
-    <style>
+    <style>/* legacy overrides removed - see dashboard.css */
         /* --- General Styles --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Tajawal', sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.7; }
@@ -179,7 +180,12 @@
     <div class="container">
 
         <header class="dashboard-header">
-            <div class="logo"><h1>خطة حفظ القرآن الكريم</h1></div>
+            <div class="logo"><a href="index.html"><h1>🕌 منارة الحفظ</h1></a></div>
+            <nav class="dash-nav-links">
+                <a href="dashboard.html" class="active">لوحة المتابعة</a>
+                <a href="plangen2.html">الجدول التفصيلي</a>
+                <a href="index.html">الرئيسية</a>
+            </nav>
         </header>
 
         <div id="loading-indicator">جاري التحميل...</div>
@@ -189,9 +195,11 @@
             <div class="dashboard-grid">
 
                 <section id="daily-task" class="card">
-                    <h3>🌟 واجب اليوم (<span id="today-date-display">...</span>)</h3>
-                    <div id="daily-task-content"> <p><i>يتم تحديد الواجب...</i></p> </div>
-                    <a href="plangen2.html" class="plan-link">الذهاب إلى جدول الخطة التفصيلي &raquo;</a>
+                    <div class="daily-task-header">
+                        <h3>🌟 واجب اليوم</h3>
+                        <span class="task-date-badge" id="today-date-display">...</span>
+                    </div>
+                    <div id="daily-task-content"><p><i>يتم تحديد الواجب...</i></p></div>
                 </section>
 
                 <section id="plan-progress" class="card">
@@ -478,7 +486,280 @@
 
 
         // --- Dashboard Display Functions ---
-        function displayDailyTask() { /* ... كما هي ... */ if (!dailyTaskContent || !currentPlanData || !currentPlanData.tableRows) { if(dailyTaskContent) dailyTaskContent.innerHTML = '<p><i>جاري تحميل بيانات الخطة...</i></p>'; if (todayDateSpan) todayDateSpan.textContent = formatDate(new Date()); return; } const tableRows = currentPlanData.tableRows; const todayStr = formatDate(new Date()); if (todayDateSpan) todayDateSpan.textContent = todayStr; const todayRow = tableRows.find(row => row.displayDate === todayStr); if (!todayRow) { dailyTaskContent.innerHTML = '<p>لا يوجد واجب مقرر في الخطة لهذا اليوم.</p>'; } else if (todayRow.type === 'excuse') { dailyTaskContent.innerHTML = `<p style="color: orange; font-weight:bold;">لديك عذر مسجل لهذا اليوم (${todayRow.excuseType || ''}).</p>`; } else if (todayRow.type === 'plan' && todayRow.state?.completed) { dailyTaskContent.innerHTML = '<p style="color: green; font-weight: bold;">✅ الحمد لله، لقد أتممت واجب هذا اليوم!</p>'; } else if (todayRow.type === 'plan' && (!todayRow.state || !todayRow.state.completed)) { const taskDetails = getPlanData(todayRow.originalSequence); if (taskDetails) { let taskHTML = `<h4>المطلوب إنجازه اليوم (${todayStr}):</h4>`; taskHTML += `<p><strong>الحفظ الجديد:</strong> ${taskDetails.fromPage ? `ص ${taskDetails.fromPage} - ${taskDetails.toPage}` : 'لا يوجد'} (${taskDetails.surah || 'مراجعة'})</p>`; taskHTML += `<p><strong>الربط:</strong> ${taskDetails.linkFrom ? `من ${taskDetails.linkFrom} إلى ${taskDetails.linkTo}` : 'لا يوجد'}</p>`; taskHTML += `<p><strong>المراجعة:</strong> ${taskDetails.reviewFrom ? `من ${taskDetails.reviewFrom} إلى ${taskDetails.reviewTo}` : 'لا يوجد'} ${taskDetails.round ? `(ج${taskDetails.round})` : ''}</p>`; dailyTaskContent.innerHTML = taskHTML; } else { dailyTaskContent.innerHTML = `<p><i>خطأ: لم يتم العثور على تفاصيل الواجب للفهرس ${todayRow.originalSequence}.</i></p>`; } } else { dailyTaskContent.innerHTML = '<p><i>واجب اليوم لم يكتمل بعد أو حالته غير معروفة.</i></p>'; } }
+        // --- Audio Recording State ---
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let recordings = [];
+        let recTimerInterval = null;
+        let recSeconds = 0;
+
+        function formatRecTime(s) {
+            const m = Math.floor(s/60).toString().padStart(2,'0');
+            const sec = (s%60).toString().padStart(2,'0');
+            return `${m}:${sec}`;
+        }
+
+        async function toggleRecording() {
+            const btn = document.getElementById('record-btn');
+            const indicator = document.getElementById('rec-indicator');
+            const recList = document.getElementById('recordings-list');
+            if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const url = URL.createObjectURL(blob);
+                        recordings.push(url);
+                        const idx = recordings.length - 1;
+                        const item = document.createElement('div');
+                        item.className = 'rec-item';
+                        item.innerHTML = `<audio controls src="${url}"></audio><button class="rec-delete" onclick="deleteRecording(${idx},this)" title="حذف">🗑️</button>`;
+                        recList.appendChild(item);
+                        stream.getTracks().forEach(t => t.stop());
+                    };
+                    mediaRecorder.start();
+                    recSeconds = 0;
+                    recTimerInterval = setInterval(() => {
+                        recSeconds++;
+                        const timerEl = document.getElementById('rec-timer');
+                        if(timerEl) timerEl.textContent = formatRecTime(recSeconds);
+                    }, 1000);
+                    btn.className = 'record-btn recording';
+                    btn.innerHTML = '⏹️ إيقاف التسجيل';
+                    if(indicator) { indicator.classList.add('visible'); }
+                } catch(e) {
+                    alert('لم يتم الوصول إلى الميكروفون. تأكد من الصلاحيات.');
+                }
+            } else {
+                clearInterval(recTimerInterval);
+                mediaRecorder.stop();
+                btn.className = 'record-btn idle';
+                btn.innerHTML = '🎙️ تسجيل التلاوة';
+                if(indicator) { indicator.classList.remove('visible'); }
+            }
+        }
+
+        function deleteRecording(idx, btn) {
+            URL.revokeObjectURL(recordings[idx]);
+            btn.parentElement.remove();
+        }
+
+        // --- Counter Management ---
+        let todayCounters = { rep: 0, yestRep: 0, listen: 0, tafsir: false };
+
+        function loadCountersFromRow(row) {
+            if (!row || !row.state) return;
+            todayCounters.rep      = row.state.rep      || 0;
+            todayCounters.yestRep  = row.state.yestRep  || 0;
+            todayCounters.listen   = row.state.listen   || 0;
+            todayCounters.tafsir   = row.state.interp   || false;
+        }
+
+        function updateCounterDisplay(id, val) {
+            const el = document.getElementById(id);
+            if(el) el.textContent = val;
+        }
+
+        function changeCounter(field, delta, maxVal) {
+            todayCounters[field] = Math.max(0, Math.min(maxVal || 99, todayCounters[field] + delta));
+            const idMap = { rep: 'cnt-rep', yestRep: 'cnt-yest', listen: 'cnt-listen' };
+            updateCounterDisplay(idMap[field], todayCounters[field]);
+            saveTaskCounters();
+        }
+
+        function toggleTafsir() {
+            todayCounters.tafsir = !todayCounters.tafsir;
+            const btn = document.getElementById('tafsir-toggle');
+            if(btn) {
+                btn.classList.toggle('on', todayCounters.tafsir);
+            }
+            saveTaskCounters();
+        }
+
+        async function saveTaskCounters() {
+            if (!currentUser || !currentPlanData) return;
+            const tableRows = currentPlanData.tableRows;
+            const todayStr = formatDate(new Date());
+            const idx = tableRows.findIndex(r => r.displayDate === todayStr && r.type === 'plan');
+            if (idx === -1) return;
+            tableRows[idx].state = {
+                ...tableRows[idx].state,
+                rep:    todayCounters.rep,
+                yestRep:todayCounters.yestRep,
+                listen: todayCounters.listen,
+                interp: todayCounters.tafsir
+            };
+            currentPlanData.tableRows = tableRows;
+            try {
+                await db.collection('quranPlans').doc(currentUser.uid).update({
+                    tableRows: tableRows,
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } catch(e) { console.error('Save counters error:', e); }
+        }
+
+        async function markTodayComplete() {
+            if (!currentUser || !currentPlanData) return;
+            const tableRows = currentPlanData.tableRows;
+            const todayStr = formatDate(new Date());
+            const idx = tableRows.findIndex(r => r.displayDate === todayStr && r.type === 'plan');
+            if (idx === -1) return;
+            tableRows[idx].state = {
+                ...tableRows[idx].state,
+                completed: true,
+                rep:    todayCounters.rep,
+                yestRep:todayCounters.yestRep,
+                listen: todayCounters.listen,
+                interp: todayCounters.tafsir
+            };
+            currentPlanData.tableRows = tableRows;
+            const completeBtn = document.getElementById('complete-btn');
+            if(completeBtn) { completeBtn.disabled = true; completeBtn.textContent = 'جاري الحفظ...'; }
+            try {
+                await db.collection('quranPlans').doc(currentUser.uid).update({
+                    tableRows: tableRows,
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                displayDailyTask();
+                const stats = calculateDashboardStats(currentPlanData.tableRows);
+                const streakData = calculateStreaksAndLevel(currentPlanData.tableRows);
+                displayProgress(stats);
+                displayStats(stats);
+                displayStreakInfoInCalendarCard(streakData);
+                initializeAndColorCalendar(currentPlanData.tableRows);
+            } catch(e) {
+                console.error('Complete error:', e);
+                alert('حدث خطأ أثناء الحفظ.');
+                if(completeBtn) { completeBtn.disabled = false; completeBtn.textContent = '✅ تأكيد إتمام الواجب'; }
+            }
+        }
+
+        function displayDailyTask() {
+            if (!dailyTaskContent || !currentPlanData || !currentPlanData.tableRows) {
+                if(dailyTaskContent) dailyTaskContent.innerHTML = '<p><i>جاري تحميل بيانات الخطة...</i></p>';
+                if (todayDateSpan) todayDateSpan.textContent = formatDate(new Date());
+                return;
+            }
+            const tableRows = currentPlanData.tableRows;
+            const todayStr = formatDate(new Date());
+            if (todayDateSpan) todayDateSpan.textContent = todayStr;
+            const todayRow = tableRows.find(row => row.displayDate === todayStr);
+            const repMax = currentPlanData.repetitionMax || 20;
+
+            if (!todayRow) {
+                dailyTaskContent.innerHTML = '<p>لا يوجد واجب مقرر في الخطة لهذا اليوم.</p>';
+                return;
+            }
+            if (todayRow.type === 'excuse') {
+                dailyTaskContent.innerHTML = `<div class="task-excuse-banner">⚠️ لديك عذر مسجل لهذا اليوم (${todayRow.excuseType || 'عذر'}).</div>`;
+                return;
+            }
+            if (todayRow.type === 'plan' && todayRow.state?.completed) {
+                const d = getPlanData(todayRow.originalSequence);
+                dailyTaskContent.innerHTML = `
+                    <div class="task-completed-banner">
+                        ✅ ماشاء الله! أتممت واجب اليوم بنجاح 🎉
+                        ${d ? `<div style="margin-top:8px;font-size:0.85em;font-weight:400;">الحفظ: ص${d.fromPage}–${d.toPage} (${d.surah})</div>` : ''}
+                    </div>`;
+                return;
+            }
+            if (todayRow.type !== 'plan') {
+                dailyTaskContent.innerHTML = '<p><i>حالة غير معروفة.</i></p>';
+                return;
+            }
+
+            const taskDetails = getPlanData(todayRow.originalSequence);
+            if (!taskDetails) {
+                dailyTaskContent.innerHTML = `<p><i>خطأ: لم يتم العثور على تفاصيل الواجب (${todayRow.originalSequence}).</i></p>`;
+                return;
+            }
+
+            loadCountersFromRow(todayRow);
+            const pageFrom = taskDetails.fromPage || '';
+            const pageTo   = taskDetails.toPage || '';
+            const quranUrl = pageFrom ? `https://quran.com/?page=${pageFrom}` : 'https://quran.com/';
+
+            let html = `<div class="task-blocks">`;
+
+            // Memorization block
+            html += `<div class="task-block">
+                <div class="task-block-label"><span class="icon">📖</span> الحفظ الجديد</div>
+                <div class="task-block-value">${pageFrom ? `صفحة ${pageFrom} ← ${pageTo}` : 'لا يوجد حفظ جديد'}</div>
+                <div class="task-block-sub">${taskDetails.surah || ''}</div>
+                ${pageFrom ? `<a class="quran-page-link" href="${quranUrl}" target="_blank" rel="noopener">🔗 فتح الصفحة في القرآن</a>` : ''}
+            </div>`;
+
+            // Link block
+            if (taskDetails.linkFrom) {
+                html += `<div class="task-block">
+                    <div class="task-block-label"><span class="icon">🔗</span> الربط</div>
+                    <div class="task-block-value"> ${taskDetails.linkFrom} ← ${taskDetails.linkTo}</div>
+                </div>`;
+            }
+
+            // Review block
+            if (taskDetails.reviewFrom) {
+                html += `<div class="task-block">
+                    <div class="task-block-label"><span class="icon">🔄</span> المراجعة ${taskDetails.round ? `(جولة ${taskDetails.round})` : ''}</div>
+                    <div class="task-block-value">${taskDetails.reviewFrom} ← ${taskDetails.reviewTo}</div>
+                </div>`;
+            }
+            html += '</div>';
+
+            // Counters row
+            html += `<div class="counters-row">
+                <div class="counter-widget">
+                    <div class="counter-label">تكرار اليوم <small>الحد الأقصى: ${repMax}</small></div>
+                    <div class="counter-controls">
+                        <button class="counter-btn dec" onclick="changeCounter('rep',-1,${repMax})">−</button>
+                        <span class="counter-value" id="cnt-rep">${todayCounters.rep}</span>
+                        <button class="counter-btn inc" onclick="changeCounter('rep',1,${repMax})">+</button>
+                    </div>
+                </div>
+                <div class="counter-widget">
+                    <div class="counter-label">تكرار أمس <small>مراجعة الصفحة السابقة</small></div>
+                    <div class="counter-controls">
+                        <button class="counter-btn dec" onclick="changeCounter('yestRep',-1,${repMax})">−</button>
+                        <span class="counter-value" id="cnt-yest">${todayCounters.yestRep}</span>
+                        <button class="counter-btn inc" onclick="changeCounter('yestRep',1,${repMax})">+</button>
+                    </div>
+                </div>
+                <div class="counter-widget">
+                    <div class="counter-label">الاستماع <small>عدد مرات الاستماع</small></div>
+                    <div class="counter-controls">
+                        <button class="counter-btn dec" onclick="changeCounter('listen',-1)">−</button>
+                        <span class="counter-value" id="cnt-listen">${todayCounters.listen}</span>
+                        <button class="counter-btn inc" onclick="changeCounter('listen',1)">+</button>
+                    </div>
+                </div>
+                <div class="toggle-widget">
+                    <span class="toggle-label">📚 قراءة التفسير</span>
+                    <button class="toggle-switch ${todayCounters.tafsir ? 'on' : ''}" id="tafsir-toggle" onclick="toggleTafsir()"></button>
+                </div>
+            </div>`;
+
+            // Audio recorder
+            html += `<div class="audio-section">
+                <button class="record-btn idle" id="record-btn" onclick="toggleRecording()">🎙️ تسجيل التلاوة</button>
+                <div class="recording-indicator" id="rec-indicator">
+                    <div class="rec-dot"></div>
+                    <span>يسجّل...</span>
+                    <span class="rec-timer" id="rec-timer">00:00</span>
+                </div>
+                <div class="recordings-list" id="recordings-list"></div>
+            </div>`;
+
+            // Action buttons
+            html += `<div class="task-actions">
+                <button class="btn-complete" id="complete-btn" onclick="markTodayComplete()">✅ تأكيد إتمام الواجب</button>
+                <a href="plangen2.html" class="btn-plan-link">📋 الجدول التفصيلي</a>
+            </div>`;
+
+            dailyTaskContent.innerHTML = html;
+        }
         function displayProgress(stats) { /* ... كما هي ... */ if (!currentPlanData) return; const planType = currentPlanData.planType || '?'; const memorizedPages = stats.memorizedPages; const progressPercent = totalQuranPages > 0 ? Math.min(100, (memorizedPages / totalQuranPages) * 100).toFixed(0) : 0; if(currentPlanNameSpan) currentPlanNameSpan.textContent = `خطة ${planType} صفحات`; if(progressBarValue) { progressBarValue.style.width = `${progressPercent}%`; progressBarValue.textContent = `${progressPercent}%`; } if(completedPagesProgressSpan) completedPagesProgressSpan.textContent = memorizedPages; }
         function displayStats(stats) { /* ... كما هي ... */ if(statMemorized) statMemorized.textContent = stats.memorizedPages; if(statPerfected) statPerfected.textContent = stats.perfectedTasks; if(statLinked) statLinked.textContent = stats.linkedTasks; if(statExcuses) statExcuses.textContent = stats.excuseCount; }
 
