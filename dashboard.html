@@ -873,18 +873,36 @@
          }
 
         // --- Authentication Listener ---
+        console.log('[DASH] Registering auth listener...');
         auth.onAuthStateChanged(user => {
+             console.log('[DASH] Auth state changed:', user ? 'logged in' : 'not logged in');
              currentUser = user;
              if (user) { loadDashboardData(user); }
              else {
                  // Not logged in - show not-auth screen
                  if (calendarObserver) { calendarObserver.disconnect(); calendarObserver = null; }
                  if (calendarInstance && typeof calendarInstance.destroy === 'function') { calendarInstance.destroy(); calendarInstance = null; }
+                 console.log('[DASH] Calling hideLoading from auth...');
                  hideLoading();
                  if(notAuthEl) notAuthEl.style.display = 'flex';
                  if(dashMain) dashMain.style.display = 'none';
              }
          });
+
+        // Fallback: if auth doesn't respond in 6 seconds, hide loading anyway
+        setTimeout(() => {
+            const el = document.getElementById('load-dash');
+            if (el && !el.classList.contains('gone')) {
+                console.log('[DASH] Fallback: hiding loading after timeout');
+                el.classList.add('gone');
+                el.style.display = 'none';
+                // Show not-auth if no user
+                if (!currentUser) {
+                    const na = document.getElementById('not-auth');
+                    if(na) na.style.display = 'flex';
+                }
+            }
+        }, 6000);
 
         // --- Print Function ---
         function printData() { console.log("Initiating browser print..."); window.print(); }
