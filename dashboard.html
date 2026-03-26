@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl" data-theme="light">
 <head>
   <meta charset="UTF-8">
@@ -62,165 +62,15 @@
     .vc-leg-item{display:flex;align-items:center;gap:5px;font-size:.75em;color:var(--c-text-3);}
     .vc-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
   </style>
-        /* --- General Styles --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Tajawal', sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.7; }
-        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
-        h1, h2, h3, h4 { color: #1a5276; margin-bottom: 0.75em; }
-        p { margin-bottom: 1em; color: #555; font-size: 0.95em; }
-        a { text-decoration: none; color: #2980b9; }
-        .card { background-color: #fff; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 3px 6px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; }
-
-        /* --- Header --- */
-        .dashboard-header { display: flex; justify-content: center; align-items: center; padding: 10px 20px; margin-bottom: 25px; border-bottom: 2px solid #aed6f1; background-color: #fff; border-radius: 0 0 8px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .dashboard-header .logo h1 { margin: 0; font-size: 1.8em; color: #1a5276; }
-
-        /* --- Dashboard Layout --- */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: auto auto auto;
-            gap: 25px;
-            align-items: start;
-        }
-        #daily-task { grid-column: 1 / 4; grid-row: 1 / 2; }
-        #plan-progress { grid-column: 1 / 2; grid-row: 2 / 3; }
-        #quick-stats { grid-column: 1 / 2; grid-row: 3 / 4; }
-        #calendar-view {
-            grid-column: 2 / 4;
-            grid-row: 2 / 4;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* --- Section Specific Styles --- */
-        #daily-task h3 { color: #1e8449; font-size: 1.3em; border-bottom: 2px solid #aed6f1; padding-bottom: 8px;}
-        #daily-task-content { min-height: 80px; padding-top: 10px;}
-        #daily-task-content p { margin-bottom: 0.6em; font-size: 1.05em; line-height: 1.8; }
-        #daily-task-content strong { color: #1a5276; margin-left: 8px;}
-        #daily-task .plan-link { margin-top: 15px; display: inline-block; font-size: 0.9em; background-color: #5dade2; color: white; padding: 5px 10px; border-radius: 4px; }
-        #daily-task .plan-link:hover { background-color: #3498db; }
-
-        #plan-progress h3, #quick-stats h3, #calendar-view h3, #competition-section h3, #badges-section h3 { font-size: 1.15em; }
-        #plan-progress .progress-bar-container { background-color: #e9ecef; border-radius: 0.25rem; height: 25px; overflow: hidden; margin-top: 10px; border: 1px solid #ccc; }
-        #plan-progress .progress-bar-value { background-color: #28a745; height: 100%; width: 0%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9em; font-weight: bold; transition: width 0.6s ease-in-out; }
-        #quick-stats ul { list-style: none; padding: 0; margin-top: 15px;}
-        #quick-stats ul li { margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dotted #eee; font-size: 0.95em;}
-        #quick-stats ul li strong { margin-left: 5px; color: #1a5276; min-width: 110px; display: inline-block;}
-        #quick-stats ul li span { color: #1e8449; font-weight: bold;}
-
-        /* --- Calendar Section Styles --- */
-        #calendar-view .card-header {
-            display: flex; justify-content: center; align-items: center;
-            margin-bottom: 15px; width: 100%; flex-shrink: 0;
-        }
-        #calendar-view .card-header h3 { margin-bottom: 0; }
-        #calendar-container {
-            direction: ltr; width: 100%; max-width: 450px;
-            margin: 0 auto 15px auto; min-height: 300px; flex-shrink: 0;
-        }
-        /* Today Button styles removed */
-
-        /* --- Streak Info (Inside Calendar Card) Styles --- */
-        .streak-info-condensed {
-            border-top: 1px solid #eee; margin: 15px auto 0 auto; padding: 15px; text-align: center;
-            width: 100%; max-width: 450px; flex-shrink: 0;
-        }
-        .streak-info-condensed h4 { font-size: 1.05em; color: #1a5276; margin-bottom: 10px; }
-        .streak-info-condensed .streak-boxes { display: flex; justify-content: space-around; gap: 10px; margin-bottom: 15px; }
-        .streak-info-condensed .streak-box { background-color: #eaf2f8; padding: 8px 12px; border-radius: 6px; border: 1px solid #d4e6f1; font-size: 0.9em; flex: 1; position: relative; min-width: 120px; }
-        .streak-info-condensed .streak-box strong { display: block; font-size: 1.4em; color: #1e8449; margin-top: 2px; }
-        .streak-info-condensed .level-display-wrapper { position: relative; display: inline-block; padding-left: 25px; text-align: right; }
-        /* Level & Title Styling */
-        .streak-info-condensed .level-number-display,
-        .streak-info-condensed .level-title-display {
-            display: block; font-size: 1.0em; color: #2c3e50; /* Same color */
-            font-weight: bold; line-height: 1.4; /* Same font */
-        }
-         .streak-info-condensed .level-number-display { margin-bottom: 3px; } /* Space below level */
-         .streak-info-condensed .level-title-display .level-icon { font-size: 1.1em; margin-right: 3px; vertical-align: middle; }
-        /* Info Icon Styling */
-        .info-icon {
-            display: inline-block;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; /* Use system font */
-            font-weight: normal; /* Normal weight */
-            font-style: normal; /* Normal style */
-            color: #6c757d;
-            background-color: #e9ecef;
-            border-radius: 50%;
-            width: 18px; /* Slightly larger */
-            height: 18px;
-            line-height: 18px; /* Center vertically */
-            text-align: center;
-            font-size: 0.9em; /* Adjust size */
-            cursor: help;
-            margin-right: 5px;
-            vertical-align: middle;
-            user-select: none; /* Prevent text selection */
-        }
-        /* Position icons */
-        .streak-box .info-icon { position: absolute; left: 8px; top: 8px; }
-        .level-display-wrapper .info-icon { position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
-
-
-        /* --- Base Calendar Styles (Vanilla Calendar) --- */
-        .vanilla-calendar { border: 1px solid #ddd; border-radius: 4px; }
-        .vanilla-calendar .vcal-header { background-color: #aed6f1; padding: 10px 0; border-bottom: 1px solid #ddd;}
-        .vanilla-calendar .vcal-header__label { color: #1a5276; font-weight: bold; cursor: pointer; }
-        .vanilla-calendar .vcal-arrow { background-color: #ffffff; border-radius: 50%; width: 30px; height: 30px; line-height: 30px; border: 1px solid #ccc; cursor: pointer;}
-        .vanilla-calendar .vcal-arrow::before { border-color: #1a5276; }
-        .vanilla-calendar .vcal-week { background-color: #eaf2f8; padding: 5px 0; display: flex; justify-content: space-around; }
-        .vanilla-calendar .vcal-week span { color: #1a5276; font-weight: bold; font-size: 0.85em; text-align: center; flex: 1; }
-        .vanilla-calendar .vcal-body { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; padding: 5px; }
-        .vanilla-calendar .vcal-day { display: flex; justify-content: center; align-items: center; min-height: 36px; }
-
-
-        /* --- Calendar Day Coloring CSS --- */
-        /* These styles rely on the JS adding the classes */
-        .vanilla-calendar .vanilla-calendar-day__btn { border: 1px solid transparent; background-color: transparent; cursor: pointer; width: 34px; height: 34px; padding: 0; display: flex; justify-content: center; align-items: center; font-size: 0.9em; position: relative; border-radius: 50%; transition: background-color 0.2s, color 0.2s, border-color 0.2s; color: #333; }
-        .vanilla-calendar .vanilla-calendar-day__btn.day-completed { background-color: #abebc6 !important; color: #186a3b !important; font-weight: bold; border-color: #82e0aa !important; }
-        .vanilla-calendar .vanilla-calendar-day__btn.day-excused { background-color: #fadbd8 !important; color: #922b21 !important; font-weight: bold; border-color: #f5b7b1 !important; }
-        .vanilla-calendar .vanilla-calendar-day__btn.day-completed:hover { background-color: #82e0aa !important; border-color: #5fcf8f !important; }
-        .vanilla-calendar .vanilla-calendar-day__btn.day-excused:hover { background-color: #f5b7b1 !important; border-color: #e59894 !important; }
-        .vanilla-calendar .vanilla-calendar-day__btn:not(.day-completed):not(.day-excused):not([data-calendar-is-today]):hover { background-color: #e9ecef !important; border-color: #dee2e6 !important; }
-        .vanilla-calendar .vanilla-calendar-day__btn[data-calendar-is-today]:not(.day-completed):not(.day-excused) { background-color: #aed6f1 !important; border: 1px solid #1a5276 !important; color: #1a5276 !important; font-weight: bold; }
-        .vanilla-calendar .vanilla-calendar-day__btn.day-completed[data-calendar-is-today],
-        .vanilla-calendar .vanilla-calendar-day__btn.day-excused[data-calendar-is-today] { border-width: 1px; }
-
-
-        /* Placeholder Styles */
-        .placeholder-box { min-height: 150px; background-color: #f0f4f8; border: 1px dashed #ccc; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #777; border-radius: 5px; padding: 15px; text-align: center; }
-        .placeholder-box .icon { font-size: 3em; margin-bottom: 10px; opacity: 0.5; }
-        .placeholder-box .text { font-style: italic; font-size: 0.9em; }
-
-        /* Footer */
-        .main-footer { text-align: center; padding: 20px; margin-top: 40px; background-color: #2c3e50; color: #ecf0f1; font-size: 0.9em; }
-        .main-footer a { color: #3498db; }
-
-        /* Action Buttons Hidden */
-        .action-buttons { display: none; }
-
-        /* Loading Indicator */
-        #loading-indicator { text-align: center; padding: 50px; font-size: 1.3em; color: #1a5276; display: block; }
-
-
-        /* --- Responsive Adjustments --- */
-        @media (max-width: 992px) { /* 2 columns layout */
-            .dashboard-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto auto auto; }
-            #daily-task { grid-column: span 2; grid-row: 1 / 2; }
-            #plan-progress { grid-column: 1 / 2; grid-row: 2 / 3; }
-            #quick-stats { grid-column: 1 / 2; grid-row: 3 / 4; }
-            #calendar-view { grid-column: 2 / 3; grid-row: 2 / 4; }
-        }
-         @media (max-width: 768px) { /* 1 column layout */
-             .dashboard-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
-             #daily-task, #plan-progress, #quick-stats, #calendar-view { grid-column: span 1; grid-row: auto;}
-             .streak-info-condensed .streak-boxes { flex-direction: column; gap: 8px; }
-         }
-
-    </style>
 </head>
+
 <body>
+
+
+
+
+
+
 
 <!-- Loading -->
 <div id="load-dash">
