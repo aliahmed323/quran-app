@@ -242,10 +242,14 @@
         // --- Utility Functions ---
         function showLoading(msg) {
             if(ldMsgEl) ldMsgEl.textContent = msg || 'جاري التحميل...';
-            if(loadDashEl) { loadDashEl.classList.remove('gone'); loadDashEl.style.display = ''; }
+            if(loadDashEl) { loadDashEl.style.display = 'flex'; loadDashEl.classList.remove('gone'); }
         }
         function hideLoading() {
-            if(loadDashEl) loadDashEl.classList.add('gone');
+            if(loadDashEl) {
+                loadDashEl.classList.add('gone');
+                // After transition, hide completely
+                setTimeout(() => { if(loadDashEl) loadDashEl.style.display = 'none'; }, 500);
+            }
         }
         function displayDashboard() {
             if(dashMain) dashMain.style.display = 'block';
