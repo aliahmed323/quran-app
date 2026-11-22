@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#1B4332">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="منارة الحفظ">
-  <title>لوحة المتابعة - منارة الحفظ</title>
+  <title>منارة الحفظ - رفيقك لحفظ القرآن الكريم</title>
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,34 +19,113 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
   <script>if(navigator.serviceWorker)navigator.serviceWorker.register('./sw.js').catch(()=>{});</script>
   <style>
-    /* Prevent double-tap zoom on all interactive elements */
-    button, a, input, select, .sc-btn, .cnt-btn, .bottom-nav-item {
+    /* Prevent double-tap zoom & tap highlights */
+    *, *::before, *::after {
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
-      user-select: none;
     }
 
-    .dash-wrap { max-width: 860px; margin: 0 auto; padding: 16px 14px 100px; }
-    
-    /* PWA Install Banner */
-    .pwa-banner {
-      display: none;
-      background: linear-gradient(135deg, rgba(201,168,76,0.15) 0%, rgba(27,67,50,0.12) 100%);
-      border: 1.5px solid var(--c-gold);
-      border-radius: var(--rad-m);
-      padding: 14px 16px;
-      margin-bottom: 16px;
-      animation: fadeInDown 0.4s ease;
+    body {
+      padding-bottom: calc(75px + env(safe-area-inset-bottom)) !important;
+      background: var(--c-bg);
+      color: var(--c-text);
+      font-family: 'Tajawal', sans-serif;
+      margin: 0;
     }
 
-    /* Today's schedule card */
+    /* Minimalist Top App Bar */
+    .mobile-top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 400;
+      background: var(--header-bg);
+      border-bottom: 2px solid var(--header-border);
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--sh-sm);
+    }
+    .top-bar-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--c-gold-l);
+      font-family: 'Amiri', serif;
+      font-size: 1.3em;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .top-bar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Container */
+    .spa-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 16px 14px;
+    }
+
+    /* SPA Tabs View Management */
+    .tab-view { display: none; animation: fadeIn 0.25s ease; }
+    .tab-view.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Bottom Navigation Bar */
+    .spa-bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 64px;
+      background: var(--header-bg);
+      border-top: 2px solid var(--header-border);
+      z-index: 500;
+      display: flex;
+      align-items: stretch;
+      justify-content: space-around;
+      padding-bottom: env(safe-area-inset-bottom);
+      box-shadow: 0 -4px 18px rgba(0,0,0,0.18);
+    }
+    .spa-nav-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.72em;
+      font-weight: 700;
+      transition: color 0.15s;
+      position: relative;
+    }
+    .spa-nav-btn .nav-icon { font-size: 1.55em; line-height: 1; }
+    .spa-nav-btn.active { color: var(--c-gold-l); }
+    .spa-nav-btn.active::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 22%; right: 22%;
+      height: 3px;
+      background: var(--c-gold);
+      border-radius: 0 0 4px 4px;
+    }
+
+    /* ============================================================
+       TAB 1: TODAY'S SCHEDULE CARD (واجب اليوم التفاعلي المباشر)
+       ============================================================ */
     .today-hero-card {
       background: var(--c-surface);
       border: 1.5px solid var(--c-border);
       border-radius: var(--rad-l);
       padding: 20px;
-      margin-bottom: 18px;
       box-shadow: var(--sh-md);
+      margin-bottom: 16px;
       position: relative;
       overflow: hidden;
     }
@@ -57,26 +136,26 @@
       height: 4px;
       background: linear-gradient(to left, var(--c-gold), var(--c-primary-l));
     }
-    .today-header {
+    .today-card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 16px;
+      gap: 8px;
+      margin-bottom: 14px;
     }
-    .today-title {
+    .today-card-title {
       font-family: 'Amiri', serif;
       font-size: 1.35em;
       color: var(--c-primary);
       font-weight: 700;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
+      margin: 0;
     }
-    [data-theme="dark"] .today-title { color: var(--c-gold-l); }
-    .today-badges { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    .badge-pill {
+    [data-theme="dark"] .today-card-title { color: var(--c-gold-l); }
+    .today-pill-badge {
       background: var(--c-primary-pale);
       color: var(--c-primary);
       padding: 4px 12px;
@@ -84,39 +163,39 @@
       font-size: 0.8em;
       font-weight: 700;
     }
-    [data-theme="dark"] .badge-pill {
+    [data-theme="dark"] .today-pill-badge {
       background: rgba(27,67,50,0.6);
       color: var(--c-gold-l);
     }
 
-    /* Memorization Target Box */
-    .mem-target-box {
+    /* Quran Target Box */
+    .target-quran-box {
       background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-l) 100%);
       color: #fff;
       border-radius: var(--rad-m);
-      padding: 18px;
+      padding: 16px 18px;
       margin-bottom: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       box-shadow: var(--sh-sm);
     }
-    .mem-target-info h3 {
-      font-size: 1.5em;
+    .target-quran-box h3 {
       font-family: 'Amiri', serif;
+      font-size: 1.45em;
       margin: 0 0 4px;
       color: var(--c-gold-l);
     }
-    .mem-target-info p {
+    .target-quran-box p {
       margin: 0;
       font-size: 0.9em;
-      color: rgba(255,255,255,0.9);
+      opacity: 0.9;
     }
-    .quran-btn-link {
+    .mushaf-link-btn {
       background: rgba(255,255,255,0.18);
       border: 1px solid rgba(255,255,255,0.35);
       color: #fff !important;
-      padding: 8px 16px;
+      padding: 9px 15px;
       border-radius: 50px;
       font-size: 0.85em;
       font-weight: 700;
@@ -127,42 +206,42 @@
       transition: var(--tr-fast);
       min-height: 42px;
     }
-    .quran-btn-link:hover { background: rgba(255,255,255,0.28); }
+    .mushaf-link-btn:hover { background: rgba(255,255,255,0.28); }
 
-    /* Task Steps Pipeline */
-    .task-step-item {
+    /* Step Item Row */
+    .step-item-row {
       background: var(--c-bg);
       border: 1.5px solid var(--c-border);
       border-radius: var(--rad-m);
-      padding: 12px 16px;
+      padding: 12px 14px;
       margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
-      transition: var(--tr-fast);
+      gap: 10px;
+      transition: background 0.2s, border-color 0.2s;
     }
-    .task-step-item.is-done {
+    .step-item-row.done-step {
       background: var(--c-success-bg);
       border-color: var(--c-success);
     }
-    .step-main-text { flex: 1; }
-    .step-name {
+    .step-text-wrap { flex: 1; }
+    .step-text-title {
       font-weight: 700;
       font-size: 0.95em;
       color: var(--c-text);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
-    .step-subtext {
-      font-size: 0.78em;
+    .step-text-sub {
+      font-size: 0.76em;
       color: var(--c-text-3);
       margin-top: 2px;
     }
 
-    /* Counter Control for Mobile */
-    .m-counter {
+    /* Counter Control */
+    .ctrl-counter {
       display: flex;
       align-items: center;
       background: var(--c-surface);
@@ -171,7 +250,7 @@
       overflow: hidden;
       box-shadow: var(--sh-sm);
     }
-    .m-btn {
+    .ctrl-counter button {
       width: 44px;
       height: 44px;
       border: none;
@@ -183,135 +262,107 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.15s;
+      user-select: none;
     }
-    [data-theme="dark"] .m-btn { color: var(--c-gold-l); }
-    .m-btn:active { background: var(--c-bg-3); }
-    .m-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-    .m-val {
+    [data-theme="dark"] .ctrl-counter button { color: var(--c-gold-l); }
+    .ctrl-counter button:active { background: var(--c-bg-3); }
+    .ctrl-counter .ctrl-val {
       min-width: 38px;
       text-align: center;
       font-size: 1.15em;
       font-weight: 700;
       color: var(--c-primary);
     }
-    [data-theme="dark"] .m-val { color: var(--c-gold-l); }
+    [data-theme="dark"] .ctrl-counter .ctrl-val { color: var(--c-gold-l); }
 
-    /* Big Toggle Button */
-    .m-toggle-btn {
-      min-width: 90px;
+    /* Toggle Step Button */
+    .step-toggle-btn {
+      min-width: 85px;
       height: 44px;
-      padding: 0 16px;
+      padding: 0 14px;
       border-radius: 50px;
       border: 1.5px solid var(--c-border);
       background: var(--c-surface);
       color: var(--c-text-2);
       font-weight: 700;
-      font-size: 0.88em;
+      font-size: 0.85em;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      transition: var(--tr-fast);
+      transition: all 0.2s;
     }
-    .m-toggle-btn.active {
+    .step-toggle-btn.active {
       background: var(--c-success);
       color: #fff;
       border-color: var(--c-success);
-      box-shadow: 0 2px 10px rgba(22,163,74,0.3);
+      box-shadow: 0 2px 8px rgba(22,163,74,0.3);
     }
 
-    /* Multi-section cards */
-    .info-strip {
-      background: var(--c-bg-3);
-      border-radius: var(--rad-s);
-      padding: 10px 14px;
-      margin-bottom: 12px;
-      font-size: 0.85em;
-      color: var(--c-text-2);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border: 1px solid var(--c-border);
-    }
-
-    /* Action Buttons Row */
-    .today-actions-bar {
+    /* Card Action Bar */
+    .today-actions-row {
       display: flex;
       gap: 10px;
       margin-top: 18px;
       flex-wrap: wrap;
     }
-    .today-actions-bar .btn {
+    .btn-complete-today {
       flex: 1;
-      min-height: 50px;
-      min-width: 140px;
-      font-size: 0.98em;
-    }
-
-    /* Collapsible Full Schedule Drawer / Section */
-    .full-plan-section {
-      background: var(--c-surface);
-      border: 1px solid var(--c-border);
-      border-radius: var(--rad-l);
-      padding: 18px;
-      margin-bottom: 20px;
-      box-shadow: var(--sh-sm);
-    }
-    .collapsible-trigger {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      background: none;
+      min-width: 170px;
+      min-height: 52px;
+      background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-l) 100%);
+      color: #fff;
       border: none;
-      cursor: pointer;
+      border-radius: var(--rad-m);
+      font-size: 1.05em;
+      font-weight: 700;
       font-family: inherit;
-      padding: 4px 0;
-      text-align: right;
-    }
-    .collapsible-trigger h3 {
-      margin: 0;
-      font-size: 1.15em;
-      color: var(--c-primary);
+      cursor: pointer;
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
+      box-shadow: 0 4px 16px rgba(27,67,50,0.3);
+      transition: transform 0.15s, box-shadow 0.15s;
     }
-    [data-theme="dark"] .collapsible-trigger h3 { color: var(--c-gold-l); }
-    .collapse-chevron {
-      font-size: 1.2em;
-      transition: transform 0.3s;
+    .btn-complete-today:active { transform: translateY(2px); box-shadow: 0 2px 6px rgba(27,67,50,0.2); }
+    .btn-excuse-today {
+      min-height: 52px;
+      padding: 0 20px;
+      background: var(--c-surface);
+      border: 1.5px solid var(--c-border);
+      border-radius: var(--rad-m);
+      font-family: inherit;
+      font-weight: 700;
+      color: var(--c-text-2);
+      cursor: pointer;
     }
-    .collapse-chevron.open { transform: rotate(180deg); }
-    .collapsible-content {
-      display: none;
-      margin-top: 16px;
-      animation: fadeIn 0.3s ease;
-    }
-    .collapsible-content.open { display: block; }
+    .btn-excuse-today:hover { border-color: var(--c-gold); }
 
-    /* Search & Filter for In-Page Schedule */
-    .table-filter-bar {
+    /* ============================================================
+       TAB 2: DETAILED SCHEDULE CARDS (الجدول التفصيلي بطاقات أنيقة)
+       ============================================================ */
+    .schedule-toolbar {
       display: flex;
       gap: 8px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       flex-wrap: wrap;
     }
-    .table-filter-bar input {
+    .schedule-search-input {
       flex: 1;
-      min-width: 160px;
-      padding: 9px 14px;
+      min-width: 170px;
+      padding: 10px 16px;
       border-radius: 50px;
       border: 1.5px solid var(--c-border);
-      background: var(--c-bg);
-      font-family: inherit;
-      font-size: 0.88em;
+      background: var(--c-surface);
       color: var(--c-text);
+      font-family: inherit;
+      font-size: 0.9em;
+      outline: none;
     }
-    .filter-pills { display: flex; gap: 6px; }
-    .filter-pill {
+    .schedule-search-input:focus { border-color: var(--c-gold); }
+    .schedule-filters { display: flex; gap: 6px; }
+    .s-filter-btn {
       padding: 8px 14px;
       border-radius: 50px;
       border: 1px solid var(--c-border);
@@ -320,19 +371,183 @@
       font-size: 0.82em;
       font-weight: 700;
       cursor: pointer;
+      font-family: inherit;
     }
-    .filter-pill.active {
+    .s-filter-btn.active {
       background: var(--c-primary);
       color: #fff;
       border-color: var(--c-primary);
     }
-    [data-theme="dark"] .filter-pill.active {
+    [data-theme="dark"] .s-filter-btn.active {
       background: var(--c-gold);
       color: var(--c-primary);
     }
 
-    /* Modal / Bottom Sheet for Excuses */
-    .modal-overlay {
+    /* Day Card */
+    .day-sched-card {
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
+      border-radius: var(--rad-m);
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      box-shadow: var(--sh-sm);
+      transition: border-color 0.2s;
+    }
+    .day-sched-card.is-today-card {
+      border: 2px solid var(--c-gold);
+      background: linear-gradient(135deg, rgba(201,168,76,0.06) 0%, var(--c-surface) 100%);
+    }
+    .day-sched-card.is-done-card {
+      border-color: rgba(22,163,74,0.4);
+      background: var(--c-success-bg);
+    }
+    .day-sched-card.is-excuse-card {
+      border-color: rgba(220,38,38,0.4);
+      background: var(--c-warning-bg);
+    }
+    .day-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .day-card-badge {
+      font-size: 0.82em;
+      font-weight: 700;
+      color: var(--c-primary);
+      background: var(--c-primary-pale);
+      padding: 3px 10px;
+      border-radius: 50px;
+    }
+    [data-theme="dark"] .day-card-badge { color: var(--c-gold-l); background: rgba(27,67,50,0.5); }
+    .day-card-status {
+      font-size: 0.78em;
+      font-weight: 700;
+    }
+    .day-card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      font-size: 0.85em;
+      margin-bottom: 10px;
+    }
+    .dc-label { color: var(--c-text-3); font-size: 0.88em; }
+    .dc-val { font-weight: 700; color: var(--c-text); }
+    .day-card-btn-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding-top: 6px;
+      border-top: 1px dashed var(--c-border);
+    }
+    .day-action-pill {
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
+      border-radius: 50px;
+      padding: 5px 14px;
+      font-size: 0.8em;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      color: var(--c-text-2);
+    }
+    .day-action-pill.done {
+      background: var(--c-success);
+      color: #fff;
+      border-color: var(--c-success);
+    }
+
+    /* ============================================================
+       TAB 3: SQUARE STATS GRID (الإحصائيات المربعة الكاملة)
+       ============================================================ */
+    .square-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    @media (min-width: 600px) {
+      .square-stats-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (min-width: 900px) {
+      .square-stats-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .square-stat-card {
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
+      border-radius: var(--rad-m);
+      padding: 16px 14px;
+      text-align: center;
+      box-shadow: var(--sh-sm);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 110px;
+    }
+    .square-stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(to left, var(--c-gold), var(--c-primary-l));
+    }
+    .sq-icon { font-size: 1.6em; margin-bottom: 4px; display: block; }
+    .sq-val {
+      font-size: 1.45em;
+      font-weight: 700;
+      color: var(--c-primary);
+      display: block;
+      font-family: inherit;
+      line-height: 1.2;
+    }
+    [data-theme="dark"] .sq-val { color: var(--c-gold-l); }
+    .sq-label {
+      font-size: 0.74em;
+      color: var(--c-text-3);
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       TAB 4: MORE & SETTINGS (المزيد)
+       ============================================================ */
+    .more-profile-card {
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
+      border-radius: var(--rad-l);
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--sh-sm);
+    }
+    .more-menu-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .more-menu-item {
+      background: var(--c-surface);
+      border: 1.5px solid var(--c-border);
+      border-radius: var(--rad-m);
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--c-text);
+      font-weight: 700;
+      font-size: 0.95em;
+      text-decoration: none;
+      cursor: pointer;
+      font-family: inherit;
+      transition: var(--tr-fast);
+      min-height: 52px;
+    }
+    .more-menu-item:hover { border-color: var(--c-gold); }
+    .more-menu-item.danger { color: var(--c-danger); border-color: rgba(220,38,38,0.25); }
+
+    /* Bottom Sheet Modal for Excuses */
+    .excuse-modal-overlay {
       display: none;
       position: fixed;
       inset: 0;
@@ -342,297 +557,341 @@
       align-items: flex-end;
       justify-content: center;
     }
-    .modal-overlay.open { display: flex; }
-    .bottom-sheet {
+    .excuse-modal-overlay.open { display: flex; }
+    .excuse-bottom-sheet {
       background: var(--c-surface);
       width: 100%;
       max-width: 500px;
       border-radius: var(--rad-xl) var(--rad-xl) 0 0;
       padding: 24px 20px 32px;
       box-shadow: var(--sh-lg);
-      animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1);
+      animation: sheetSlideUp 0.3s cubic-bezier(0.4,0,0.2,1);
     }
-    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    .sheet-title {
-      font-family: 'Amiri', serif;
-      font-size: 1.3em;
-      color: var(--c-primary);
-      margin-bottom: 8px;
-      text-align: center;
-    }
-    [data-theme="dark"] .sheet-title { color: var(--c-gold-l); }
-    .excuse-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 18px 0; }
-    .excuse-opt-btn {
+    @keyframes sheetSlideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .excuse-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 18px 0; }
+    .excuse-btn-opt {
       padding: 14px;
       background: var(--c-bg-3);
       border: 1.5px solid var(--c-border);
       border-radius: var(--rad-m);
       font-family: inherit;
-      font-size: 0.95em;
       font-weight: 700;
       color: var(--c-text);
       cursor: pointer;
-      text-align: center;
-      transition: var(--tr-fast);
       min-height: 48px;
     }
-    .excuse-opt-btn:hover { border-color: var(--c-gold); background: var(--c-primary-pale); }
+    .excuse-btn-opt:hover { border-color: var(--c-gold); }
 
-    /* Calendar in dashboard */
-    #calendar-container { direction: ltr; width: 100%; margin: 10px 0; }
-    .vc-legend { display: flex; gap: 12px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
-    .vc-leg-item { display: flex; align-items: center; gap: 6px; font-size: 0.78em; color: var(--c-text-3); }
-    .vc-dot { width: 10px; height: 10px; border-radius: 50%; }
-
-    /* Level and Streak display */
-    .level-card-wrap {
-      background: var(--c-surface);
-      border-radius: var(--rad-m);
-      padding: 16px;
-      border: 1px solid var(--c-border);
-      margin-top: 12px;
-      text-align: center;
+    /* Notification Toast */
+    .toast-msg {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(50px);
+      background: #1B4332;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 0.9em;
+      font-weight: 700;
+      box-shadow: var(--sh-lg);
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s;
+    }
+    .toast-msg.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
     }
   </style>
 </head>
 
 <body>
-  <!-- Loading Screen -->
-  <div id="load-dash">
-    <div class="ld-spinner"></div>
-    <span class="ld-msg" id="ld-msg">جاري التحقق من بياناتك...</span>
-  </div>
-
-  <!-- Unified Header -->
-  <header class="app-header">
-    <div class="header-brand">
-      <a href="index.html" style="display:flex;align-items:center;gap:8px;text-decoration:none;">
-        <span class="brand-icon">🕌</span>
-        <span class="brand-name">منارة الحفظ</span>
-      </a>
-    </div>
-    <nav class="header-nav">
-      <a href="index.html">الرئيسية</a>
-      <a href="dashboard.html" class="active">لوحة المتابعة</a>
-      <a href="plangen2.html">الجدول التفصيلي</a>
-    </nav>
-    <div class="header-actions">
+  <!-- Minimalist Top Bar (No clutter, No exit button in header) -->
+  <header class="mobile-top-bar">
+    <a href="javascript:void(0)" onclick="switchTab('today')" class="top-bar-brand">
+      <span>🕌</span>
+      <span>منارة الحفظ</span>
+    </a>
+    <div class="top-bar-actions">
       <button class="theme-toggle" id="theme-btn" title="تبديل المظهر">🌙</button>
-      <button class="btn btn-sm btn-outline" onclick="signOut()" style="border-radius:50px;min-height:36px;padding:4px 12px;">خروج</button>
     </div>
   </header>
 
-  <!-- Not Authenticated -->
-  <div id="not-auth" style="display:none;" class="not-auth">
-    <div class="not-auth-box">
-      <div style="font-size:3.5em;margin-bottom:12px;">🔒</div>
-      <h2 style="font-family:'Amiri',serif;color:var(--c-primary);font-size:1.8em;">يرجى تسجيل الدخول</h2>
-      <p style="color:var(--c-text-3);margin-bottom:24px;">سجّل الدخول بحسابك للوصول إلى لوحة المتابعة والجدول</p>
-      <a href="index.html" class="btn btn-primary btn-lg" style="text-decoration:none;">🔑 الذهاب لتسجيل الدخول</a>
-    </div>
+  <!-- Not Authenticated View -->
+  <div id="not-auth-screen" style="display:none;padding:60px 20px;text-align:center;">
+    <div style="font-size:3.5em;margin-bottom:12px;">🔒</div>
+    <h2 style="font-family:'Amiri',serif;color:var(--c-primary);font-size:1.8em;margin-bottom:8px;">يرجى تسجيل الدخول</h2>
+    <p style="color:var(--c-text-3);margin-bottom:24px;">سجّل الدخول بحساب Google للوصول لخطتك اليومية</p>
+    <a href="index.html" class="btn btn-primary btn-lg" style="text-decoration:none;">🔑 تسجيل الدخول</a>
   </div>
 
-  <!-- Main Content -->
-  <main id="dash-main" style="display:none;" class="page-fade">
-    <div class="dash-wrap">
+  <!-- SPA Main Content Container -->
+  <main class="spa-container" id="app-content" style="display:none;">
 
-      <!-- PWA Install Banner -->
-      <div id="pwa-banner" class="pwa-banner">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-          <div style="display:flex;align-items:center;gap:10px;">
-            <span style="font-size:2em;">📲</span>
-            <div>
-              <strong style="color:var(--c-primary);display:block;">تثبيت تطبيق منارة الحفظ</strong>
-              <span style="font-size:0.8em;color:var(--c-text-3);">تطبيق خفيف وسريع على شاشة هاتفك الرئيسية</span>
-            </div>
-          </div>
-          <button class="btn btn-gold btn-sm" id="pwa-btn">تثبيت الآن ✨</button>
-        </div>
-      </div>
-
-      <!-- TODAY'S SCHEDULE ROW (الجدول التفصيلي ليوم واحد فقط أمام المستخدم) -->
-      <section class="today-hero-card" id="today-task-card">
-        <div class="today-header">
-          <div class="today-title">
+    <!-- ============================================================
+         VIEW 1: TODAY'S SCHEDULE (واجب اليوم)
+         ============================================================ -->
+    <div class="tab-view active" id="view-today">
+      <div class="today-hero-card">
+        <div class="today-card-header">
+          <h2 class="today-card-title">
             <span>🌟</span>
-            <span>جدول واجب اليوم</span>
-          </div>
-          <div class="today-badges">
-            <span class="badge-pill" id="today-date-text">اليوم</span>
-            <span class="badge-pill" id="today-seq-text">يوم -</span>
+            <span>واجب اليوم</span>
+          </h2>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <span class="today-pill-badge" id="today-date-badge">اليوم</span>
+            <span class="today-pill-badge" id="today-seq-badge">اليوم -</span>
           </div>
         </div>
 
-        <div id="today-task-content">
-          <p style="text-align:center;color:var(--c-text-3);padding:20px;">جاري تحميل مهام اليوم...</p>
-        </div>
-      </section>
-
-      <!-- STATS STRIP -->
-      <div class="stats-strip">
-        <div class="stat-card">
-          <span class="stat-icon">📖</span>
-          <span class="stat-val" id="stat-memorized">0</span>
-          <div class="stat-lbl">صفحة محفوظة</div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-icon">⭐</span>
-          <span class="stat-val" id="stat-perfected">0</span>
-          <div class="stat-lbl">صفحة متقنة</div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-icon">🔗</span>
-          <span class="stat-val" id="stat-linked">0</span>
-          <div class="stat-lbl">صفحة مربوطة</div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-icon">📅</span>
-          <span class="stat-val" id="stat-excuses">0</span>
-          <div class="stat-lbl">أيام الأعذار</div>
+        <div id="today-task-body">
+          <p style="text-align:center;color:var(--c-text-3);padding:24px 0;">جاري تحميل واجبك المبارك...</p>
         </div>
       </div>
 
-      <!-- PROGRESS SUMMARY -->
+      <!-- Quick Summary Strip inside Today -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
+        <div class="square-stat-card" style="min-height:85px;padding:10px 8px;">
+          <span class="sq-val" id="today-memorized-count">0</span>
+          <span class="sq-label">صفحة محفوظة</span>
+        </div>
+        <div class="square-stat-card" style="min-height:85px;padding:10px 8px;">
+          <span class="sq-val" id="today-remaining-count">604</span>
+          <span class="sq-label">صفحة متبقية</span>
+        </div>
+        <div class="square-stat-card" style="min-height:85px;padding:10px 8px;">
+          <span class="sq-val" id="today-streak-count">0</span>
+          <span class="sq-label">سلسلة أيام متصلة 🔥</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         VIEW 2: DETAILED SCHEDULE CARDS (الجدول التفصيلي)
+         ============================================================ -->
+    <div class="tab-view" id="view-schedule">
+      <div class="schedule-toolbar">
+        <input type="text" class="schedule-search-input" id="sched-search-input" placeholder="ابحث برقم الصفحة أو اسم السورة..." oninput="renderScheduleList()">
+        <div class="schedule-filters">
+          <button class="s-filter-btn active" onclick="setSchedFilter('all', this)">الكل</button>
+          <button class="s-filter-btn" onclick="setSchedFilter('pending', this)">المتبقي</button>
+          <button class="s-filter-btn" onclick="setSchedFilter('completed', this)">المكتمل</button>
+          <button class="s-filter-btn" onclick="setSchedFilter('excuse', this)">الأعذار</button>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding:0 4px;">
+        <span style="font-size:0.85em;color:var(--c-text-3);" id="sched-results-count">300 يوم</span>
+        <button class="day-action-pill" onclick="jumpToTodayCard()">الانتقال لليوم الحالي 🎯</button>
+      </div>
+
+      <!-- Days Cards Container -->
+      <div id="sched-cards-container">
+        <!-- Dynamically rendered -->
+      </div>
+    </div>
+
+    <!-- ============================================================
+         VIEW 3: RICH STATS GRID & CALENDAR (الإحصائيات الشاملة)
+         ============================================================ -->
+    <div class="tab-view" id="view-stats">
+      <h3 style="font-family:'Amiri',serif;color:var(--c-primary);font-size:1.35em;margin:0 0 14px;">
+        📊 إحصائيات الإنجاز والمسيرة
+      </h3>
+
+      <!-- 12 Square Stat Cards Grid as requested -->
+      <div class="square-stats-grid">
+        <div class="square-stat-card">
+          <span class="sq-icon">📖</span>
+          <span class="sq-val" id="stat-mem-pages">0</span>
+          <span class="sq-label">صفحة محفوظة</span>
+        </div>
+        <div class="square-stat-card">
+          <span class="sq-icon">⏳</span>
+          <span class="sq-val" id="stat-rem-pages">604</span>
+          <span class="sq-label">صفحة متبقية</span>
+        </div>
+        <div class="square-stat-card">
+          <span class="sq-icon">📅</span>
+          <span class="sq-val" id="stat-start-date" style="font-size:1.05em;">-</span>
+          <span class="sq-label">تاريخ الانطلاق</span>
+        </div>
+        <div class="square-stat-card">
+          <span class="sq-icon">🏁</span>
+          <span class="sq-val" id="stat-end-date" style="font-size:1.05em;">-</span>
+          <span class="sq-label">تاريخ الختم المتوقع</span>
+        </div>
+        <div class="square-stat-card">
+          <span class="sq-icon">⏱️</span>
+          <span class="sq-val" id="stat-elapsed-days">0</span>
+          <span class="sq-label">أيام منقضية</span>
+        </div>
+        <div class="square-stat-card">
+          <span class="sq-icon">🗓️</span>
+          <span class="sq-val" id="stat-remaining-days">300</span>
+          <span class="sq-label">أيام متبقية</span>
+        </div>
+        <div class="square-stat-card">
+          <span class="sq-icon">⚠️</span>
+          <span class="sq-val" id="stat-excuse-days">0</span>
+          <span class="sq-label">أيام الأعذار والتأخير</span>
+        </div>
+        <div class="square-stat-card">
+          <span class="sq-icon">📊</span>
+          <span class="sq-val" id="stat-progress-pct">0%</span>
+          <span class="sq-label">نسبة الإنجاز الكلية</span>
+        </div>
+        <div class="square-stat-card">
+          <span class="sq-icon">🔗</span>
+          <span class="sq-val" id="stat-linked-count">0</span>
+          <span class="sq-label">صفحات الربط المنجزة</span>
+        </div>
+        <div class="square-stat-card">
+          <span class="sq-icon">⭐</span>
+          <span class="sq-val" id="stat-reviewed-count">0</span>
+          <span class="sq-label">صفحات المراجعة المنجزة</span>
+        </div>
+        <div class="square-stat-card">
+          <span class="sq-icon">🔄</span>
+          <span class="sq-val" id="stat-current-round">-</span>
+          <span class="sq-label">دورة المراجعة الحالية</span>
+        </div>
+        <div class="square-stat-card">
+          <span class="sq-icon">⚡</span>
+          <span class="sq-val" id="stat-daily-rate">2 صفحة</span>
+          <span class="sq-label">معدل الحفظ اليومي</span>
+        </div>
+      </div>
+
+      <!-- Streaks and Level -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title">🏅 الرتبة وسلاسل الاستمرار</div>
+        <div style="display:flex;gap:10px;margin-bottom:12px;">
+          <div class="square-stat-card" style="flex:1;min-height:85px;">
+            <span class="sq-val" id="streak-current-val">🔥 0</span>
+            <span class="sq-label">السلسلة الحالية</span>
+          </div>
+          <div class="square-stat-card" style="flex:1;min-height:85px;">
+            <span class="sq-val" id="streak-longest-val">🏆 0</span>
+            <span class="sq-label">أفضل سلسلة متصلة</span>
+          </div>
+        </div>
+        <div id="rank-display" style="background:var(--c-bg);border:1px solid var(--c-border);border-radius:var(--rad-s);padding:14px;text-align:center;">
+          <strong style="color:var(--c-primary);font-size:1.15em;" id="rank-title">🌱 غرسة الإيمان</strong>
+          <div style="font-size:0.8em;color:var(--c-text-3);margin-top:4px;">استمر يومياً لترتقي إلى رتبتك القرآنية القادمة</div>
+        </div>
+      </div>
+
+      <!-- Interactive Calendar -->
       <div class="card">
-        <div class="card-title">📈 التقدم في الحفظ الكامل</div>
-        <div class="progress-plan-name" id="current-plan-name">-</div>
-        
-        <div style="display:flex;justify-content:space-between;font-size:0.82em;color:var(--c-text-3);margin-bottom:6px;">
-          <span>التقدم الكلي في المصحف</span>
-          <span><strong id="completed-pages-progress">0</strong> / 604 صفحة</span>
-        </div>
-        <div class="progress-wrap">
-          <div id="progress-bar-value" class="progress-fill" style="width:0%">0%</div>
-        </div>
-
-        <div style="margin-top:14px;">
-          <div style="display:flex;justify-content:space-between;font-size:0.8em;color:var(--c-text-3);margin-bottom:4px;">
-            <span>الصفحات المربوطة</span>
-            <span id="linked-pct">0%</span>
-          </div>
-          <div class="progress-wrap" style="height:10px;margin-bottom:10px;">
-            <div id="linked-bar" class="progress-fill" style="width:0%;background:linear-gradient(to left,#C9A84C,#A07A2A);"></div>
-          </div>
-          
-          <div style="display:flex;justify-content:space-between;font-size:0.8em;color:var(--c-text-3);margin-bottom:4px;">
-            <span>الصفحات المتقنة والمراجعة</span>
-            <span id="perf-pct">0%</span>
-          </div>
-          <div class="progress-wrap" style="height:10px;">
-            <div id="perf-bar" class="progress-fill" style="width:0%;background:linear-gradient(to left,#2563eb,#1e40af);"></div>
-          </div>
-        </div>
-
-        <ul class="quick-list" id="plan-info-list" style="margin-top:14px;"></ul>
-      </div>
-
-      <!-- IN-PAGE DETAILED TABLE (الجدول التفصيلي الكامل من نفس الصفحة دون الانتقال) -->
-      <div class="full-plan-section">
-        <button class="collapsible-trigger" id="toggle-full-table-btn" onclick="toggleFullSchedule()">
-          <h3>
-            <span>📋</span>
-            <span>الجدول التفصيلي الكامل للخطة (عرض مباشر)</span>
-          </h3>
-          <span class="collapse-chevron" id="table-chevron">▼</span>
-        </button>
-
-        <div class="collapsible-content" id="full-table-container">
-          <div class="table-filter-bar">
-            <input type="text" id="table-search" placeholder="بحث برقم الصفحة أو اسم السورة..." oninput="filterScheduleTable()">
-            <div class="filter-pills">
-              <button class="filter-pill active" onclick="setScheduleFilter('all', this)">الكل</button>
-              <button class="filter-pill" onclick="setScheduleFilter('pending', this)">المتبقي</button>
-              <button class="filter-pill" onclick="setScheduleFilter('completed', this)">المكتمل</button>
-            </div>
-          </div>
-
-          <div style="overflow-x:auto;max-height:480px;border-radius:var(--rad-s);border:1px solid var(--c-border);">
-            <table class="plan-table" id="inpage-schedule-table">
-              <thead>
-                <tr>
-                  <th>اليوم</th>
-                  <th>التاريخ</th>
-                  <th>الحفظ الجديد</th>
-                  <th>السورة</th>
-                  <th>الربط</th>
-                  <th>المراجعة</th>
-                  <th>الحالة</th>
-                </tr>
-              </thead>
-              <tbody id="inpage-schedule-tbody">
-                <!-- Dynamically populated -->
-              </tbody>
-            </table>
-          </div>
-          <div style="text-align:center;margin-top:12px;">
-            <a href="plangen2.html" class="btn btn-outline btn-sm">فتح المحرر الموسع للجدول ↗</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- STREAKS & LEVEL -->
-      <div class="card">
-        <div class="card-title">🏅 سلاسل الإنجاز والمستوى</div>
-        <div class="streak-grid" id="streak-area"></div>
-        <div class="level-card-wrap" id="level-area"></div>
-      </div>
-
-      <!-- CALENDAR -->
-      <div class="card">
-        <div class="card-title">📅 تقويم المتابعة التفاعلي</div>
-        <div id="calendar-container"><p style="text-align:center;color:var(--c-text-3);">جاري تحميل التقويم...</p></div>
+        <div class="card-title">📅 تقويم الالتزام اليومي</div>
+        <div id="calendar-container"></div>
         <div class="vc-legend">
           <div class="vc-leg-item"><div class="vc-dot" style="background:#16a34a"></div>يوم مكتمل</div>
           <div class="vc-leg-item"><div class="vc-dot" style="background:#dc2626"></div>يوم عذر</div>
           <div class="vc-leg-item"><div class="vc-dot" style="background:var(--c-primary)"></div>اليوم الحالي</div>
         </div>
       </div>
-
     </div>
+
+    <!-- ============================================================
+         VIEW 4: MORE & ACTIONS (المزيد)
+         ============================================================ -->
+    <div class="tab-view" id="view-more">
+      <div class="more-profile-card">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:50px;height:50px;background:var(--c-primary-pale);color:var(--c-primary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.6em;font-weight:700;" id="user-initial">
+            م
+          </div>
+          <div>
+            <strong style="font-size:1.1em;display:block;" id="user-display-name">طالب العلم</strong>
+            <span style="font-size:0.82em;color:var(--c-text-3);" id="user-display-email">...</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="more-menu-list">
+        <!-- Clean Create New Plan Button -->
+        <button class="more-menu-item" onclick="promptNewPlan()">
+          <span>🔄 إنشاء خطة جديدة</span>
+          <span>←</span>
+        </button>
+
+        <!-- Print Schedule Button -->
+        <a href="plangen2.html" class="more-menu-item">
+          <span>🖨️ طباعة الجدول كاملاً (A4)</span>
+          <span>←</span>
+        </a>
+
+        <!-- Install PWA -->
+        <button class="more-menu-item" id="pwa-install-menu-item" onclick="triggerPWAInstall()" style="display:none;">
+          <span>📲 تثبيت التطبيق على الهاتف</span>
+          <span>تثبيت</span>
+        </button>
+
+        <!-- Sign Out -->
+        <button class="more-menu-item danger" onclick="signOut()">
+          <span>🚪 تسجيل الخروج</span>
+          <span>خروج</span>
+        </button>
+      </div>
+    </div>
+
   </main>
 
-  <!-- Bottom Sheet for Registering Excuse -->
-  <div class="modal-overlay" id="excuse-modal" onclick="closeExcuseModal(event)">
-    <div class="bottom-sheet" onclick="event.stopPropagation()">
-      <div class="sheet-title">⚠️ تسجيل عذر لليوم</div>
+  <!-- BOTTOM NAVIGATION BAR (4 TABS) -->
+  <nav class="spa-bottom-nav" id="main-bottom-nav">
+    <button class="spa-nav-btn active" id="btn-tab-today" onclick="switchTab('today')">
+      <span class="nav-icon">🌟</span>
+      <span>واجب اليوم</span>
+    </button>
+    <button class="spa-nav-btn" id="btn-tab-schedule" onclick="switchTab('schedule')">
+      <span class="nav-icon">📋</span>
+      <span>الجدول</span>
+    </button>
+    <button class="spa-nav-btn" id="btn-tab-stats" onclick="switchTab('stats')">
+      <span class="nav-icon">📈</span>
+      <span>الإحصائيات</span>
+    </button>
+    <button class="spa-nav-btn" id="btn-tab-more" onclick="switchTab('more')">
+      <span class="nav-icon">⚙️</span>
+      <span>المزيد</span>
+    </button>
+  </nav>
+
+  <!-- Bottom Sheet for Excuses -->
+  <div class="excuse-modal-overlay" id="excuse-modal" onclick="closeExcuseModal(event)">
+    <div class="excuse-bottom-sheet" onclick="event.stopPropagation()">
+      <h3 style="font-family:'Amiri',serif;font-size:1.35em;color:var(--c-primary);margin:0 0 6px;text-align:center;">
+        ⚠️ تسجيل عذر لليوم
+      </h3>
       <p style="text-align:center;font-size:0.85em;color:var(--c-text-3);margin:0 0 16px;">
-        اختر سبب العذر لترحيل مهام اليوم إلى الغد تلقائياً دون ضياع حفظك:
+        اختر سبب العذر لتأجيل مهام اليوم بسلاسة دون ضياع حفظك:
       </p>
-      <div class="excuse-options">
-        <button class="excuse-opt-btn" onclick="applyExcuse('مرض')">🤒 مرض</button>
-        <button class="excuse-opt-btn" onclick="applyExcuse('سفر')">✈️ سفر</button>
-        <button class="excuse-opt-btn" onclick="applyExcuse('امتحانات')">📚 امتحانات</button>
-        <button class="excuse-opt-btn" onclick="applyExcuse('انشغال')">💼 انشغال</button>
-        <button class="excuse-opt-btn" onclick="applyExcuse('طارئ')">⚡ طارئ</button>
-        <button class="excuse-opt-btn" onclick="applyExcuse('عذر آخر')">✨ عذر آخر</button>
+      <div class="excuse-grid">
+        <button class="excuse-btn-opt" onclick="applyExcuseAction('مرض')">🤒 مرض</button>
+        <button class="excuse-btn-opt" onclick="applyExcuseAction('سفر')">✈️ سفر</button>
+        <button class="excuse-btn-opt" onclick="applyExcuseAction('امتحانات')">📚 امتحانات</button>
+        <button class="excuse-btn-opt" onclick="applyExcuseAction('انشغال')">💼 انشغال</button>
+        <button class="excuse-btn-opt" onclick="applyExcuseAction('طارئ')">⚡ طارئ</button>
+        <button class="excuse-btn-opt" onclick="applyExcuseAction('عذر آخر')">✨ عذر آخر</button>
       </div>
-      <button class="btn btn-outline" style="width:100%;border-radius:50px;" onclick="closeExcuseModal()">إلغاء</button>
+      <button class="btn btn-outline" style="width:100%;border-radius:50px;min-height:46px;" onclick="closeExcuseModal()">إلغاء</button>
     </div>
   </div>
 
-  <!-- FIXED BOTTOM NAVIGATION BAR -->
-  <nav class="bottom-nav" id="bottom-nav">
-    <a href="index.html" class="bottom-nav-item">
-      <span class="bottom-nav-icon">🏠</span>
-      <span>الرئيسية</span>
-    </a>
-    <a href="dashboard.html" class="bottom-nav-item active">
-      <span class="bottom-nav-icon">📊</span>
-      <span>متابعتي</span>
-    </a>
-    <a href="plangen2.html" class="bottom-nav-item">
-      <span class="bottom-nav-icon">📋</span>
-      <span>الجدول</span>
-    </a>
-  </nav>
+  <!-- Notification Toast -->
+  <div class="toast-msg" id="toast-msg">تم الحفظ بنجاح ✓</div>
 
   <script>
-    // === THEME INITIALIZATION ===
+    // === THEME HANDLING ===
     (function(){
       const t = localStorage.getItem('theme') === 'dark';
       document.documentElement.setAttribute('data-theme', t ? 'dark' : 'light');
     })();
-    document.addEventListener('DOMContentLoaded', function(){
+    document.addEventListener('DOMContentLoaded', () => {
       const btn = document.getElementById('theme-btn');
       const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
       if (btn) {
@@ -646,25 +905,35 @@
       }
     });
 
-    // === PWA INSTALL PROMPT ===
-    let deferredPrompt = null;
+    // === PWA PROMPT HANDLING ===
+    let pwaDeferredPrompt = null;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
-      deferredPrompt = e;
-      const banner = document.getElementById('pwa-banner');
-      if (banner) banner.style.display = 'block';
+      pwaDeferredPrompt = e;
+      const mi = document.getElementById('pwa-install-menu-item');
+      if (mi) mi.style.display = 'flex';
     });
-    document.getElementById('pwa-btn')?.addEventListener('click', async () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
+    async function triggerPWAInstall() {
+      if (pwaDeferredPrompt) {
+        pwaDeferredPrompt.prompt();
+        const { outcome } = await pwaDeferredPrompt.userChoice;
         if (outcome === 'accepted') {
-          const banner = document.getElementById('pwa-banner');
-          if (banner) banner.style.display = 'none';
+          const mi = document.getElementById('pwa-install-menu-item');
+          if (mi) mi.style.display = 'none';
         }
-        deferredPrompt = null;
+        pwaDeferredPrompt = null;
       }
-    });
+    }
+
+    // === TOAST HELPER ===
+    function showToast(msg) {
+      const t = document.getElementById('toast-msg');
+      if (t) {
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+      }
+    }
 
     // === FIREBASE INITIALIZATION ===
     const firebaseConfig = {
@@ -679,22 +948,22 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // === GLOBAL STATE ===
+    // === GLOBAL CONSTANTS & STATIC ARRAYS (100% Complete) ===
     const totalQuranPages = 604;
     const initialTotalRows = 320;
-    let currentUser = null;
-    let currentPlanData = null;
-    let calendarInstance = null;
-    let dayStatus = {};
-    let calendarObserver = null;
-    let activeScheduleFilter = 'all';
-
-    // === EXTRACTED STATIC DATA ARRAYS (100% Complete) ===
     const surahs = ['الفاتحة والبقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة', 'البقرة وآل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'آل عمران', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء', 'النساء والمائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة', 'المائدة والأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأنعام', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأعراف', 'الأنفال', 'الأنفال', 'الأنفال', 'الأنفال', 'الأنفال', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة', 'التوبة ويونس', 'يونس', 'يونس', 'يونس', 'يونس', 'يونس', 'يونس', 'يونس وهود', 'هود', 'هود', 'هود', 'هود', 'هود', 'هود', 'هود ويوسف', 'يوسف', 'يوسف', 'يوسف', 'يوسف', 'يوسف', 'يوسف', 'الرعد', 'الرعد', 'الرعد', 'إبراهيم', 'إبراهيم', 'إبراهيم', 'إبراهيم والحجر', 'الحجر', 'الحجر', 'الحجر والنحل', 'النحل', 'النحل', 'النحل', 'النحل', 'النحل', 'النحل', 'النحل والإسراء', 'الإسراء', 'الإسراء', 'الإسراء', 'الإسراء', 'الإسراء', 'الإسراء والكهف', 'الكهف', 'الكهف', 'الكهف', 'الكهف', 'الكهف', 'مريم', 'مريم', 'مريم', 'مريم وطه', 'طه', 'طه', 'طه', 'طه', 'طه والأنبياء', 'الأنبياء', 'الأنبياء', 'الأنبياء', 'الأنبياء', 'الأنبياء والحج', 'الحج', 'الحج', 'الحج', 'الحج', 'الحج والمؤمنون', 'المؤمنون', 'المؤمنون', 'المؤمنون', 'المؤمنون والنور', 'النور', 'النور', 'النور', 'النور', 'النور والفرقان', 'الفرقان', 'الفرقان', 'الفرقان', 'الشعراء', 'الشعراء', 'الشعراء', 'الشعراء', 'الشعراء', 'النمل', 'النمل', 'النمل', 'النمل', 'النمل والقصص', 'القصص', 'القصص', 'القصص', 'القصص', 'القصص والعنكبوت', 'العنكبوت', 'العنكبوت', 'العنكبوت', 'العنكبوت والروم', 'الروم', 'الروم', 'الروم', 'لقمان', 'لقمان', 'السجدة', 'السجدة والأحزاب', 'الأحزاب', 'الأحزاب', 'الأحزاب', 'الأحزاب', 'الأحزاب وسبأ', 'سبأ', 'سبأ', 'سبأ وفاطر', 'فاطر', 'فاطر', 'فاطر ويس', 'يس', 'يس', 'يس والصافات', 'الصافات', 'الصافات', 'الصافات', 'ص', 'ص', 'ص والزمر', 'الزمر', 'الزمر', 'الزمر', 'الزمر', 'غافر', 'غافر', 'غافر', 'غافر', 'غافر', 'فصلت', 'فصلت', 'فصلت', 'الشورى', 'الشورى', 'الشورى', 'الشورى والزخرف', 'الزخرف', 'الزخرف', 'الزخرف والدخان', 'الدخان', 'الجاثية', 'الجاثية والأحقاف', 'الأحقاف', 'الأحقاف', 'محمد', 'محمد', 'الفتح', 'الفتح', 'الفتح والحجرات', 'الحجرات و ق', 'ق', 'الذاريات', 'الذاريات والطور', 'الطور والنجم', 'النجم والقمر', 'القمر', 'القمر والرحمن', 'الرحمن والواقعة', 'الواقعة', 'الواقعة والحديد', 'الحديد', 'الحديد والمجادلة', 'المجادلة', 'المجادلة والحشر', 'الحشر', 'الممتحنة', 'الممتحنة والصف', 'الجمعة والمنافقون', 'المنافقون والتغابن', 'التغابن والطلاق', 'الطلاق والتحريم', 'التحريم والملك', 'الملك والقلم', 'القلم والحاقة', 'الحاقة والمعارج', 'المعارج ونوح', 'نوح والجن', 'الجن والمزمل', 'المزمل والمدثر', 'المدثر والقيامة والإنسان', 'الإنسان والمرسلات', 'المرسلات والنبأ', 'النبأ والنازعات', 'عبس والتكوير', 'الإنفطار والمطففين', 'الإنشقاق والبروج', 'الطارق والأعلى والغاشية', 'الفجر والبلد', 'الشمس والليل', 'الضحى إلى الناس', 'ختم القرآن'];
     const linkFromData = ['', '', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 13, 13, 13, 13, 13, 13, 25, 25, 25, 25, 25, 25, 37, 37, 37, 37, 37, 37, 49, 49, 49, 49, 49, 49, 61, 61, 61, 61, 61, 61, 73, 73, 73, 73, 73, 73, 85, 85, 85, 85, 85, 85, 97, 97, 97, 97, 97, 97, 109, 109, 109, 109, 109, 109, 121, 121, 121, 121, 121, 121, 133, 133, 133, 133, 133, 133, 145, 145, 145, 145, 145, 145, 157, 157, 157, 157, 157, 157, 169, 169, 169, 169, 169, 169, 181, 181, 181, 181, 181, 181, 193, 193, 193, 193, 193, 193, 205, 205, 205, 205, 205, 205, 217, 217, 217, 217, 217, 217, 229, 229, 229, 229, 229, 229, 241, 241, 241, 241, 241, 241, 253, 253, 253, 253, 253, 253, 265, 265, 265, 265, 265, 265, 277, 277, 277, 277, 277, 277, 289, 289, 289, 289, 289, 289, 301, 301, 301, 301, 301, 301, 313, 313, 313, 313, 313, 313, 325, 325, 325, 325, 325, 325, 337, 337, 337, 337, 337, 337, 349, 349, 349, 349, 349, 349, 361, 361, 361, 361, 361, 361, 373, 373, 373, 373, 373, 373, 385, 385, 385, 385, 385, 385, 397, 397, 397, 397, 397, 397, 409, 409, 409, 409, 409, 409, 421, 421, 421, 421, 421, 421, 433, 433, 433, 433, 433, 433, 445, 445, 445, 445, 445, 445, 457, 457, 457, 457, 457, 457, 469, 469, 469, 469, 469, 469, 481, 481, 481, 481, 481, 481, 493, 493, 493, 493, 493, 493, 505, 505, 505, 505, 505, 505, 517, 517, 517, 517, 517, 517, 529, 529, 529, 529, 529, 529, 541, 541, 541, 541, 541, 541, 553, 553, 553, 553, 553, 553, 565, 565, 565, 565, 565, 565, 577, 577, 577, 577, 577, 577];
     const linkToData = ['', '', 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122, 124, 126, 128, 130, 132, 134, 136, 138, 140, 142, 144, 146, 148, 150, 152, 154, 156, 158, 160, 162, 164, 166, 168, 170, 172, 174, 176, 178, 180, 182, 184, 186, 188, 190, 192, 194, 196, 198, 200, 202, 204, 206, 208, 210, 212, 214, 216, 218, 220, 222, 224, 226, 228, 230, 232, 234, 236, 238, 240, 242, 244, 246, 248, 250, 252, 254, 256, 258, 260, 262, 264, 266, 268, 270, 272, 274, 276, 278, 280, 282, 284, 286, 288, 290, 292, 294, 296, 298, 300, 302, 304, 306, 308, 310, 312, 314, 316, 318, 320, 322, 324, 326, 328, 330, 332, 334, 336, 338, 340, 342, 344, 346, 348, 350, 352, 354, 356, 358, 360, 362, 364, 366, 368, 370, 372, 374, 376, 378, 380, 382, 384, 386, 388, 390, 392, 394, 396, 398, 400, 402, 404, 406, 408, 410, 412, 414, 416, 418, 420, 422, 424, 426, 428, 430, 432, 434, 436, 438, 440, 442, 444, 446, 448, 450, 452, 454, 456, 458, 460, 462, 464, 466, 468, 470, 472, 474, 476, 478, 480, 482, 484, 486, 488, 490, 492, 494, 496, 498, 500, 502, 504, 506, 508, 510, 512, 514, 516, 518, 520, 522, 524, 526, 528, 530, 532, 534, 536, 538, 540, 542, 544, 546, 548, 550, 552, 554, 556, 558, 560, 562, 564, 566, 568, 570, 572, 574, 576, 578, 580, 582, 584, 586, 588, 590, 592, 594, 597, 600, 604];
     const reviewFromData = [...Array(32).fill(''), 1, 3, 5, 7, 9, 11, 1, 5, 9, 13, 17, 21, 1, 7, 13, 19, 25, 31, 1, 9, 17, 25, 33, 41, 1, 11, 21, 31, 41, 51, 1, 13, 25, 37, 49, 61, 1, 15, 29, 43, 57, 71, 1, 17, 33, 49, 65, 81, 1, 19, 37, 55, 73, 91, 1, 21, 41, 61, 81, 101, 1, 23, 45, 67, 89, 111, 1, 25, 49, 73, 97, 121, 1, 27, 53, 79, 105, 131, 1, 29, 57, 85, 113, 141, 1, 31, 61, 91, 121, 151, 1, 33, 65, 97, 129, 161, 1, 35, 69, 103, 137, 171, 1, 37, 73, 109, 145, 181, 1, 39, 77, 115, 153, 191, 1, 41, 81, 121, 161, 201, 1, 43, 85, 127, 169, 211, 1, 45, 89, 133, 177, 221, 1, 47, 93, 139, 185, 231, 1, 49, 97, 145, 193, 241, 1, 51, 101, 151, 201, 251, 1, 53, 105, 157, 209, 261, 1, 55, 109, 163, 217, 271, 1, 57, 113, 169, 225, 281, 1, 59, 117, 175, 233, 291, 1, 61, 121, 181, 241, 301, 1, 63, 125, 187, 249, 311, 1, 65, 129, 193, 257, 321, 1, 67, 133, 199, 265, 331, 1, 69, 137, 205, 273, 341, 1, 71, 141, 211, 281, 351, 1, 73, 145, 217, 289, 361, 1, 75, 149, 223, 297, 371, 1, 77, 153, 229, 305, 381, 1, 79, 157, 235, 313, 391, 1, 81, 161, 241, 321, 401, 1, 83, 165, 247, 329, 411, 1, 85, 169, 253, 337, 421, 1, 87, 173, 259, 345, 431, 1, 89, 177, 265, 353, 441, 1, 91, 181, 271, 361, 451, 1, 93, 185, 277, 369, 461, 1, 95, 189, 283, 377, 471, 1, 97, 193, 289, 385, 481];
     const reviewToData = [...Array(32).fill(''), 2, 4, 6, 8, 10, 12, 4, 8, 12, 16, 20, 24, 6, 12, 18, 24, 30, 36, 8, 16, 24, 32, 40, 48, 10, 20, 30, 40, 50, 60, 12, 24, 36, 48, 60, 72, 14, 28, 42, 56, 70, 84, 16, 32, 48, 64, 80, 96, 18, 36, 54, 72, 90, 108, 20, 40, 60, 80, 100, 120, 22, 44, 66, 88, 110, 132, 24, 48, 72, 96, 120, 144, 26, 52, 78, 104, 130, 156, 28, 56, 84, 112, 140, 168, 30, 60, 90, 120, 150, 180, 32, 64, 96, 128, 160, 192, 34, 68, 102, 136, 170, 204, 36, 72, 108, 144, 180, 216, 38, 76, 114, 152, 190, 228, 40, 80, 120, 160, 200, 240, 42, 84, 126, 168, 210, 252, 44, 88, 132, 176, 220, 264, 46, 92, 138, 184, 230, 276, 48, 96, 144, 192, 240, 288, 50, 100, 150, 200, 250, 300, 52, 104, 156, 208, 260, 312, 54, 108, 162, 216, 270, 324, 56, 112, 168, 224, 280, 336, 58, 116, 174, 232, 290, 348, 60, 120, 180, 240, 300, 360, 62, 124, 186, 248, 310, 372, 64, 128, 192, 256, 320, 384, 66, 132, 198, 264, 330, 396, 68, 136, 204, 272, 340, 408, 70, 140, 210, 280, 350, 420, 72, 144, 216, 288, 360, 432, 74, 148, 222, 296, 370, 444, 76, 152, 228, 304, 380, 456, 78, 156, 234, 312, 390, 468, 80, 160, 240, 320, 400, 480, 82, 164, 246, 328, 410, 492, 84, 168, 252, 336, 420, 504, 86, 172, 258, 344, 430, 516, 88, 176, 264, 352, 440, 528, 90, 180, 270, 360, 450, 540, 92, 184, 276, 368, 460, 552, 94, 188, 282, 376, 470, 564, 96, 192, 288, 384, 480, 576];
+
+    // === GLOBAL STATE ===
+    let currentUser = null;
+    let currentPlanData = null;
+    let calendarInstance = null;
+    let dayStatus = {};
+    let calendarObserver = null;
+    let activeSchedFilter = 'all';
 
     // === UTILITY FUNCTIONS ===
     function formatDate(d) {
@@ -740,22 +1009,26 @@
       return reviewCounter === 0 ? '' : Math.ceil(reviewCounter / 6);
     }
 
-    function showLoading(msg) {
-      const el = document.getElementById('load-dash');
-      const msgEl = document.getElementById('ld-msg');
-      if (msgEl) msgEl.textContent = msg || 'جاري التحميل...';
-      if (el) { el.style.display = 'flex'; el.classList.remove('gone'); }
-    }
-    function hideLoading() {
-      const el = document.getElementById('load-dash');
-      if (el) {
-        el.classList.add('gone');
-        setTimeout(() => { el.style.display = 'none'; }, 450);
+    // === TAB SWITCHING (0ms instantaneous SPA) ===
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.spa-nav-btn').forEach(b => b.classList.remove('active'));
+
+      const targetView = document.getElementById('view-' + tabName);
+      const targetBtn = document.getElementById('btn-tab-' + tabName);
+      if (targetView) targetView.classList.add('active');
+      if (targetBtn) targetBtn.classList.add('active');
+
+      if (tabName === 'schedule') {
+        renderScheduleList();
+      } else if (tabName === 'stats') {
+        initializeAndColorCalendar(currentPlanData?.tableRows);
       }
+      window.scrollTo({ top: 0, behavior: 'instant' });
     }
 
-    // === TODAY'S TASK STATE & CONTROLS ===
-    let todayTaskState = {
+    // === TODAY'S TASK STATE & PIPELINE ===
+    let todayCounters = {
       yestRep: 0,
       listen: 0,
       interp: false,
@@ -765,9 +1038,9 @@
       reviewed: false
     };
 
-    function loadTodayState(row) {
+    function loadCountersFromRow(row) {
       if (!row || !row.state) return;
-      todayTaskState = {
+      todayCounters = {
         yestRep: row.state.yestRep || 0,
         listen: row.state.listen || 0,
         interp: Boolean(row.state.interp),
@@ -778,44 +1051,44 @@
       };
     }
 
-    async function changeCounter(field, delta, maxVal) {
+    async function changeTodayCounter(field, delta, maxVal) {
       const max = maxVal ?? 99;
-      todayTaskState[field] = Math.max(0, Math.min(max, (todayTaskState[field] || 0) + delta));
-      const valEl = document.getElementById('cnt-' + field);
-      if (valEl) valEl.textContent = todayTaskState[field];
-      updateStepStyles();
-      await persistTodayCounters();
+      todayCounters[field] = Math.max(0, Math.min(max, (todayCounters[field] || 0) + delta));
+      const valEl = document.getElementById('cnt-today-' + field);
+      if (valEl) valEl.textContent = todayCounters[field];
+      updateStepDoneStyles();
+      await persistCounters();
     }
 
-    async function toggleStepBool(field) {
-      todayTaskState[field] = !todayTaskState[field];
-      const btn = document.getElementById('btn-toggle-' + field);
+    async function toggleTodayBool(field) {
+      todayCounters[field] = !todayCounters[field];
+      const btn = document.getElementById('btn-today-toggle-' + field);
       if (btn) {
-        btn.classList.toggle('active', todayTaskState[field]);
-        btn.innerHTML = todayTaskState[field] ? 'تم ✓' : 'لم يتم';
+        btn.classList.toggle('active', todayCounters[field]);
+        btn.innerHTML = todayCounters[field] ? 'تم ✓' : 'لم يتم';
       }
-      updateStepStyles();
-      await persistTodayCounters();
+      updateStepDoneStyles();
+      await persistCounters();
     }
 
-    function updateStepStyles() {
+    function updateStepDoneStyles() {
       const repMax = currentPlanData?.repetitionMax || 20;
-      const stepRules = {
-        'step-yestRep': todayTaskState.yestRep >= 5,
-        'step-listen': todayTaskState.listen >= 1,
-        'step-interp': todayTaskState.interp,
-        'step-record': todayTaskState.record >= 1,
-        'step-rep': todayTaskState.rep >= repMax,
-        'step-linked': todayTaskState.linked,
-        'step-reviewed': todayTaskState.reviewed
+      const rules = {
+        'row-step-yestRep': todayCounters.yestRep >= 5,
+        'row-step-listen': todayCounters.listen >= 1,
+        'row-step-interp': todayCounters.interp,
+        'row-step-record': todayCounters.record >= 1,
+        'row-step-rep': todayCounters.rep >= repMax,
+        'row-step-linked': todayCounters.linked,
+        'row-step-reviewed': todayCounters.reviewed
       };
-      Object.entries(stepRules).forEach(([id, isDone]) => {
-        const item = document.getElementById(id);
-        if (item) item.classList.toggle('is-done', isDone);
+      Object.entries(rules).forEach(([id, isDone]) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('done-step', isDone);
       });
     }
 
-    async function persistTodayCounters() {
+    async function persistCounters() {
       if (!currentUser || !currentPlanData) return;
       const todayStr = formatDate(new Date());
       const tableRows = currentPlanData.tableRows;
@@ -824,9 +1097,12 @@
 
       tableRows[idx].state = {
         ...tableRows[idx].state,
-        ...todayTaskState
+        ...todayCounters
       };
       currentPlanData.tableRows = tableRows;
+
+      // Update LocalStorage cache for 0ms next load
+      localStorage.setItem('manarat_plan_cache', JSON.stringify(currentPlanData));
 
       try {
         await db.collection('quranPlans').doc(currentUser.uid).update({
@@ -834,265 +1110,246 @@
           lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
         });
       } catch(e) {
-        console.error('Failed to auto-save counters:', e);
+        console.error('Auto-save error:', e);
       }
     }
 
-    // === DISPLAY DAILY TASK (الجدول التفصيلي لليوم الواحد) ===
-    function displayDailyTask() {
-      const container = document.getElementById('today-task-content');
-      const dateText = document.getElementById('today-date-text');
-      const seqText = document.getElementById('today-seq-text');
-      if (!container || !currentPlanData || !currentPlanData.tableRows) return;
+    // === RENDER TAB 1: TODAY'S SCHEDULE (واجب اليوم التفاعلي) ===
+    function renderTodayView() {
+      const container = document.getElementById('today-task-body');
+      const dateBadge = document.getElementById('today-date-badge');
+      const seqBadge = document.getElementById('today-seq-badge');
+      if (!container || !currentPlanData?.tableRows) return;
 
       const tableRows = currentPlanData.tableRows;
       const todayStr = formatDate(new Date());
-      
+
       const now = new Date();
-      if (dateText) {
-        dateText.textContent = now.toLocaleDateString('ar-SA', { weekday: 'long', day: 'numeric', month: 'short' });
+      if (dateBadge) {
+        dateBadge.textContent = now.toLocaleDateString('ar-SA', { weekday: 'long', day: 'numeric', month: 'short' });
       }
 
-      const todayRow = tableRows.find(r => r.displayDate === todayStr);
+      // Find today's row, or upcoming pending row
+      let todayRow = tableRows.find(r => r.displayDate === todayStr);
+      if (!todayRow) {
+        todayRow = tableRows.find(r => r.type === 'plan' && !r.state?.completed);
+      }
+
       const repMax = currentPlanData.repetitionMax || 20;
 
       if (!todayRow) {
-        // Look for the next upcoming pending row if today is not strictly in the plan dates
-        const nextPending = tableRows.find(r => r.type === 'plan' && !r.state?.completed);
-        if (nextPending) {
-          renderTaskRow(nextPending, repMax, container, seqText, true);
-        } else {
-          container.innerHTML = `
-            <div style="text-align:center;padding:36px 16px;color:var(--c-text-3);">
-              <div style="font-size:3em;margin-bottom:10px;">🎉</div>
-              <h3 style="font-family:'Amiri',serif;color:var(--c-primary);margin-bottom:6px;">مبارك! لا يوجد واجب مستحق</h3>
-              <p>لقد أتممت جميع مهام الخطة المسجلة حتى الآن.</p>
-            </div>`;
-          if (seqText) seqText.textContent = 'مكتمل';
-        }
+        if (seqBadge) seqBadge.textContent = 'الختام المبارك';
+        container.innerHTML = `
+          <div style="text-align:center;padding:32px 14px;color:var(--c-text-3);">
+            <div style="font-size:3em;margin-bottom:8px;">🎉</div>
+            <h3 style="font-family:'Amiri',serif;color:var(--c-primary);margin:0 0 6px;">مبارك! ختمت الخطة بنجاح</h3>
+            <p>أتممت جميع أيام الخطة المقررة كاملة بحمد الله وفضله.</p>
+          </div>`;
         return;
       }
 
       if (todayRow.type === 'excuse') {
-        if (seqText) seqText.textContent = 'عذر مسجل';
+        if (seqBadge) seqBadge.textContent = 'عذر مسجل';
         container.innerHTML = `
-          <div style="text-align:center;padding:24px;background:var(--c-warning-bg);border:1.5px solid var(--c-warning);border-radius:var(--rad-m);color:var(--c-warning);">
-            <div style="font-size:2.5em;margin-bottom:6px;">⚠️</div>
-            <strong style="font-size:1.1em;display:block;">يوم عذر (${todayRow.excuseType || 'عذر طارئ'})</strong>
-            <p style="margin:6px 0 0;font-size:0.85em;">تم تأجيل جدول الحفظ تلقائياً دون التأثير على تسلسل متابعتك.</p>
+          <div style="text-align:center;padding:26px 14px;background:var(--c-warning-bg);border:1.5px solid var(--c-warning);border-radius:var(--rad-m);color:var(--c-warning);">
+            <div style="font-size:2.6em;margin-bottom:6px;">⚠️</div>
+            <strong style="font-size:1.15em;display:block;">يوم عذر (${todayRow.excuseType || 'عذر طارئ'})</strong>
+            <p style="margin:6px 0 14px;font-size:0.88em;">تم تأجيل جدول الحفظ تلقائياً دون أي ضياع في تسلسلك.</p>
+            <button class="btn btn-sm btn-outline" onclick="deleteExcuseAndRestore(${todayRow.displaySeq})">حذف العذر واستعادة واجب اليوم ↩</button>
           </div>`;
         return;
       }
 
       if (todayRow.state?.completed) {
-        if (seqText) seqText.textContent = `اليوم ${todayRow.displaySeq || ''}`;
+        if (seqBadge) seqBadge.textContent = `اليوم ${todayRow.displaySeq}`;
         const d = getPlanData(todayRow.originalSequence);
         container.innerHTML = `
-          <div style="text-align:center;padding:26px 16px;background:var(--c-success-bg);border:2px solid var(--c-success);border-radius:var(--rad-m);color:var(--c-success);">
+          <div style="text-align:center;padding:26px 14px;background:var(--c-success-bg);border:2px solid var(--c-success);border-radius:var(--rad-m);color:var(--c-success);">
             <div style="font-size:3em;margin-bottom:8px;">✅</div>
-            <strong style="font-size:1.2em;display:block;">ما شاء الله! أتممت واجب اليوم بنجاح 🎉</strong>
-            ${d ? `<p style="margin:8px 0 0;font-size:0.9em;color:var(--c-success);">الحفظ: صفحة ${d.fromPage} – ${d.toPage} (${d.surah})</p>` : ''}
-            <button class="btn btn-sm btn-outline" style="margin-top:14px;" onclick="reopenTodayTask()">تعديل مهام اليوم ✏️</button>
+            <strong style="font-size:1.25em;display:block;margin-bottom:4px;">ما شاء الله! أتممت واجب اليوم بنجاح 🎉</strong>
+            ${d ? `<p style="margin:0 0 14px;font-size:0.92em;">الحفظ: صفحة ${d.fromPage} إلى ${d.toPage} (${d.surah})</p>` : ''}
+            <button class="btn btn-sm btn-outline" onclick="uncompleteToday()">تعديل أو مراجعة مهام اليوم ✏️</button>
           </div>`;
         return;
       }
 
-      renderTaskRow(todayRow, repMax, container, seqText, false);
-    }
+      // Render Active Today Card
+      if (seqBadge) seqBadge.textContent = `اليوم ${todayRow.displaySeq}`;
+      const d = getPlanData(todayRow.originalSequence);
+      loadCountersFromRow(todayRow);
 
-    function renderTaskRow(row, repMax, container, seqText, isUpcoming) {
-      if (seqText) seqText.textContent = `اليوم ${row.displaySeq || '1'}`;
-      const d = getPlanData(row.originalSequence);
-      if (!d) {
-        container.innerHTML = '<p>خطأ في استرجاع تفاصيل اليوم.</p>';
-        return;
-      }
-
-      loadTodayState(row);
-      const quranUrl = d.fromPage ? `https://quran.com/?page=${d.fromPage}` : 'https://quran.com/';
+      // Clean Madinah Mushaf Viewer Link
+      const mushafUrl = d.fromPage
+        ? `https://quran.ksu.edu.sa/index.php?l=ar#aya=${d.fromPage}_1`
+        : 'https://quran.ksu.edu.sa/';
 
       let html = '';
 
       // Main Memorization Block
       html += `
-        <div class="mem-target-box">
-          <div class="mem-target-info">
+        <div class="target-quran-box">
+          <div>
             <h3>📖 ص ${d.fromPage} ← ص ${d.toPage}</h3>
             <p>سورة ${d.surah || 'مقررة'}</p>
           </div>
-          <a href="${quranUrl}" target="_blank" rel="noopener" class="quran-btn-link">
-            <span>فتح المصحف</span>
+          <a href="${mushafUrl}" target="_blank" rel="noopener" class="mushaf-link-btn">
+            <span>مصحف المدينة</span>
             <span>↗</span>
           </a>
         </div>`;
 
-      // Step 1: Yesterday Repetition
+      // 1. Yesterday Repetition
       html += `
-        <div class="task-step-item ${todayTaskState.yestRep >= 5 ? 'is-done' : ''}" id="step-yestRep">
-          <div class="step-main-text">
-            <div class="step-name"><span>🔁</span><span>تكرار الأمس</span></div>
-            <div class="step-subtext">تثبيت ورد الأمس (الحد المطلوب: 5 مرات)</div>
+        <div class="step-item-row ${todayCounters.yestRep >= 5 ? 'done-step' : ''}" id="row-step-yestRep">
+          <div class="step-text-wrap">
+            <div class="step-text-title"><span>🔁</span><span>تكرار الأمس</span></div>
+            <div class="step-text-sub">تثبيت ورد الأمس في الذاكرة (الحد: 5 مرات)</div>
           </div>
-          <div class="m-counter">
-            <button class="m-btn" onclick="changeCounter('yestRep', -1, 5)">−</button>
-            <span class="m-val" id="cnt-yestRep">${todayTaskState.yestRep}</span>
-            <button class="m-btn" onclick="changeCounter('yestRep', 1, 5)">+</button>
+          <div class="ctrl-counter">
+            <button onclick="changeTodayCounter('yestRep', -1, 5)">−</button>
+            <span class="ctrl-val" id="cnt-today-yestRep">${todayCounters.yestRep}</span>
+            <button onclick="changeTodayCounter('yestRep', 1, 5)">+</button>
           </div>
         </div>`;
 
-      // Step 2: Listening
+      // 2. Listening
       html += `
-        <div class="task-step-item ${todayTaskState.listen >= 1 ? 'is-done' : ''}" id="step-listen">
-          <div class="step-main-text">
-            <div class="step-name"><span>🎧</span><span>الاستماع المتقن</span></div>
-            <div class="step-subtext">سماع القارئ المتقن للصفحتين (1 إلى 3 مرات)</div>
+        <div class="step-item-row ${todayCounters.listen >= 1 ? 'done-step' : ''}" id="row-step-listen">
+          <div class="step-text-wrap">
+            <div class="step-text-title"><span>🎧</span><span>الاستماع المتقن</span></div>
+            <div class="step-subtext">سماع القارئ للصفحتين (1 إلى 3 مرات)</div>
           </div>
-          <div class="m-counter">
-            <button class="m-btn" onclick="changeCounter('listen', -1, 3)">−</button>
-            <span class="m-val" id="cnt-listen">${todayTaskState.listen}</span>
-            <button class="m-btn" onclick="changeCounter('listen', 1, 3)">+</button>
+          <div class="ctrl-counter">
+            <button onclick="changeTodayCounter('listen', -1, 3)">−</button>
+            <span class="ctrl-val" id="cnt-today-listen">${todayCounters.listen}</span>
+            <button onclick="changeTodayCounter('listen', 1, 3)">+</button>
           </div>
         </div>`;
 
-      // Step 3: Tafsir
+      // 3. Tafsir
       html += `
-        <div class="task-step-item ${todayTaskState.interp ? 'is-done' : ''}" id="step-interp">
-          <div class="step-main-text">
-            <div class="step-name"><span>📚</span><span>قراءة التفسير</span></div>
+        <div class="step-item-row ${todayCounters.interp ? 'done-step' : ''}" id="row-step-interp">
+          <div class="step-text-wrap">
+            <div class="step-text-title"><span>📚</span><span>قراءة التفسير</span></div>
             <div class="step-subtext">فهم وتدبر معاني الآيات الجديدة</div>
           </div>
-          <button class="m-toggle-btn ${todayTaskState.interp ? 'active' : ''}" id="btn-toggle-interp" onclick="toggleStepBool('interp')">
-            ${todayTaskState.interp ? 'تم ✓' : 'لم يتم'}
+          <button class="step-toggle-btn ${todayCounters.interp ? 'active' : ''}" id="btn-today-toggle-interp" onclick="toggleTodayBool('interp')">
+            ${todayCounters.interp ? 'تم ✓' : 'لم يتم'}
           </button>
         </div>`;
 
-      // Step 4: Recording
+      // 4. Recording
       html += `
-        <div class="task-step-item ${todayTaskState.record >= 1 ? 'is-done' : ''}" id="step-record">
-          <div class="step-main-text">
-            <div class="step-name"><span>🎙️</span><span>التسجيل والمطابقة</span></div>
-            <div class="step-subtext">تسجيل التلاوة غيباً للتحقق (3 مرات)</div>
+        <div class="step-item-row ${todayCounters.record >= 1 ? 'done-step' : ''}" id="row-step-record">
+          <div class="step-text-wrap">
+            <div class="step-text-title"><span>🎙️</span><span>التسجيل والمطابقة</span></div>
+            <div class="step-subtext">تسجيل القراءة غيباً للتأكد من الضبط (3 مرات)</div>
           </div>
-          <div class="m-counter">
-            <button class="m-btn" onclick="changeCounter('record', -1, 3)">−</button>
-            <span class="m-val" id="cnt-record">${todayTaskState.record}</span>
-            <button class="m-btn" onclick="changeCounter('record', 1, 3)">+</button>
+          <div class="ctrl-counter">
+            <button onclick="changeTodayCounter('record', -1, 3)">−</button>
+            <span class="ctrl-val" id="cnt-today-record">${todayCounters.record}</span>
+            <button onclick="changeTodayCounter('record', 1, 3)">+</button>
           </div>
         </div>`;
 
-      // Step 5: Repetition of New Memorization
+      // 5. Repetition of New Memorization
       html += `
-        <div class="task-step-item ${todayTaskState.rep >= repMax ? 'is-done' : ''}" id="step-rep">
-          <div class="step-main-text">
-            <div class="step-name"><span>🔄</span><span>تكرار الحفظ الجديد</span></div>
-            <div class="step-subtext">التكرار حتى الإتقان (الهدف: ${repMax} مرة)</div>
+        <div class="step-item-row ${todayCounters.rep >= repMax ? 'done-step' : ''}" id="row-step-rep">
+          <div class="step-text-wrap">
+            <div class="step-text-title"><span>🔄</span><span>تكرار الحفظ الجديد</span></div>
+            <div class="step-subtext">التكرار حتى الرسوخ (المستهدف: ${repMax} مرة)</div>
           </div>
-          <div class="m-counter">
-            <button class="m-btn" onclick="changeCounter('rep', -1, ${repMax})">−</button>
-            <span class="m-val" id="cnt-rep">${todayTaskState.rep}</span>
-            <button class="m-btn" onclick="changeCounter('rep', 1, ${repMax})">+</button>
+          <div class="ctrl-counter">
+            <button onclick="changeTodayCounter('rep', -1, ${repMax})">−</button>
+            <span class="ctrl-val" id="cnt-today-rep">${todayCounters.rep}</span>
+            <button onclick="changeTodayCounter('rep', 1, ${repMax})">+</button>
           </div>
         </div>`;
 
-      // Linking Section (الربط القريب)
+      // 6. Cumulative Linking (الربط التراكمي)
       if (d.linkFrom && d.linkTo) {
         html += `
-          <div class="task-step-item ${todayTaskState.linked ? 'is-done' : ''}" id="step-linked">
-            <div class="step-main-text">
-              <div class="step-name"><span>🔗</span><span>الربط التراكمي</span></div>
-              <div class="step-subtext">ربط الصفحات من ص ${d.linkFrom} إلى ص ${d.linkTo}</div>
+          <div class="step-item-row ${todayCounters.linked ? 'done-step' : ''}" id="row-step-linked">
+            <div class="step-text-wrap">
+              <div class="step-text-title"><span>🔗</span><span>الربط التراكمي</span></div>
+              <div class="step-subtext">ربط المحفوظ: من ص ${d.linkFrom} إلى ص ${d.linkTo}</div>
             </div>
-            <button class="m-toggle-btn ${todayTaskState.linked ? 'active' : ''}" id="btn-toggle-linked" onclick="toggleStepBool('linked')">
-              ${todayTaskState.linked ? 'تم ✓' : 'لم يتم'}
+            <button class="step-toggle-btn ${todayCounters.linked ? 'active' : ''}" id="btn-today-toggle-linked" onclick="toggleTodayBool('linked')">
+              ${todayCounters.linked ? 'تم ✓' : 'لم يتم'}
             </button>
-          </div>`;
-      } else {
-        html += `
-          <div class="info-strip">
-            <span>🔗 الربط: لا يوجد ورد ربط لليومين الأولين</span>
           </div>`;
       }
 
-      // Review Section (المراجعة)
+      // 7. Periodic Review (المراجعة)
       if (d.reviewFrom && d.reviewTo) {
         html += `
-          <div class="task-step-item ${todayTaskState.reviewed ? 'is-done' : ''}" id="step-reviewed">
-            <div class="step-main-text">
-              <div class="step-name">
+          <div class="step-item-row ${todayCounters.reviewed ? 'done-step' : ''}" id="row-step-reviewed">
+            <div class="step-text-wrap">
+              <div class="step-text-title">
                 <span>⭐</span>
                 <span>المراجعة الدورية ${d.round ? `(الجولة ${d.round})` : ''}</span>
               </div>
-              <div class="step-subtext">مراجعة المحفوظ من ص ${d.reviewFrom} إلى ص ${d.reviewTo}</div>
+              <div class="step-subtext">مراجعة: من ص ${d.reviewFrom} إلى ص ${d.reviewTo}</div>
             </div>
-            <button class="m-toggle-btn ${todayTaskState.reviewed ? 'active' : ''}" id="btn-toggle-reviewed" onclick="toggleStepBool('reviewed')">
-              ${todayTaskState.reviewed ? 'تم ✓' : 'لم يتم'}
+            <button class="step-toggle-btn ${todayCounters.reviewed ? 'active' : ''}" id="btn-today-toggle-reviewed" onclick="toggleTodayBool('reviewed')">
+              ${todayCounters.reviewed ? 'تم ✓' : 'لم يتم'}
             </button>
-          </div>`;
-      } else {
-        html += `
-          <div class="info-strip">
-            <span>⭐ المراجعة الدورية: تبدأ تلقائياً من اليوم 33 بعد تثبيت الحصيلة الأولى</span>
           </div>`;
       }
 
       // Actions Row
       html += `
-        <div class="today-actions-bar">
-          <button class="btn btn-primary btn-lg" id="btn-complete-day" onclick="markTodayComplete()">
-            ✅ تأكيد إتمام واجب اليوم
+        <div class="today-actions-row">
+          <button class="btn-complete-today" onclick="confirmCompleteToday()">
+            <span>✅</span>
+            <span>تأكيد إتمام واجب اليوم</span>
           </button>
-          <button class="btn btn-outline" onclick="openExcuseModal()">
-            ⚠️ تسجيل عذر
+          <button class="btn-excuse-today" onclick="openExcuseModal()">
+            <span>⚠️ تسجيل عذر</span>
           </button>
         </div>`;
 
       container.innerHTML = html;
     }
 
-    // === COMPLETE TODAY TASK ===
-    async function markTodayComplete() {
+    // Confirm Complete Today
+    async function confirmCompleteToday() {
       if (!currentUser || !currentPlanData) return;
       const todayStr = formatDate(new Date());
       const tableRows = currentPlanData.tableRows;
       let idx = tableRows.findIndex(r => r.displayDate === todayStr && r.type === 'plan');
       if (idx === -1) {
-        // Fallback to first pending plan row
         idx = tableRows.findIndex(r => r.type === 'plan' && !r.state?.completed);
       }
       if (idx === -1) return;
 
-      const btn = document.getElementById('btn-complete-day');
-      if (btn) { btn.disabled = true; btn.textContent = '⏳ جاري الحفظ...'; }
-
       tableRows[idx].state = {
         ...tableRows[idx].state,
-        ...todayTaskState,
+        ...todayCounters,
         completed: true
       };
       currentPlanData.tableRows = tableRows;
+
+      localStorage.setItem('manarat_plan_cache', JSON.stringify(currentPlanData));
+      renderAllViews();
+      const initialTab = localStorage.getItem('open_tab');
+      if (initialTab) {
+        localStorage.removeItem('open_tab');
+        switchTab(initialTab);
+      }
+      showToast('🎉 تقبل الله! تم إتمام واجب اليوم بنجاح.');
 
       try {
         await db.collection('quranPlans').doc(currentUser.uid).update({
           tableRows: tableRows,
           lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
         });
-        
-        displayDailyTask();
-        const stats = calculateDashboardStats(tableRows);
-        const streakData = calculateStreaksAndLevel(tableRows);
-        displayProgress(stats);
-        displayStats(stats);
-        displayStreakArea(streakData);
-        initializeAndColorCalendar(tableRows);
-        renderInPageScheduleTable();
       } catch(e) {
         console.error(e);
-        alert('حدث خطأ أثناء حفظ الإنجاز: ' + e.message);
-        if (btn) { btn.disabled = false; btn.textContent = '✅ تأكيد إتمام واجب اليوم'; }
       }
     }
 
-    async function reopenTodayTask() {
+    async function uncompleteToday() {
       if (!currentUser || !currentPlanData) return;
       const todayStr = formatDate(new Date());
       const tableRows = currentPlanData.tableRows;
@@ -1102,16 +1359,14 @@
       tableRows[idx].state.completed = false;
       currentPlanData.tableRows = tableRows;
 
+      localStorage.setItem('manarat_plan_cache', JSON.stringify(currentPlanData));
+      renderAllViews();
+      showToast('تمت إعادة فتح مهام اليوم للتعديل.');
+
       await db.collection('quranPlans').doc(currentUser.uid).update({
         tableRows: tableRows,
         lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
       });
-      displayDailyTask();
-      const stats = calculateDashboardStats(tableRows);
-      displayProgress(stats);
-      displayStats(stats);
-      initializeAndColorCalendar(tableRows);
-      renderInPageScheduleTable();
     }
 
     // === EXCUSE MODAL HANDLING ===
@@ -1123,32 +1378,28 @@
       document.getElementById('excuse-modal').classList.remove('open');
     }
 
-    async function applyExcuse(excuseType) {
+    async function applyExcuseAction(excuseType) {
       closeExcuseModal();
       if (!currentUser || !currentPlanData) return;
 
-      showLoading('جاري تسجيل العذر وتأجيل الجدول...');
       const todayStr = formatDate(new Date());
       const tableRows = currentPlanData.tableRows;
       let rowIndex = tableRows.findIndex(r => r.displayDate === todayStr && r.type === 'plan');
       if (rowIndex === -1) {
         rowIndex = tableRows.findIndex(r => r.type === 'plan' && !r.state?.completed);
       }
-      if (rowIndex === -1) { hideLoading(); return; }
+      if (rowIndex === -1) return;
 
       const targetRow = tableRows[rowIndex];
       const origSeq = targetRow.originalSequence;
 
-      // 1. Mark target row as excuse
       targetRow.type = 'excuse';
       targetRow.excuseType = excuseType;
       targetRow.state = null;
 
-      // 2. Create replacement row for next day
       const nextDate = new Date(targetRow.displayDate + 'T00:00:00Z');
       nextDate.setUTCDate(nextDate.getUTCDate() + 1);
 
-      const repMax = currentPlanData.repetitionMax || 20;
       const newPlanRow = {
         type: 'plan',
         originalSequence: origSeq,
@@ -1157,7 +1408,6 @@
         state: { yestRep: 0, listen: 0, interp: false, record: 0, rep: 0, linked: false, reviewed: false, completed: false }
       };
 
-      // 3. Shift following rows forward
       for (let i = rowIndex + 1; i < tableRows.length; i++) {
         const r = tableRows[i];
         if (r.displaySeq) r.displaySeq += 1;
@@ -1168,188 +1418,272 @@
         }
       }
 
-      // Insert new plan row after the excuse row
       tableRows.splice(rowIndex + 1, 0, newPlanRow);
       currentPlanData.tableRows = tableRows;
 
-      try {
-        await db.collection('quranPlans').doc(currentUser.uid).update({
-          tableRows: tableRows,
-          lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        hideLoading();
-        displayDailyTask();
-        const stats = calculateDashboardStats(tableRows);
-        const streakData = calculateStreaksAndLevel(tableRows);
-        displayProgress(stats);
-        displayStats(stats);
-        displayStreakArea(streakData);
-        initializeAndColorCalendar(tableRows);
-        renderInPageScheduleTable();
-      } catch(e) {
-        hideLoading();
-        console.error(e);
-        alert('حدث خطأ أثناء تطبيق العذر: ' + e.message);
+      localStorage.setItem('manarat_plan_cache', JSON.stringify(currentPlanData));
+      renderAllViews();
+      showToast(`تم تسجيل عذر (${excuseType}) وتأجيل الجدول.`);
+
+      await db.collection('quranPlans').doc(currentUser.uid).update({
+        tableRows: tableRows,
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+
+    async function deleteExcuseAndRestore(displaySeq) {
+      if (!confirm('هل تريد حذف هذا العذر واستعادة تسلسل اليوم؟')) return;
+      const tableRows = currentPlanData.tableRows;
+      const excIdx = tableRows.findIndex(r => r.displaySeq === displaySeq && r.type === 'excuse');
+      if (excIdx === -1) return;
+
+      tableRows.splice(excIdx, 1);
+      for (let i = excIdx; i < tableRows.length; i++) {
+        const r = tableRows[i];
+        if (r.displaySeq) r.displaySeq -= 1;
+        if (r.type !== 'excuse' && r.displayDate) {
+          const d = new Date(r.displayDate + 'T00:00:00Z');
+          d.setUTCDate(d.getUTCDate() - 1);
+          r.displayDate = formatDate(d);
+        }
       }
+      currentPlanData.tableRows = tableRows;
+
+      localStorage.setItem('manarat_plan_cache', JSON.stringify(currentPlanData));
+      renderAllViews();
+      showToast('تم حذف العذر وتعديل الجدول.');
+
+      await db.collection('quranPlans').doc(currentUser.uid).update({
+        tableRows: tableRows,
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+      });
     }
 
-    // === IN-PAGE DETAILED SCHEDULE ACCORDION & TABLE ===
-    function toggleFullSchedule() {
-      const container = document.getElementById('full-table-container');
-      const chevron = document.getElementById('table-chevron');
-      const isOpen = container.classList.toggle('open');
-      chevron.classList.toggle('open', isOpen);
-      if (isOpen) {
-        renderInPageScheduleTable();
-      }
+    // === RENDER TAB 2: DETAILED SCHEDULE CARDS (الجدول التفصيلي بطاقات) ===
+    function setSchedFilter(filter, btn) {
+      activeSchedFilter = filter;
+      document.querySelectorAll('.s-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderScheduleList();
     }
 
-    function setScheduleFilter(filter, el) {
-      activeScheduleFilter = filter;
-      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-      el.classList.add('active');
-      renderInPageScheduleTable();
-    }
-
-    function filterScheduleTable() {
-      renderInPageScheduleTable();
-    }
-
-    function renderInPageScheduleTable() {
-      const tbody = document.getElementById('inpage-schedule-tbody');
-      if (!tbody || !currentPlanData?.tableRows) return;
+    function renderScheduleList() {
+      const container = document.getElementById('sched-cards-container');
+      const countLabel = document.getElementById('sched-results-count');
+      if (!container || !currentPlanData?.tableRows) return;
 
       const rows = currentPlanData.tableRows;
-      const query = (document.getElementById('table-search')?.value || '').trim().toLowerCase();
+      const query = (document.getElementById('sched-search-input')?.value || '').trim().toLowerCase();
+      const todayStr = formatDate(new Date());
 
       let html = '';
+      let matchCount = 0;
+
       rows.forEach((r, idx) => {
-        if (r.type === 'excuse') {
-          if (activeScheduleFilter === 'completed') return;
+        const isExcuse = r.type === 'excuse';
+        const isCompleted = Boolean(r.state?.completed);
+        const isToday = r.displayDate === todayStr;
+
+        if (activeSchedFilter === 'pending' && (isCompleted || isExcuse)) return;
+        if (activeSchedFilter === 'completed' && !isCompleted) return;
+        if (activeSchedFilter === 'excuse' && !isExcuse) return;
+
+        const d = getPlanData(r.originalSequence);
+        if (query) {
+          const searchKey = `${r.displaySeq} ${d.fromPage} ${d.toPage} ${d.surah} ${r.displayDate}`.toLowerCase();
+          if (!searchKey.includes(query)) return;
+        }
+
+        matchCount++;
+
+        if (isExcuse) {
           html += `
-            <tr class="exc-row">
-              <td>${r.displaySeq || '-'}</td>
-              <td>${r.displayDate}</td>
-              <td colspan="4">⚠️ عذر (${r.excuseType || 'عذر'})</td>
-              <td>عذر</td>
-            </tr>`;
+            <div class="day-sched-card is-excuse-card" id="card-day-${r.displaySeq}">
+              <div class="day-card-head">
+                <span class="day-card-badge">يوم ${r.displaySeq}</span>
+                <span class="day-card-status" style="color:var(--c-warning);">⚠️ عذر (${r.excuseType || 'عذر'})</span>
+              </div>
+              <div style="font-size:0.88em;color:var(--c-text-2);margin-bottom:8px;">
+                التاريخ: <strong>${r.displayDate}</strong>
+              </div>
+              <div class="day-card-btn-row">
+                <button class="day-action-pill" onclick="deleteExcuseAndRestore(${r.displaySeq})">حذف العذر واستعادة اليوم</button>
+              </div>
+            </div>`;
           return;
         }
 
-        const isCompleted = Boolean(r.state?.completed);
-        if (activeScheduleFilter === 'pending' && isCompleted) return;
-        if (activeScheduleFilter === 'completed' && !isCompleted) return;
-
-        const d = getPlanData(r.originalSequence);
-        const searchTarget = `${d.fromPage} ${d.toPage} ${d.surah}`.toLowerCase();
-        if (query && !searchTarget.includes(query)) return;
-
-        const isToday = r.displayDate === formatDate(new Date());
-
         html += `
-          <tr class="${isCompleted ? 'done-row' : ''} ${isToday ? 'r-2' : ''}">
-            <td><strong>${r.displaySeq}</strong></td>
-            <td>${r.displayDate}</td>
-            <td>ص ${d.fromPage}–${d.toPage}</td>
-            <td>${d.surah}</td>
-            <td>${d.linkFrom ? `ص ${d.linkFrom}–${d.linkTo}` : '—'}</td>
-            <td>${d.reviewFrom ? `ص ${d.reviewFrom}–${d.reviewTo} (ج${d.round})` : '—'}</td>
-            <td>${isCompleted ? '<span style="color:var(--c-success);font-weight:700;">مكتمل ✓</span>' : 'متبقي'}</td>
-          </tr>`;
+          <div class="day-sched-card ${isCompleted ? 'is-done-card' : ''} ${isToday ? 'is-today-card' : ''}" id="card-day-${r.displaySeq}">
+            <div class="day-card-head">
+              <span class="day-card-badge">اليوم ${r.displaySeq}</span>
+              <span class="day-card-status">
+                ${isToday ? '<strong style="color:var(--c-gold-d);">🌟 اليوم الحالي</strong>' : ''}
+                ${isCompleted ? '<strong style="color:var(--c-success);">✓ مكتمل</strong>' : ''}
+                ${!isCompleted && !isToday ? '<span style="color:var(--c-text-3);">قيد الانتظار</span>' : ''}
+              </span>
+            </div>
+
+            <div class="day-card-grid">
+              <div>
+                <span class="dc-label">الحفظ: </span>
+                <span class="dc-val">ص ${d.fromPage}–${d.toPage} (${d.surah})</span>
+              </div>
+              <div>
+                <span class="dc-label">التاريخ: </span>
+                <span class="dc-val">${r.displayDate}</span>
+              </div>
+              <div>
+                <span class="dc-label">الربط: </span>
+                <span class="dc-val">${d.linkFrom ? `ص ${d.linkFrom}–${d.linkTo}` : '—'}</span>
+              </div>
+              <div>
+                <span class="dc-label">المراجعة: </span>
+                <span class="dc-val">${d.reviewFrom ? `ص ${d.reviewFrom}–${d.reviewTo} (ج${d.round})` : '—'}</span>
+              </div>
+            </div>
+
+            <div class="day-card-btn-row">
+              <button class="day-action-pill ${isCompleted ? 'done' : ''}" onclick="toggleDayCompletionFromSchedule(${idx})">
+                ${isCompleted ? '✓ أتممته (انقر للإلغاء)' : 'تعليم كمكتمل ✅'}
+              </button>
+            </div>
+          </div>`;
       });
 
-      tbody.innerHTML = html || '<tr><td colspan="7" style="text-align:center;padding:16px;">لا توجد صفوف تطابق البحث</td></tr>';
+      if (countLabel) countLabel.textContent = `${matchCount} يوم معروض`;
+      container.innerHTML = html || '<div style="text-align:center;padding:30px;color:var(--c-text-3);">لا توجد أيام تطابق بحثك</div>';
     }
 
-    // === STATS & PROGRESS FUNCTIONS ===
-    function calculateDashboardStats(tableRows) {
-      let lastCompletedPage = 0;
-      let linkedTasks = 0;
-      let perfectedTasks = 0;
+    // Two-Way Sync from Schedule Card
+    async function toggleDayCompletionFromSchedule(rowIndex) {
+      if (!currentUser || !currentPlanData) return;
+      const row = currentPlanData.tableRows[rowIndex];
+      if (!row || row.type !== 'plan') return;
+
+      const newState = !row.state?.completed;
+      row.state = {
+        ...row.state,
+        completed: newState
+      };
+
+      localStorage.setItem('manarat_plan_cache', JSON.stringify(currentPlanData));
+      renderAllViews();
+      showToast(newState ? `تم إتمام اليوم ${row.displaySeq} ✓` : `تم إلغاء إتمام اليوم ${row.displaySeq}`);
+
+      await db.collection('quranPlans').doc(currentUser.uid).update({
+        tableRows: currentPlanData.tableRows,
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+
+    function jumpToTodayCard() {
+      const todayStr = formatDate(new Date());
+      const todayRow = currentPlanData?.tableRows?.find(r => r.displayDate === todayStr);
+      if (todayRow) {
+        const el = document.getElementById('card-day-' + todayRow.displaySeq);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.style.boxShadow = '0 0 0 3px var(--c-gold)';
+          setTimeout(() => el.style.boxShadow = '', 2000);
+        }
+      }
+    }
+
+    // === RENDER TAB 3: SQUARE STATS & CALENDAR (12 Square Cards) ===
+    function calculateFullMetrics(tableRows) {
+      if (!tableRows || tableRows.length === 0) return {};
+
+      let completedDays = 0;
       let excuseCount = 0;
-      if (!tableRows) return { memorizedPages: 0, linkedTasks: 0, perfectedTasks: 0, excuseCount: 0 };
+      let highestMemorizedPage = 0;
+      let linkedCount = 0;
+      let reviewedCount = 0;
+      let currentRound = 1;
 
       tableRows.forEach(row => {
         if (row.type === 'excuse') {
           excuseCount++;
         } else if (row.type === 'plan' && row.state?.completed) {
-          const planInfo = getPlanData(row.originalSequence);
-          if (planInfo && planInfo.toPage) {
-            const pageNum = parseInt(planInfo.toPage);
-            if (!isNaN(pageNum)) {
-              lastCompletedPage = Math.max(lastCompletedPage, pageNum);
-            }
+          completedDays++;
+          const d = getPlanData(row.originalSequence);
+          if (d && d.toPage) {
+            highestMemorizedPage = Math.max(highestMemorizedPage, parseInt(d.toPage) || 0);
           }
-          if (planInfo && planInfo.linkTo !== '' && row.state.linked) {
-            linkedTasks++;
-          }
-          if (planInfo && planInfo.reviewTo !== '' && row.state.reviewed) {
-            perfectedTasks++;
+          if (d && d.linkTo && row.state.linked) linkedCount++;
+          if (d && d.reviewTo && row.state.reviewed) {
+            reviewedCount++;
+            if (d.round) currentRound = Math.max(currentRound, parseInt(d.round) || 1);
           }
         }
       });
 
+      const memorizedPages = Math.min(highestMemorizedPage, totalQuranPages);
+      const remainingPages = Math.max(0, totalQuranPages - memorizedPages);
+
+      // Dates
+      const startStr = currentPlanData.startDate || formatDate(new Date());
+      const startDate = new Date(startStr + 'T00:00:00Z');
+      const today = new Date(); today.setUTCHours(0,0,0,0);
+      const elapsedDays = Math.max(0, Math.floor((today - startDate) / 86400000));
+
+      const totalPlanDays = tableRows.length;
+      const remainingDays = Math.max(0, totalPlanDays - completedDays - excuseCount);
+
+      const expectedEnd = new Date(startDate);
+      expectedEnd.setUTCDate(startDate.getUTCDate() + totalPlanDays);
+
+      const progressPct = totalQuranPages > 0 ? ((memorizedPages / totalQuranPages) * 100).toFixed(1) : 0;
+
       return {
-        memorizedPages: Math.min(lastCompletedPage, totalQuranPages),
-        linkedTasks,
-        perfectedTasks,
-        excuseCount
+        memorizedPages,
+        remainingPages,
+        startStr,
+        expectedEndStr: formatDate(expectedEnd),
+        elapsedDays,
+        remainingDays,
+        excuseCount,
+        progressPct,
+        linkedCount,
+        reviewedCount,
+        currentRound,
+        dailyRate: (currentPlanData.planType === 'rev' || currentPlanData.planType === '1') ? '1 صفحة' : `${currentPlanData.planType || 2} صفحة`
       };
     }
 
-    function displayProgress(stats) {
-      if (!currentPlanData) return;
-      const planType = currentPlanData.planType || '2';
-      const planLabel = planType === 'rev' ? 'خطة المراجعة الشاملة' : `خطة ${planType} صفحة يومياً`;
-      const mPages = Math.min(stats.memorizedPages || 0, totalQuranPages);
-      const lPages = Math.min(stats.linkedTasks || 0, totalQuranPages);
-      const pPages = Math.min(stats.perfectedTasks || 0, totalQuranPages);
-      const pct = v => totalQuranPages > 0 ? Math.min(100, (v / totalQuranPages) * 100).toFixed(1) : 0;
+    function renderStatsView() {
+      if (!currentPlanData?.tableRows) return;
+      const m = calculateFullMetrics(currentPlanData.tableRows);
 
-      const planNameEl = document.getElementById('current-plan-name');
-      if (planNameEl) {
-        planNameEl.textContent = `📘 ${planLabel} — للطالب ${currentPlanData.studentName || 'المبارك'}`;
-      }
+      // Populate 12 Square Stat Cards
+      setText('stat-mem-pages', m.memorizedPages);
+      setText('stat-rem-pages', m.remainingPages);
+      setText('stat-start-date', m.startStr);
+      setText('stat-end-date', m.expectedEndStr);
+      setText('stat-elapsed-days', m.elapsedDays + ' يوم');
+      setText('stat-remaining-days', m.remainingDays + ' يوم');
+      setText('stat-excuse-days', m.excuseCount + ' يوم');
+      setText('stat-progress-pct', m.progressPct + '%');
+      setText('stat-linked-count', m.linkedCount);
+      setText('stat-reviewed-count', m.reviewedCount);
+      setText('stat-current-round', 'الجولة ' + m.currentRound);
+      setText('stat-daily-rate', m.dailyRate);
 
-      const pBar = document.getElementById('progress-bar-value');
-      if (pBar) {
-        pBar.style.width = `${pct(mPages)}%`;
-        pBar.textContent = `${pct(mPages)}%`;
-      }
-      const mPagesEl = document.getElementById('completed-pages-progress');
-      if (mPagesEl) mPagesEl.textContent = mPages;
+      // Today tab mini badges
+      setText('today-memorized-count', m.memorizedPages);
+      setText('today-remaining-count', m.remainingPages);
 
-      const lb = document.getElementById('linked-bar'), lp = document.getElementById('linked-pct');
-      const pb = document.getElementById('perf-bar'), pp = document.getElementById('perf-pct');
-      if (lb) lb.style.width = `${pct(lPages)}%`;
-      if (lp) lp.textContent = `${pct(lPages)}%`;
-      if (pb) pb.style.width = `${pct(pPages)}%`;
-      if (pp) pp.textContent = `${pct(pPages)}%`;
-
-      const list = document.getElementById('plan-info-list');
-      if (list && currentPlanData.startDate) {
-        const sd = new Date(currentPlanData.startDate + 'T00:00:00Z');
-        const today = new Date();
-        const days = Math.max(0, Math.floor((today - sd) / 86400000));
-        list.innerHTML = `
-          <li><strong>تاريخ الانطلاق</strong><span>${currentPlanData.startDate}</span></li>
-          <li><strong>أيام المسيرة المباركة</strong><span>${days} يوم</span></li>
-          <li><strong>أيام الأعذار</strong><span>${stats.excuseCount || 0} يوم</span></li>
-          <li><strong>المتبقي حتى الختمة</strong><span>${totalQuranPages - mPages} صفحة</span></li>
-          <li><strong>سقف التكرار اليومي</strong><span>${currentPlanData.repetitionMax || 20}×</span></li>
-        `;
-      }
+      // Streaks
+      const streakData = calculateStreaksAndLevel(currentPlanData.tableRows);
+      setText('streak-current-val', '🔥 ' + streakData.currentStreak);
+      setText('streak-longest-val', '🏆 ' + streakData.longestStreak);
+      setText('today-streak-count', streakData.currentStreak);
+      setText('rank-title', `المستوى ${streakData.currentLevel}: ${streakData.currentTitle}`);
     }
 
-    function displayStats(stats) {
-      const sm = document.getElementById('stat-memorized');
-      const sp = document.getElementById('stat-perfected');
-      const sl = document.getElementById('stat-linked');
-      const se = document.getElementById('stat-excuses');
-      if (sm) sm.textContent = stats.memorizedPages || 0;
-      if (sp) sp.textContent = stats.perfectedTasks || 0;
-      if (sl) sl.textContent = stats.linkedTasks || 0;
-      if (se) se.textContent = stats.excuseCount || 0;
+    function setText(id, val) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
     }
 
     // === STREAKS & TITLES ===
@@ -1366,73 +1700,47 @@
 
     function calculateStreaksAndLevel(tableRows) {
       if (!tableRows || tableRows.length === 0) {
-        return { currentStreak: 0, longestStreak: 0, currentLevel: 0, currentTitle: levelTitles[0] };
+        return { currentStreak: 0, longestStreak: 0, currentLevel: 1, currentTitle: levelTitles[0] };
       }
-      const sortedRows = [...tableRows].sort((a, b) => new Date(a.displayDate) - new Date(b.displayDate));
-      let longestStreak = 0;
-      let currentRun = 0;
+      const sorted = [...tableRows].sort((a, b) => new Date(a.displayDate) - new Date(b.displayDate));
+      let longest = 0, currentRun = 0;
       const todayStr = formatDate(new Date());
 
-      for (const row of sortedRows) {
+      for (const row of sorted) {
         if (row.displayDate > todayStr) break;
         if (row.type === 'plan' && row.state?.completed) {
           currentRun++;
         } else if (row.type === 'excuse') {
-          // Excuse doesn't break the streak
           continue;
         } else {
-          if (currentRun > longestStreak) longestStreak = currentRun;
+          if (currentRun > longest) longest = currentRun;
           currentRun = 0;
         }
       }
-      if (currentRun > longestStreak) longestStreak = currentRun;
+      if (currentRun > longest) longest = currentRun;
 
-      // Current Streak Calculation backward from today
-      let tempCurrentStreak = 0;
-      let broken = false;
-      for (let i = sortedRows.length - 1; i >= 0; i--) {
-        const row = sortedRows[i];
+      let tempCurrent = 0, broken = false;
+      for (let i = sorted.length - 1; i >= 0; i--) {
+        const row = sorted[i];
         if (row.displayDate > todayStr) continue;
         if (row.type === 'plan' && row.state?.completed) {
-          if (!broken) tempCurrentStreak++;
+          if (!broken) tempCurrent++;
         } else if (row.type === 'excuse') {
           continue;
         } else {
           broken = true;
-          if (row.displayDate === todayStr) tempCurrentStreak = 0;
+          if (row.displayDate === todayStr) tempCurrent = 0;
           break;
         }
       }
 
-      const currentStreak = tempCurrentStreak;
-      const levelIndex = Math.min(Math.floor(currentStreak / 10), levelTitles.length - 1);
+      const levelIndex = Math.min(Math.floor(tempCurrent / 10), levelTitles.length - 1);
       return {
-        currentStreak,
-        longestStreak,
+        currentStreak: tempCurrent,
+        longestStreak: longest,
         currentLevel: levelIndex + 1,
         currentTitle: levelTitles[levelIndex] || levelTitles[0]
       };
-    }
-
-    function displayStreakArea(streakData) {
-      const area = document.getElementById('streak-area');
-      const lvArea = document.getElementById('level-area');
-      if (!area || !streakData) return;
-
-      area.innerHTML = `
-        <div class="streak-item"><span class="si-val">🔥 ${streakData.currentStreak}</span><div class="si-lbl">سلسلة الأيام الحالية</div></div>
-        <div class="streak-item"><span class="si-val">🏆 ${streakData.longestStreak}</span><div class="si-lbl">أطول سلسلة متصلة</div></div>
-      `;
-
-      if (lvArea) {
-        lvArea.innerHTML = `
-          <div style="font-size:1.1em;font-weight:700;color:var(--c-primary);">
-            المستوى ${streakData.currentLevel}: ${streakData.currentTitle}
-          </div>
-          <div style="font-size:0.78em;color:var(--c-text-3);margin-top:4px;">
-            كل 10 أيام إنجاز متتالية ترفعك إلى رتبة ومستوى قرآني جديد
-          </div>`;
-      }
     }
 
     // === CALENDAR OBSERVER & INITIALIZATION ===
@@ -1449,7 +1757,7 @@
           if (st === 'completed') btn.classList.add('day-completed');
           else if (st === 'excused') btn.classList.add('day-excused');
         });
-      }, 250);
+      }, 200);
     }
 
     function initializeAndColorCalendar(tableRows) {
@@ -1474,9 +1782,7 @@
           selection: { day: false, month: true, year: true },
           visibility: { theme: 'light', weekend: false, today: true }
         },
-        actions: {
-          update: () => applyCustomColoring()
-        }
+        actions: { update: () => applyCustomColoring() }
       };
 
       container.innerHTML = '';
@@ -1490,84 +1796,84 @@
         calendarInstance.init();
         applyCustomColoring();
 
-        // Setup observer
         calendarObserver = new MutationObserver(() => applyCustomColoring());
         calendarObserver.observe(container, { childList: true, subtree: true });
-      } catch(err) {
-        console.error('Calendar init error:', err);
+      } catch(e) {
+        console.error('Calendar error:', e);
       }
     }
 
-    // === AUTHENTICATION & DATA LOADING ===
-    function loadDashboardData(user) {
-      if (!user) return;
-      showLoading('جاري استرجاع خطتك القرآنية...');
+    // === TAB 4: MORE & SETTINGS ===
+    function renderMoreView() {
+      if (!currentUser) return;
+      setText('user-display-name', currentUser.displayName || currentPlanData?.studentName || 'طالب العلم المبارك');
+      setText('user-display-email', currentUser.email || 'حساب مفعل');
+      const initial = (currentUser.displayName || currentPlanData?.studentName || 'م')[0];
+      setText('user-initial', initial);
+    }
 
-      db.collection('quranPlans').doc(user.uid).get().then(doc => {
-        hideLoading();
-        if (doc.exists) {
-          currentPlanData = doc.data();
-          if (!currentPlanData.tableRows || currentPlanData.tableRows.length === 0) {
-            window.location.href = 'index.html';
-            return;
-          }
-
-          document.getElementById('dash-main').style.display = 'block';
-          document.getElementById('not-auth').style.display = 'none';
-
-          const stats = calculateDashboardStats(currentPlanData.tableRows);
-          const streakData = calculateStreaksAndLevel(currentPlanData.tableRows);
-
-          displayDailyTask();
-          displayProgress(stats);
-          displayStats(stats);
-          displayStreakArea(streakData);
-          initializeAndColorCalendar(currentPlanData.tableRows);
-        } else {
-          // No plan created yet
-          document.getElementById('dash-main').style.display = 'none';
-          document.getElementById('not-auth').style.display = 'flex';
-          document.getElementById('not-auth').innerHTML = `
-            <div class="not-auth-box">
-              <div style="font-size:3em;margin-bottom:12px;">📖</div>
-              <h2>لم تقم بإنشاء خطة بعد!</h2>
-              <p style="color:var(--c-text-3);margin-bottom:20px;">توجه إلى الصفحة الرئيسية لإنشاء خطتك القرآنية والانطلاق في الرحلة المباركة</p>
-              <a href="index.html" class="btn btn-primary btn-lg">✨ إنشاء خطتي الآن</a>
-            </div>`;
-        }
-      }).catch(err => {
-        hideLoading();
-        console.error('Error fetching plan:', err);
-        alert('حدث خطأ أثناء تحميل الخطة: ' + err.message);
-      });
+    function promptNewPlan() {
+      if (confirm('هل ترغب في إنشاء خطة جديدة؟ يمكنك إعادة ضبط خطتك الحالية وتحديد نقطة بداية جديدة.')) {
+        window.location.href = 'index.html';
+      }
     }
 
     function signOut() {
+      localStorage.removeItem('manarat_plan_cache');
       auth.signOut().then(() => window.location.href = 'index.html');
     }
 
+    // === RENDER ALL VIEWS ===
+    function renderAllViews() {
+      renderTodayView();
+      renderScheduleList();
+      renderStatsView();
+      renderMoreView();
+    }
+
+    // === INSTANT CACHE STARTUP (Zero Delay!) ===
+    (function tryInstantCache() {
+      const cached = localStorage.getItem('manarat_plan_cache');
+      if (cached) {
+        try {
+          currentPlanData = JSON.parse(cached);
+          document.getElementById('app-content').style.display = 'block';
+          document.getElementById('not-auth-screen').style.display = 'none';
+          renderAllViews();
+        } catch(e) {}
+      }
+    })();
+
+    // === AUTHENTICATION & FIRESTORE REALTIME SYNC ===
     auth.onAuthStateChanged(user => {
       currentUser = user;
       if (user) {
-        loadDashboardData(user);
-      } else {
-        hideLoading();
-        document.getElementById('dash-main').style.display = 'none';
-        document.getElementById('not-auth').style.display = 'flex';
-      }
-    });
+        document.getElementById('app-content').style.display = 'block';
+        document.getElementById('not-auth-screen').style.display = 'none';
 
-    // Fallback loading safety timeout
-    setTimeout(() => {
-      const el = document.getElementById('load-dash');
-      if (el && !el.classList.contains('gone')) {
-        el.classList.add('gone');
-        setTimeout(() => el.style.display = 'none', 450);
-        if (!currentUser) {
-          document.getElementById('not-auth').style.display = 'flex';
+        // Realtime Firestore Listener (always up-to-date)
+        db.collection('quranPlans').doc(user.uid).onSnapshot(doc => {
+          if (doc.exists) {
+            currentPlanData = doc.data();
+            localStorage.setItem('manarat_plan_cache', JSON.stringify(currentPlanData));
+            renderAllViews();
+          } else {
+            // No plan exists yet
+            if (!localStorage.getItem('manarat_plan_cache')) {
+              window.location.href = 'index.html';
+            }
+          }
+        }, err => {
+          console.error('Firestore listener error:', err);
+        });
+      } else {
+        // Not logged in
+        if (!localStorage.getItem('manarat_plan_cache')) {
+          document.getElementById('app-content').style.display = 'none';
+          document.getElementById('not-auth-screen').style.display = 'block';
         }
       }
-    }, 6000);
+    });
   </script>
 </body>
 </html>

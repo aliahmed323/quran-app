@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" data-theme="light">
 <head>
+  <script>
+    if (localStorage.getItem('manarat_plan_cache')) {
+      window.location.replace('dashboard.html');
+    }
+  </script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#1B4332">
@@ -177,12 +183,12 @@
       <!-- Has existing plan -->
       <div id="has-plan" style="display:none;">
         <div class="existing-note">
-          <p>🎉 لديك خطة حفظ مسجّلة ومستمرة!</p>
+          <p>🌟 مرحباً بك مجدداً في رحلتك القرآنية المباركة</p>
           <div style="display:flex;gap:12px;justify-content:center;margin-top:14px;flex-wrap:wrap;">
             <a href="dashboard.html" class="btn btn-primary btn-lg">📊 لوحة المتابعة</a>
             <a href="plangen2.html" class="btn btn-outline">📋 الجدول التفصيلي</a>
           </div>
-          <button class="signout-link" id="reset-plan-btn" style="margin-top:14px;">إنشاء خطة جديدة (سيحذف الخطة الحالية)</button>
+          <button class="signout-link" id="reset-plan-btn" style="margin-top:14px;">✨ البدء من جديد وإنشاء خطة جديدة</button>
         </div>
       </div>
 
@@ -291,7 +297,7 @@
           <!-- Error / Action -->
           <div id="wizard-error" style="display:none;color:var(--c-danger);padding:10px 14px;background:var(--c-danger-bg);border-radius:var(--rad-s);margin-bottom:12px;font-size:.88em;"></div>
           <button class="btn btn-gold btn-lg" id="create-plan-btn" onclick="createPlan()" style="width:100%;justify-content:center;">
-            ✨ إنشاء الخطة وبدء الرحلة
+            ✨ اعتماد الخطة والبدء في الحفظ
           </button>
         </div>
       </div>
@@ -504,8 +510,8 @@
         loadMsg.textContent = 'جاري التحقق من خطّتك...';
         db.collection('quranPlans').doc(user.uid).get().then(doc => {
           if (doc.exists && doc.data().tableRows?.length > 0) {
-            hasPlan.style.display = 'block';
-            planWizard.style.display = 'none';
+            localStorage.setItem('manarat_plan_cache', JSON.stringify(doc.data()));
+            window.location.replace('dashboard.html');
           } else {
             hasPlan.style.display = 'none';
             planWizard.style.display = 'block';

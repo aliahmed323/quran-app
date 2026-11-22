@@ -2,7 +2,7 @@
   "name": "منارة الحفظ - رفيقك لحفظ القرآن الكريم",
   "short_name": "منارة الحفظ",
   "description": "تطبيق متكامل لمتابعة خطتك الشخصية لحفظ القرآن الكريم والربط والمراجعة اليومية",
-  "start_url": "./index.html",
+  "start_url": "./dashboard.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
@@ -33,17 +33,10 @@
   "categories": ["education", "productivity", "lifestyle"],
   "shortcuts": [
     {
-      "name": "لوحة المتابعة",
-      "short_name": "المتابعة",
+      "name": "واجب اليوم",
+      "short_name": "واجب اليوم",
       "description": "متابعة واجب اليوم وإنجاز الحفظ",
       "url": "./dashboard.html",
-      "icons": [{ "src": "./icons/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "الجدول التفصيلي",
-      "short_name": "الجدول",
-      "description": "عرض وتعديل الجدول التراكمي",
-      "url": "./plangen2.html",
       "icons": [{ "src": "./icons/icon-192.png", "sizes": "192x192" }]
     }
   ]

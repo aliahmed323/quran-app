@@ -174,9 +174,9 @@
         <p id="quran-quote-text"></p>
     </div>
 
-    <div class="action-buttons">
-        <button id="new-plan-btn">إنشاء جدول جديد</button> {/* This button might need review later */}
-        <button id="print-button" onclick="printData()">طباعة الجدول</button>
+    <div class="action-buttons" style="display:flex;gap:10px;justify-content:center;margin:16px 0;flex-wrap:wrap;">
+        <button id="print-button" class="btn btn-primary" onclick="printData()">🖨️ طباعة الجدول الكامل</button>
+        <a href="dashboard.html" class="btn btn-outline">← العودة للوحة المتابعة</a>
     </div>
     <div class="clear"></div>
 
@@ -843,20 +843,26 @@
 
 
   <!-- Fixed Bottom Navigation Bar -->
-  <nav class="bottom-nav" id="bottom-nav">
-    <a href="index.html" class="bottom-nav-item">
-      <span class="bottom-nav-icon">🏠</span>
-      <span>الرئيسية</span>
+  
+  <nav class="spa-bottom-nav" id="main-bottom-nav">
+    <a href="dashboard.html" class="spa-nav-btn">
+      <span class="nav-icon">🌟</span>
+      <span>واجب اليوم</span>
     </a>
-    <a href="dashboard.html" class="bottom-nav-item">
-      <span class="bottom-nav-icon">📊</span>
-      <span>متابعتي</span>
-    </a>
-    <a href="plangen2.html" class="bottom-nav-item active">
-      <span class="bottom-nav-icon">📋</span>
+    <a href="javascript:void(0)" class="spa-nav-btn active">
+      <span class="nav-icon">📋</span>
       <span>الجدول</span>
     </a>
+    <a href="dashboard.html" class="spa-nav-btn" onclick="localStorage.setItem('open_tab','stats')">
+      <span class="nav-icon">📈</span>
+      <span>الإحصائيات</span>
+    </a>
+    <a href="dashboard.html" class="spa-nav-btn" onclick="localStorage.setItem('open_tab','more')">
+      <span class="nav-icon">⚙️</span>
+      <span>المزيد</span>
+    </a>
   </nav>
+
 
 </body>
 </html>
