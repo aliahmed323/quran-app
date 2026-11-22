@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1B4332"/>
+      <stop offset="100%" stop-color="#0F241C"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F5DE88"/>
+      <stop offset="50%" stop-color="#C9A84C"/>
+      <stop offset="100%" stop-color="#9A7624"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="512" height="512" rx="110" fill="url(#bgGrad)"/>
+  <rect x="16" y="16" width="480" height="480" rx="94" fill="none" stroke="#C9A84C" stroke-width="6" opacity="0.4"/>
+  
+  <!-- Minaret / Dome Top -->
+  <path d="M 256 90 C 265 140 310 160 310 200 L 202 200 C 202 160 247 140 256 90 Z" fill="url(#goldGrad)"/>
+  <circle cx="256" cy="74" r="10" fill="url(#goldGrad)"/>
+  
+  <!-- Crescent on top -->
+  <path d="M 256 46 A 14 14 0 1 1 248 70 A 11 11 0 1 0 256 46 Z" fill="#F5DE88"/>
+
+  <!-- Quran Stand / Open Book -->
+  <g transform="translate(256, 310)">
+    <!-- Left Page -->
+    <path d="M -15 -40 C -70 -70 -140 -50 -150 40 C -110 30 -50 45 -15 65 Z" fill="#F8F5EF" stroke="#C9A84C" stroke-width="4"/>
+    <!-- Right Page -->
+    <path d="M 15 -40 C 70 -70 140 -50 150 40 C 110 30 50 45 15 65 Z" fill="#F8F5EF" stroke="#C9A84C" stroke-width="4"/>
+    <!-- Book Spine & Calligraphy lines -->
+    <line x1="-120" y1="-10" x2="-45" y2="0" stroke="#C9A84C" stroke-width="3" stroke-linecap="round"/>
+    <line x1="-125" y1="12" x2="-45" y2="22" stroke="#C9A84C" stroke-width="3" stroke-linecap="round"/>
+    <line x1="120" y1="-10" x2="45" y2="0" stroke="#C9A84C" stroke-width="3" stroke-linecap="round"/>
+    <line x1="125" y1="12" x2="45" y2="22" stroke="#C9A84C" stroke-width="3" stroke-linecap="round"/>
+    
+    <!-- Wooden Stand (Rihal) -->
+    <path d="M -90 50 L -120 120 L -80 120 L -40 70 L 40 70 L 80 120 L 120 120 L 90 50 Z" fill="url(#goldGrad)"/>
+    <path d="M -50 70 L 0 115 L 50 70 Z" fill="#84651B"/>
+  </g>
+  
+  <!-- Inner subtle glow -->
+  <circle cx="256" cy="256" r="160" fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.3" stroke-dasharray="10 10"/>
+</svg>

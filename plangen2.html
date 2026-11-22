@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl" data-theme="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#1B4332">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>الجدول التفصيلي - منارة الحفظ</title>
@@ -124,6 +124,30 @@
              .excuse-holder-row td { background-color: #ffebeb !important; font-style: normal; color: #000; }
              .round-1, .round-2, .round-3, .round-4, .round-5, .round-6 { background-color: inherit !important; /* Reset round colors for B&W */ }
              @page { size: A4 landscape; margin: 0.7cm; } /* Landscape for wider table */
+        }
+
+    
+        /* Mobile Touch & Button Sizing Fix */
+        button, a, input, select, .button-group button, .delete-button {
+            touch-action: manipulation !important;
+            -webkit-tap-highlight-color: transparent !important;
+        }
+        .button-group button {
+            width: 32px !important;
+            height: 32px !important;
+            font-size: 16px !important;
+        }
+        .delete-button {
+            width: 28px !important;
+            height: 28px !important;
+            font-size: 14px !important;
+        }
+        td input[type="checkbox"] {
+            width: 22px !important;
+            height: 22px !important;
+        }
+        body {
+            padding-bottom: calc(75px + env(safe-area-inset-bottom)) !important;
         }
 
     </style>
@@ -816,6 +840,23 @@
         }
 
     </script>
+
+
+  <!-- Fixed Bottom Navigation Bar -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <a href="index.html" class="bottom-nav-item">
+      <span class="bottom-nav-icon">🏠</span>
+      <span>الرئيسية</span>
+    </a>
+    <a href="dashboard.html" class="bottom-nav-item">
+      <span class="bottom-nav-icon">📊</span>
+      <span>متابعتي</span>
+    </a>
+    <a href="plangen2.html" class="bottom-nav-item active">
+      <span class="bottom-nav-icon">📋</span>
+      <span>الجدول</span>
+    </a>
+  </nav>
 
 </body>
 </html>

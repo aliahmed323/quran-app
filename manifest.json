@@ -1,18 +1,50 @@
 {
-  "name": "منارة الحفظ",
-  "short_name": "منارة",
-  "description": "تطبيق حفظ القرآن الكريم ومتابعة التقدم",
+  "name": "منارة الحفظ - رفيقك لحفظ القرآن الكريم",
+  "short_name": "منارة الحفظ",
+  "description": "تطبيق متكامل لمتابعة خطتك الشخصية لحفظ القرآن الكريم والربط والمراجعة اليومية",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "orientation": "portrait-primary",
+  "orientation": "portrait",
   "background_color": "#1B4332",
   "theme_color": "#1B4332",
   "lang": "ar",
   "dir": "rtl",
   "icons": [
-    { "src": "https://placehold.co/192x192/1B4332/C9A84C?text=م", "sizes": "192x192", "type": "image/png" },
-    { "src": "https://placehold.co/512x512/1B4332/C9A84C?text=م", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ],
-  "categories": ["education", "productivity"],
-  "screenshots": []
+  "categories": ["education", "productivity", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "لوحة المتابعة",
+      "short_name": "المتابعة",
+      "description": "متابعة واجب اليوم وإنجاز الحفظ",
+      "url": "./dashboard.html",
+      "icons": [{ "src": "./icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "الجدول التفصيلي",
+      "short_name": "الجدول",
+      "description": "عرض وتعديل الجدول التراكمي",
+      "url": "./plangen2.html",
+      "icons": [{ "src": "./icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
 }

@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#1B4332">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="منارة الحفظ">
@@ -125,6 +125,21 @@
   </div>
 
   <main class="page-fade">
+
+      <!-- PWA Install Banner -->
+      <div id="pwa-banner" style="display:none;background:linear-gradient(135deg,rgba(201,168,76,0.15) 0%,rgba(27,67,50,0.12) 100%);border:1.5px solid var(--c-gold);border-radius:var(--rad-m);padding:14px 16px;margin-bottom:18px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:2em;">📲</span>
+            <div>
+              <strong style="color:var(--c-primary);display:block;">تثبيت تطبيق منارة الحفظ على الهاتف</strong>
+              <span style="font-size:0.8em;color:var(--c-text-3);">تطبيق خفيف وسريع على شاشة هاتفك الرئيسية كأي تطبيق</span>
+            </div>
+          </div>
+          <button class="btn btn-gold btn-sm" id="pwa-btn">تثبيت الآن ✨</button>
+        </div>
+      </div>
+
 
     <!-- Loading Screen -->
     <div class="load-screen" id="load-screen">
@@ -295,6 +310,27 @@
   </footer>
 
   <script>
+    
+    // === PWA INSTALL PROMPT ===
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const banner = document.getElementById('pwa-banner');
+      if (banner) banner.style.display = 'block';
+    });
+    document.getElementById('pwa-btn')?.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          const banner = document.getElementById('pwa-banner');
+          if (banner) banner.style.display = 'none';
+        }
+        deferredPrompt = null;
+      }
+    });
+
     // === THEME ===
     const themeBtn = document.getElementById('theme-btn');
     let isDark = localStorage.getItem('theme') === 'dark';
@@ -385,30 +421,25 @@
       // Build tableRows
       const repMax = selectedRep;
       const planType = selectedPages;
-      const totalBaseRows = 300; // base plan days (صفحتين/يوم = 300 يوم)
+      const totalBaseRows = 300;
       const tableRows = [];
       const startDate = new Date(dateVal + 'T00:00:00Z');
 
-      // Calculate rows per day based on plan
-      const pagesPerDay = (planType === 'rev' || planType === '1') ? 1 : parseInt(planType);
-      const startIndex = selectedMem === 'partial' ? Math.floor((priorPages - 1) / 2) : 0;
-      const rowsCount = planType === 'rev' ? totalBaseRows : Math.ceil(300 / pagesPerDay);
-
+      const startIndex = selectedMem === 'partial' ? Math.max(0, Math.min(299, Math.floor((priorPages - 1) / 2))) : 0;
       let dayOffset = 0;
-      let rowIndex = startIndex;
-      for (let d = 0; d < rowsCount && rowIndex < 300; d++) {
+      let displaySeq = 1;
+
+      for (let rowIndex = startIndex; rowIndex < 300; rowIndex++) {
         const rowDate = new Date(startDate);
         rowDate.setUTCDate(startDate.getUTCDate() + dayOffset);
-        // For multi-pages, we might do multiple rows per day but keep 1 row/day approach
         tableRows.push({
           type: 'plan',
           originalSequence: rowIndex,
-          displaySeq: d + 1,
+          displaySeq: displaySeq++,
           displayDate: formatDate(rowDate),
-          state: { yestRep:0, listen:0, interp:false, record:0, rep:0, linked:false, reviewed:false, completed:false }
+          state: { yestRep: 0, listen: 0, interp: false, record: 0, rep: 0, linked: false, reviewed: false, completed: false }
         });
         dayOffset++;
-        rowIndex++;
       }
 
       const planData = {
@@ -468,7 +499,7 @@
         const avatar = document.getElementById('user-avatar');
         if (user.photoURL) avatar.src = user.photoURL; else avatar.src = 'https://placehold.co/44x44/1B4332/C9A84C?text=' + (user.displayName?.[0]||'م');
         // Show nav links
-        ['nav-dash','nav-plan','mob-dash','mob-plan'].forEach(id => { const el=document.getElementById(id); if(el) el.style.display=''; });
+        ['nav-dash','nav-plan','mob-dash','mob-plan','bnav-dash','bnav-plan'].forEach(id => { const el=document.getElementById(id); if(el) el.style.display=''; });
         // Check plan
         loadMsg.textContent = 'جاري التحقق من خطّتك...';
         db.collection('quranPlans').doc(user.uid).get().then(doc => {
@@ -483,9 +514,26 @@
       } else {
         notSignedIn.style.display = 'block';
         signedIn.style.display = 'none';
-        ['nav-dash','nav-plan','mob-dash','mob-plan'].forEach(id => { const el=document.getElementById(id); if(el) el.style.display='none'; });
+        ['nav-dash','nav-plan','mob-dash','mob-plan','bnav-dash','bnav-plan'].forEach(id => { const el=document.getElementById(id); if(el) el.style.display='none'; });
       }
     });
   </script>
+
+  <!-- Fixed Bottom Navigation Bar -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <a href="index.html" class="bottom-nav-item active">
+      <span class="bottom-nav-icon">🏠</span>
+      <span>الرئيسية</span>
+    </a>
+    <a href="dashboard.html" class="bottom-nav-item" id="bnav-dash" style="display:none">
+      <span class="bottom-nav-icon">📊</span>
+      <span>متابعتي</span>
+    </a>
+    <a href="plangen2.html" class="bottom-nav-item" id="bnav-plan" style="display:none">
+      <span class="bottom-nav-icon">📋</span>
+      <span>الجدول</span>
+    </a>
+  </nav>
+
 </body>
 </html>
